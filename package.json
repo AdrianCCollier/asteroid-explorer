@@ -6,16 +6,22 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "concurrently": "^8.2.1",
+    "express": "^4.18.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\" \"npm run start-game\"",
+    "start-frontend": "cd frontend && npm start",
+    "start-backend": "cd backend && npm start",
+    "start-game": "cd game && npm start",
+    "install-all": "npm install && npm run install-backend && npm run install-frontend && npm run install-game",
+    "install-backend": "cd backend && npm install",
+    "install-frontend": "cd frontend && npm install",
+    "install-game": "cd game && npm install"
   },
   "eslintConfig": {
     "extends": [
@@ -34,5 +40,17 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AdrianCCollier/asteroid-explorer.git"
+  },
+  "author": "Andrew Melo, Malyk Banka, Alejandro Flores, Adrian Collier",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AdrianCCollier/asteroid-explorer/issues"
+  },
+  "homepage": "https://github.com/AdrianCCollier/asteroid-explorer#readme"
 }
