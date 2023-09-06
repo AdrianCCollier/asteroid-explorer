@@ -14,7 +14,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently \"npm run start-frontend\" \"npm run start-backend\" \"npm run start-game\"",
+    "start-all": "concurrently \"npm run start-frontend\" \"npm run start-backend\" \"npm run start-game\"",
     "start-frontend": "cd frontend && npm start",
     "start-backend": "cd backend && npm start",
     "start-game": "cd game && npm start",
