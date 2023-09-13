@@ -1,0 +1,15 @@
+#phaser-canvas-tall{
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    top: 50%;
+    transform: translate(0%, -50%);
+}
+
+#phaser-canvas-wide{
+    position: absolute;
+    height: 75%;
+    top: 12%;
+    left: 50%;
+    transform: translate(-50%);
+}
