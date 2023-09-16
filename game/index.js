@@ -1,8 +1,16 @@
 // This file holds the Game class, and contains the logic for a Phaser game
 
+import {createPlayer, loadPlayerImage} from './player.js';
+import {createAsteroid} from './asteroid.js';
+
+
+
 var player;
+var asteroid;
 var velocity = 0;
 var velocityLimit = 400;
+
+
 
 // Game setup
 let config = {
@@ -33,38 +41,27 @@ function preload(){
 
 
     // Loads a local image in this case luffy jumping
-    this.load.image('player', './assets/LuffyJumping.png');
+    loadPlayerImage(this);
 }
     
 
 // Create function (Draws assets, and adds any physics to them)
-function create(){    
+function create(){  
+    // Will create the main world (asteroid) that the player and the aliens will be walking on
+    asteroid = createAsteroid(this);
+
+    // Calls create player to create the player with physics, and then returns into the game's player var  
+    player = createPlayer(this);
+
+
+
+
+
     
-    // Draws Luffy with an initial (x, y) position of (400, 100)
-    // Also specifies that the game's physics will effect this asset
-    player = this.physics.add.image(400, 100, 'player')
-
-    // Changes the width and height of Luffy and sets that new scale(size)
-    const newWidth = player.width/4;
-    const newHeight = player.height/4;
-    player.setScale(newWidth / player.width, newHeight / player.height);
-
-    // Applies more physics to Luffy, in this case sets his initial x velocity to 200, and his initial y velocity to 20
-    // Sets his bounce level for his x and y, and makes it so that the bounds of the canvas makes him bouce
-    player.setVelocity(0, 100)
-    player.setBounce(0,0)
-    player.setCollideWorldBounds(true)
-
-
-
-
-
+    ///////////// Will handle canvas resizing depending on window resize /////////////
 
     // Gets the Phaser canvas element
     const canvas = this.game.canvas;
-
-    
-
     // Function to handle canvas resizing
     function resizeCanvas() {
         console.log(window.height);
@@ -77,51 +74,60 @@ function create(){
             canvas.id = 'phaser-canvas-wide';
         }
     }
-
     // Initial canvas resizing
     resizeCanvas();
-
     // Add an event listener for window resize
     window.addEventListener('resize', resizeCanvas);
 }
 
 
 function update(){
-    // Define variables for keyboard input
-    const aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    const dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    // Call the handlePlayerMovement function to continuously check for input
+    handlePlayerMovement(this);
 
 
-    // Function to handle player movement
-    function handlePlayerMovement() {
+    /*
+    // Define the center point (the point of attraction)
+    const centerX = this.physics.world.bounds.width / 2;
+    const centerY = this.physics.world.bounds.height / 2;
 
-       
+    // Set up a constant gravitational force
+    const gravitationalForce = 200;
 
-        // Stop horizontal movement when neither left nor right is pressed
-        if (!aKey.isDown && !dKey.isDown) {
-            if (velocity > 0){
-                velocity -= 25;
-            }
-            else if (velocity < 0){
-                velocity += 25;
-            }
+    // In the update function, calculate the direction and apply the force
+    const angle = Phaser.Math.Angle.Between(player.x, player.y, centerX, centerY);
+    const forceX = Math.cos(angle) * gravitationalForce;
+    const forceY = Math.sin(angle) * gravitationalForce;
+    player.setAcceleration(forceX, forceY);*/
+}
+
+
+// Function to handle player movement
+function handlePlayerMovement(scene) {
+    const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+
+    // Stop horizontal movement when neither left nor right is pressed
+    if (!aKey.isDown && !dKey.isDown) {
+        if (velocity > 0){
+            velocity -= 25;
         }
-
-        // Move left
-        if (aKey.isDown) {
-            if (velocity > velocityLimit * -1)
-                velocity -= 25;
+        else if (velocity < 0){
+            velocity += 25;
         }
-
-        // Move right
-        if (dKey.isDown) {
-            if (velocity < velocityLimit)
-                velocity += 25;
-        }
-
-        player.setVelocityX(velocity); // Adjust the velocity as needed
     }
 
-    // Call the handlePlayerMovement function to continuously check for input
-    handlePlayerMovement();
+    // Move left
+    if (aKey.isDown) {
+        if (velocity > velocityLimit * -1)
+            velocity -= 25;
+    }
+
+    // Move right
+    if (dKey.isDown) {
+        if (velocity < velocityLimit)
+            velocity += 25;
+    }
+
+    player.setVelocityX(velocity); // Adjust the velocity as needed
 }
