@@ -1,0 +1,14 @@
+.frontend__containers__menu {
+    z-index: 100;
+    background-color: rgb( 255, 255, 255 );
+    box-shadow: 0px 8px 32px 0 rgba( 0, 0, 255, 0.30 );
+    backdrop-filter: blur(1px);
+    padding: 0px 16px 16px 16px;
+    border-radius: 16px;
+    font-family: sans-serif;
+    width: 80vw;
+    height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

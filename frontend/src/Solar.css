@@ -29,10 +29,6 @@
   margin-top: 1rem;
 }
 
-.solar__content-sun {
-  color: wheat;
-}
-
 .gradient__text {
   background: var( --gradient-text );
   background-clip: text;
