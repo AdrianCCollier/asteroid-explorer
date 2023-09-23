@@ -18,8 +18,8 @@ app.use(express.static(path.join(__dirname, '../frontend/build')))
 app.get('/asteroids', async (req, res) => {
   try {
     const response = await axios.get(
-      `https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=${API_KEY}`
-    )
+      `https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=${API_KEY}`   
+      )
     const asteroids = response.data.near_earth_objects.slice(0, 3)
     res.json(asteroids) // now localhost:3000/asteroids will display their JSON
   } catch (error) {

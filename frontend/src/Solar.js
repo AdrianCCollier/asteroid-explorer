@@ -6,26 +6,19 @@ import drawAsteroids from './containers/system/asteroids';  // Import the drawAs
 
 
 function Solar() {
-  // This is our state to hold our asteroid data, 'asteroids' displays the data, and 'setAsteroids' adds it.
-  const [asteroids, setAsteroids] = useState([])
+  const [asteroids, setAsteroids] = useState([]) // State to hold the asteroid data
 
   useEffect(() => {
-
-    // Get asteroid data from backend, server.js has an /asteroids route
+    // Fetch the asteroid data from backend/server.js when the component mounts
     fetch('http://localhost:3000/asteroids')
       .then((response) => {
-        if (!response.ok) {
-          // check if response worked, throw error if not
-          throw Error(response.statusText)
-        }
-        // console log it, and also return it
-        console.log(response.status)
+        console.log('Response Status:', response.status) // log status
         return response.json()
       })
       .then((data) => {
-        console.log('Now the body of my response is: ', data) 
-        setAsteroids(data) // Store our asteroid state with API data
-        // drawAsteroids(data) // Call the drawAsteroids function with the data
+        console.log('Retrieved data is: ', data)
+        setAsteroids(data) // Save the asteroid data in the state
+        
       })
       .catch((error) => console.error('Error fetching asteroids:', error))
   }, []) // Empty dependency array means this useEffect runs once, similar to componentDidMount
@@ -34,7 +27,7 @@ function Solar() {
     <div className="solar">
       <Header />
       <div className="solar__content">
-        <CanvasContainer asteroids={asteroids} />
+        <CanvasContainer />
         <Menu />
       </div>
     </div>

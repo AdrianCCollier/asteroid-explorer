@@ -1,27 +1,9 @@
-import React, { useEffect } from 'react' // necessary to make asteroids display actual API data
 
-import Menu from '../menu/Menu'
+
+// import Menu from '../menu/Menu'
 function drawAsteroids(context, canvasHeight, canvasWidth, asteroids) {
   // code may be replaced if we decide to plot the asteroids in their actual positions
   
-
-    const asteroidInfo = (asteroidIndex) => {
-      if (asteroids) {
-        console.log('Asteroids:', asteroids)
-        if (asteroids[asteroidIndex]) {
-          const asteroid = asteroids[asteroidIndex]
-          alert(
-            `Asteroid Name: ${asteroid.name}\nEstimated Diameter: ${asteroid.estimated_diameter}`
-          )
-        } else {
-          console.error('Asteroid index invalid:', asteroidIndex)
-        }
-      } else {
-        console.error('Asteroids data is not available')
-      }
-    }
-
-
   var canvas = document.getElementById('frontend__containers__canvas')
 
   // first asteroid
@@ -101,11 +83,11 @@ function drawAsteroids(context, canvasHeight, canvasWidth, asteroids) {
 
     // check if mouse is inside any of the circles
     if (distance1 < rad1) {
-      asteroidInfo(0) // Assume that the first asteroid corresponds to the first item in the asteroids array
+      console.log('clicked first asteroid');
     } else if (distance2 < rad2) {
-      asteroidInfo(1) // Assume that the second asteroid corresponds to the second item in the asteroids array
+      console.log('clicked second asteroid');
     } else if (distance3 < rad3) {
-      asteroidInfo(2) // Assume that the third asteroid corresponds to the third item in the asteroids array
+      console.log('clicked third asteroid');
     }
   })
 }
