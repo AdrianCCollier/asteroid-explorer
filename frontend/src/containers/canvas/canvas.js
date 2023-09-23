@@ -3,7 +3,7 @@ import drawSun from '../system/sun';
 import drawEarth from '../system/earth';
 import drawAsteroids from '../system/asteroids';
 
-  // Adrian, 9/22. added asteroids as a prop here, being passed down from Solar.js, its coming all the way from localhost:3000/asteroids, it was sent to Solar.js, and now here. The goal is to display actual asteroid data when an asteroid is clicked
+  // Adrian, 9/22. added asteroids as a prop here, being passed down from Solar.js, its coming all the way from localhost:3000/asteroids, it was sent to Solar.js, and now here. The goal is to display actual asteroid data when an asteroid is clicked, so its going to asteroids.js next
 function CanvasContainer({asteroids}) {
 
 
