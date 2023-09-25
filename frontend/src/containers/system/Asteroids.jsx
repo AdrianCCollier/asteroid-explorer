@@ -1,8 +1,23 @@
-import Menu from "../menu/Menu";
-function drawAsteroids( context, canvasHeight, canvasWidth ) {
-    // code may be replaced if we decide to plot the asteroids in their actual positions
+import { useEffect } from 'react';
 
-    var canvas = document.getElementById("frontend__containers__canvas");
+function Asteroids({ canvasRef }) {
+
+    console.log( 'Inside asteroids')
+    useEffect( () => {
+        const canvas = canvasRef.current;
+        const context = canvasRef.current.getContext('2d');
+
+        drawAsteroids( context, canvas.height, canvas.width, canvas );
+    }, [canvasRef]);
+
+    return null;
+}
+
+function drawAsteroids( context, canvasHeight, canvasWidth, canvas ) {
+
+    console.log( "inside draw asteroids");
+
+    // code may be replaced if we decide to plot the asteroids in their actual positions
     
     // first asteroid
     var centerX = canvasWidth * 0.75;
@@ -30,6 +45,7 @@ function drawAsteroids( context, canvasHeight, canvasWidth ) {
     context.fillStyle = '#71716D';
     context.fill();
     context.closePath();
+    
     
     canvas.addEventListener( "mousemove", function(e) {
         var rect = canvas.getBoundingClientRect();
@@ -59,33 +75,7 @@ function drawAsteroids( context, canvasHeight, canvasWidth ) {
             canvas.style.cursor = "default";
         }
     });
-
-    canvas.addEventListener( "click", function(e) {
-        var rect = canvas.getBoundingClientRect();
-        var mouseX = e.clientX - rect.left;
-        var mouseY = e.clientY - rect.top;
-
-        var ast1X = canvasWidth * 0.75;
-        var ast1Y = canvasHeight / 1.25;
-        var ast2X = canvasWidth * 0.25;
-        var ast2Y = canvasHeight * 0.1;
-        var ast3X = canvasWidth / 1.08;
-        var ast3Y = canvasHeight / 5;
-        var rad1 = 15;
-        var rad2 = 12;
-        var rad3 = 25;
-
-        // calculate the distance from the mouse to each asteroids center
-        var distance1 = Math.sqrt(( mouseX - ast1X ) ** 2 + ( mouseY - ast1Y ) ** 2);
-        var distance2 = Math.sqrt(( mouseX - ast2X ) ** 2 + ( mouseY - ast2Y ) ** 2);
-        var distance3 = Math.sqrt(( mouseX - ast3X ) ** 2 + ( mouseY - ast3Y ) ** 2);
-
-        // check if mouse is inside any of the circles
-        if( distance1 < rad1 || distance2 < rad2 || distance3 < rad3 ) {
-            Menu();
-            alert( "Asteroid clicked" );
-        }
-    });
+    
 }
 
-export default drawAsteroids;
+export default Asteroids;

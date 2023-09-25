@@ -1,16 +1,19 @@
 import React from 'react';
 import './Solar.css';
 import './index.css';
-import { Header, CanvasContainer, Menu } from './containers';
+import { Header, CanvasContainer } from './containers';
 
 function Solar() {
+
+
 
   return (
     <div className="solar">
       <Header />
       <div className= "solar__content" >
-        <CanvasContainer />
-        <Menu />
+        <div className = 'solar__content-dynamic-canvas'>
+          <CanvasContainer />
+        </div>
       </div>
     </div>
   );

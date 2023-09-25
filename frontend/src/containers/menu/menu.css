@@ -1,14 +1,42 @@
 .frontend__containers__menu {
-    z-index: 100;
-    background-color: rgb( 255, 255, 255 );
-    box-shadow: 0px 8px 32px 0 rgba( 0, 0, 255, 0.30 );
-    backdrop-filter: blur(1px);
-    padding: 0px 16px 16px 16px;
-    border-radius: 16px;
-    font-family: sans-serif;
-    width: 80vw;
-    height: 80vh;
+  position: absolute;
+  background-color: rgb( 0, 0, 0 );
+  font-family: sans-serif;
+  align-items: center;
+  display: flex;
+  }
+
+  .frontend__containers__menu__info{
+    background-color: rgb( 255, 255, 255, 0.7 );
+    box-shadow: 0px 0px 32px 5px rgba( 0, 0, 255, 0.3);
+    border-radius: 1rem;
+    z-index: inherit;
     display: flex;
     justify-content: center;
+    margin: 1rem;
     align-items: center;
+    position: absolute;
+  }
+
+  .frontend__containers__menu__textbox{
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .frontend__containers__menu__button {
+    position: absolute;
+    bottom: 3rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .custom-button {
+    width: 20rem;
+    height: 6rem;
+    font-size: 50px;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #00C137;
+    border: none;
+    transition: color 0.3s;
   }
