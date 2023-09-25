@@ -5,6 +5,7 @@
     "dev": "concurrently \"npm start --prefix ../frontend\" \"npm start\""
   },
   "dependencies": {
+    "antd": "^5.9.3",
     "axios": "^1.5.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

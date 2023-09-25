@@ -2,7 +2,8 @@ import React from 'react';
 import { Button } from 'antd';
 import './menu.css';
 
-function Menu({canvasDimensions}) {
+// Menu will need a new prop for asteroid information
+function Menu({canvasDimensions, asteroidInformation}) {
 
     console.log( 'Inside Menu' );
 
@@ -16,20 +17,21 @@ function Menu({canvasDimensions}) {
         height: `${canvasDimensions.height * 0.9}px`,      
     }
 
+
     return (
         <div className = 'frontend__containers__menu' style = {menuStyle}>
             <div className = 'frontend__containers__menu__info' style = {texstStyle}>
                 <div className = 'frontend__containers__menu__textbox'>
                     <h1>Name:</h1>
-                    <p>XYZ</p>
+                    <p>{asteroidInformation.name}</p>
                     <h2>Diameter:</h2>
-                    <p>XYZ</p>
+                    <p>{asteroidInformation.diameter}</p>
                     <h2>Distance from Earth:</h2>
-                    <p>XYZ</p>
+                    <p>{asteroidInformation.distanceFromEarth}</p>
                 </div>
                 
             </div>
-            <Button className = 'frontend__containers__menu__button custom-button'>Invade</Button>
+            <Button className = 'frontend__containers__menu__button custom-button'>EXPLORE</Button>
         </div>
       );
     }
