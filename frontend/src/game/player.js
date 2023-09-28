@@ -1,51 +1,36 @@
-export function createPlayer(scene){
-    // Draws Luffy with an initial (x, y) position of (400, 100)
-    // Also specifies that the game's physics will effect this asset
-    var player = scene.physics.add.image(400, 100, 'player')
-
-    // Applies more physics to Luffy, in this case sets his initial x velocity to 200, and his initial y velocity to 20
-    // Sets his bounce level for his x and y, and makes it so that the bounds of the canvas makes him bouce
-    player.setVelocity(0, 0)
-    player.setCollideWorldBounds(true)
+import {createAsteroid, applyRotation} from './asteroid.js';
 
 
-    // Changes the width and height of Luffy and sets that new scale(size)
-    const newWidth = player.width/16;
-    const newHeight = player.height/16;
-    player.setScale(newWidth / player.width, newHeight / player.height);
+export function createPlayer(scene, asteroid, w, h) {
+    let player = {
+        x: asteroid.x, // Sprite's x position
+        y: asteroid.y, // Sprite's y position
+        width: w, // Sprite's width
+        height: h, // Sprite's height
+        angle: 0, // Player's angle to the center of asteroid
+        vertical: 2.75, // Distance to center of asteroid for setOrigin function()
+        realDistance: asteroid.radius, // Real distance to center of asteroid
+        gravity: 0.044, // Player gravity
+        sprite: scene.add.sprite(asteroid.x, asteroid.y, 'player'),
+        rotation: null, // Player's tween rotation
+        collider: null // Player's collider circle
+    };
+
+    // Applies the player's rotation
+    player.rotation = applyRotation(scene, player);
+
+    // Set's initial player distance to the surface of the asteroid
+    const verticalOrigin = (1 + (asteroid.radius / (player.width / 2))) / 2 + 0.5;
+    player.sprite.setOrigin(0.5, verticalOrigin);
+    player.vertical = verticalOrigin;
+
+    // Sets the player's collider
+    player.collider = new Phaser.Geom.Circle(player.x, player.y, player.width / 2);
 
     return player;
 }
 
 
-
 export function loadPlayerImage(scene){
-    scene.load.image('player', './assets/LuffyJumping.png');
-}
-
-
-export function handlePlayerMovement(player, aKey, dKey, velocity, velocityLimit){
-    // Stop horizontal movement when neither left nor right is pressed
-    if (!aKey.isDown && !dKey.isDown) {
-        if (velocity > 0){
-            velocity -= 25;
-        }
-        else if (velocity < 0){
-            velocity += 25;
-        }
-    }
-
-    // Move left
-    if (aKey.isDown) {
-        if (velocity > velocityLimit * -1)
-            velocity -= 25;
-    }
-
-    // Move right
-    if (dKey.isDown) {
-        if (velocity < velocityLimit)
-            velocity += 25;
-    }
-
-    player.setVelocityX(velocity); // Adjust the velocity as needed
+    scene.load.image('player', './assets/Skeleton.png');
 }

@@ -1,15 +1,12 @@
 // This file holds the Game class, and contains the logic for a Phaser game
 
 import {createPlayer, loadPlayerImage} from './player.js';
-import {createAsteroid} from './asteroid.js';
+import {createAsteroid, applyRotation} from './asteroid.js';
 
 
 
 var player;
 var asteroid;
-var velocity = 0;
-var velocityLimit = 400;
-
 
 
 // Game setup
@@ -20,7 +17,7 @@ let config = {
     physics: {
     default: 'arcade', // sets the physics for the game
     arcade: {
-        gravity: {y: 200} // sets gravity
+        gravity: {y: 0} // sets gravity
     }
     },
 
@@ -37,34 +34,27 @@ let game = new Phaser.Game(config)
 
 // Preload Function (Loads assets)
 function preload(){
-    // When loading an asset you assign it a keyword to reference it later on
-
-
-    // Loads a local image in this case luffy jumping
+    // Loads a local image in this case a robot sprite that is 64x64 pixels
     loadPlayerImage(this);
 }
     
 
 // Create function (Draws assets, and adds any physics to them)
-function create(){  
+function create(){
     // Will create the main world (asteroid) that the player and the aliens will be walking on
-    asteroid = createAsteroid(this);
+    asteroid = createAsteroid(this, game, 121);
 
     // Calls create player to create the player with physics, and then returns into the game's player var  
-    player = createPlayer(this);
+    player = createPlayer(this, asteroid, 64, 64);
 
 
 
 
-
-    
     ///////////// Will handle canvas resizing depending on window resize /////////////
-
     // Gets the Phaser canvas element
     const canvas = this.game.canvas;
     // Function to handle canvas resizing
     function resizeCanvas() {
-        console.log(window.height);
         if (window.innerHeight > window.innerWidth){
             // Add an ID to the canvas element so that we can use CSS on it
             canvas.id = 'phaser-canvas-tall';
@@ -82,52 +72,89 @@ function create(){
 
 
 function update(){
-    // Call the handlePlayerMovement function to continuously check for input
     handlePlayerMovement(this);
-
-
-    /*
-    // Define the center point (the point of attraction)
-    const centerX = this.physics.world.bounds.width / 2;
-    const centerY = this.physics.world.bounds.height / 2;
-
-    // Set up a constant gravitational force
-    const gravitationalForce = 200;
-
-    // In the update function, calculate the direction and apply the force
-    const angle = Phaser.Math.Angle.Between(player.x, player.y, centerX, centerY);
-    const forceX = Math.cos(angle) * gravitationalForce;
-    const forceY = Math.sin(angle) * gravitationalForce;
-    player.setAcceleration(forceX, forceY);*/
 }
+
+
+// Vars for player movement
+var jumpTimer = 55;
+var frameCounter = 0;
+var jumping = false;
+var falling = false;
+var spaceUp = false;
 
 
 // Function to handle player movement
 function handlePlayerMovement(scene) {
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-
-    // Stop horizontal movement when neither left nor right is pressed
-    if (!aKey.isDown && !dKey.isDown) {
-        if (velocity > 0){
-            velocity -= 25;
-        }
-        else if (velocity < 0){
-            velocity += 25;
-        }
-    }
+    const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     // Move left
     if (aKey.isDown) {
-        if (velocity > velocityLimit * -1)
-            velocity -= 25;
+        player.angle -= 1;
     }
 
     // Move right
-    if (dKey.isDown) {
-        if (velocity < velocityLimit)
-            velocity += 25;
+    if (dKey.isDown){
+        player.angle += 1;
     }
 
-    player.setVelocityX(velocity); // Adjust the velocity as needed
+    // Jump
+    if (spaceKey.isDown && !jumping && !falling && spaceUp){
+        jumping = true;
+    }
+
+    // Checks for player not holding space for jumping
+    if (!spaceKey.isDown){
+        spaceUp = true;
+    }
+    else{
+        spaceUp = false;
+    }
+
+    // Handles jumping
+    if (jumping){
+        frameCounter += 1;
+        if (frameCounter >= jumpTimer){
+            jumping = false;
+            falling = true;
+            frameCounter = 0;
+        }
+        else{
+            player.vertical += player.gravity;
+        }
+    }
+
+    // handles falling
+    if (falling){
+        player.vertical -= player.gravity;
+        console.log(player.collider.y);
+
+        // Check for collision
+        if ((Phaser.Geom.Intersects.CircleToCircle(asteroid.collider, player.collider))){
+            falling = false;
+
+            // Resets player position
+            player.vertical = (player.realDistance / 64) + 0.5;
+        }
+    }
+
+
+    // Updates player rotation angle
+    player.rotation.updateTo('angle', player.angle);
+
+    // updates player's vertical positon
+    player.sprite.setOrigin(0.5, player.vertical);
+
+    // Calculates the real distance to the center of the asteroid, in regards to the player
+    player.realDistance = (player.vertical - 0.5) / 1 * 64;
+
+    // Calculates the x, and y positions of the player sprite
+    player.x = asteroid.x + (player.realDistance * Math.cos((player.angle - 90) * (Math.PI / 180)));
+    player.y = asteroid.y + (player.realDistance * Math.sin((player.angle - 90) * (Math.PI / 180)));
+
+    // Updates the player collider position
+    player.collider.x = player.x;
+    player.collider.y = player.y;
 }
