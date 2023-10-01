@@ -1,23 +1,20 @@
-const express = require('express');
-const axios = require('axios');
-const app = express();
-const path = require('path');
-const port = process.env.PORT || 3000;
+const express = require('express')
+const axios = require('axios')
+const app = express()
+const path = require('path')
+const port = process.env.PORT || 3000
 const cors = require('cors');
-require('dotenv').config();
+require('dotenv').config()
 const API_KEY = process.env.API_KEY
 
-// cors middleware, to allow a backend/frontend connection
 app.use(cors());
-
-// have express serve React's public folder
 app.use(express.static('public'))
 
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../frontend/build')))
 
 
-//make GET request to NASA's browse endpoint, extract 3 asteroids, and store them in our own /asteroids API endpoint. React will make a GET request to it, for data to continue flowing.
+//make GET request to browse endpoint, extract only 3 for now
 app.get('/asteroids', async (req, res) => {
   try {
     const response = await axios.get(
