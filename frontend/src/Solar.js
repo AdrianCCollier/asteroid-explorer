@@ -1,9 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import './Solar.css';
-import './index.css';
-import { Header, CanvasContainer } from './containers';
-import drawAsteroids from './containers/system/Asteroids.jsx';  // Import the drawAsteroids function
-
+import React, { useEffect, useState } from 'react'
+import './Solar.css'
+import './index.css'
+import { Header, CanvasContainer } from './containers'
+import drawAsteroids from './containers/system/Asteroids.jsx' // Import the drawAsteroids function
 
 function Solar() {
   const [asteroids, setAsteroids] = useState([]) // State to hold the asteroid data
@@ -18,7 +17,6 @@ function Solar() {
       .then((data) => {
         console.log('Retrieved data is: ', data)
         setAsteroids(data) // Save the asteroid data in the state
-        
       })
       .catch((error) => console.error('Error fetching asteroids:', error))
   }, []) // Empty dependency array means this useEffect runs once, similar to componentDidMount
@@ -26,7 +24,7 @@ function Solar() {
   return (
     <div className="solar">
       <Header />
-      <div className='solar__content__holder'>
+      <div className="solar__content__holder">
         <div className="solar__content-dynamic-canvas">
           <CanvasContainer />
         </div>
@@ -35,4 +33,4 @@ function Solar() {
   )
 }
 
-export default Solar;
+export default Solar
