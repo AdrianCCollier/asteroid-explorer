@@ -2,7 +2,6 @@ import { useEffect } from 'react';
 
 function Asteroids({ canvasRef }) {
 
-    console.log( 'Inside asteroids')
     useEffect( () => {
         const canvas = canvasRef.current;
         const context = canvasRef.current.getContext('2d');
@@ -15,7 +14,7 @@ function Asteroids({ canvasRef }) {
 
 function drawAsteroids( context, canvasHeight, canvasWidth, canvas ) {
 
-    console.log( "inside draw asteroids");
+    console.log( "Drawing steroids");
 
     // code may be replaced if we decide to plot the asteroids in their actual positions
     

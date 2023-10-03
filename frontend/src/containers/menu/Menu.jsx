@@ -5,7 +5,7 @@ import './menu.css';
 // Menu will need a new prop for asteroid information
 function Menu({canvasDimensions, asteroidInformation}) {
 
-    console.log( 'Inside Menu' );
+    console.log( 'Inside Asteroid Screen' );
 
     const menuStyle = {
         width: `${canvasDimensions.width}px`,
