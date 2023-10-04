@@ -56,24 +56,40 @@ function CanvasContainer({asteroids}) {
       var distance1 = Math.sqrt(( mouseX - ast1X ) ** 2 + ( mouseY - ast1Y ) ** 2);
       var distance2 = Math.sqrt(( mouseX - ast2X ) ** 2 + ( mouseY - ast2Y ) ** 2);
       var distance3 = Math.sqrt(( mouseX - ast3X ) ** 2 + ( mouseY - ast3Y ) ** 2);
+      
+      // fetch the asteroid data
+      var asteroidData = null // Variable to hold the asteroid data
+      var name;
+
+      // Fetch the asteroid data from backend/server.js when the component mounts
+      fetch('http://localhost:3000/asteroids') // Fetch from link
+      .then((response) => { // Then take response and return it in json form so it is usable
+        return response.json()
+      })
+      .then((data) => { // Then take the json data returned and set it to variable
+        console.log('Retrieved data inside canvas: ', data)
+        asteroidData = data // Save the asteroid data in a variable
+        if( distance1 < rad1 ) {
+          setMenuOpen( true );
+          console.log( 'Asteroid 1 clicked');
+          setAsteroidInformation( { name: asteroidData[0].name, diameter: asteroidData[0].esitmated_diameter.kilometers, distanceFromEarth: 2672 } );
+        }
+        else if( distance2 < rad2 ) {
+          setMenuOpen( true );
+          console.log( 'Asteroid 2 clicked');
+          setAsteroidInformation( { name: asteroidData[1].name, diameter: asteroidData[1].esitmated_diameter.kilometers, distanceFromEarth: 2672 } );
+        }
+        else if( distance3 < rad3 ) {
+          setMenuOpen( true );
+          console.log( 'Asteroid 3 clicked');
+          setAsteroidInformation( { name: asteroidData[2].name, diameter: asteroidData[2].esitmated_diameter.kilometers, distanceFromEarth: 2672 } );
+      }
+      })
+    .catch((error) => console.error('Error fetching asteroids:', error))
 
       // check if mouse is inside any of the circles
       // from here we will set setMenuOpen to true and pass asteroid information to Menu
-      if( distance1 < rad1 ) {
-          setMenuOpen( true );
-          console.log( 'Asteroid 1 clicked');
-          setAsteroidInformation( { name: '3 Juno ( example data )', diameter: 168, distanceFromEarth: 2672 } );
-      }
-      else if( distance2 < rad2 ) {
-          setMenuOpen( true );
-          console.log( 'Asteroid 2 clicked');
-          setAsteroidInformation( { name: '3 Juno ( example data )', diameter: 168, distanceFromEarth: 2672 } );
-      }
-      else if( distance3 < rad3 ) {
-          setMenuOpen( true );
-          console.log( 'Asteroid 3 clicked');
-          setAsteroidInformation( { name: '3 Juno ( example data )', diameter: 168, distanceFromEarth: 2672 } );
-      }
+      
   });
   
   // working event listener to resize the canvas
