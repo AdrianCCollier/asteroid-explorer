@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 export function createBullet(scene, player, w, h) {
   let speed = 10; // Speed of the bullet
   let bullet_x = player.x;

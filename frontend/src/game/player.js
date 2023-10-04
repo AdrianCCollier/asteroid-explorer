@@ -1,6 +1,8 @@
 import {createAsteroid, applyRotation} from './asteroid.js';
 import { createBullet, createBulletInside, handleBulletMovements, loadBulletImage } from './bullet.js';
 
+import Phaser from 'phaser';
+
 export function createPlayer(scene, asteroid, w, h) {
     let player = {
         x: asteroid.x, // Sprite's x position

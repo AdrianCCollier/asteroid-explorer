@@ -8,6 +8,8 @@ import { createDoor, loadDoorImage } from './door.js';
 import { addColliderBetweenObjects, addObjectToWorld } from './collisions.js';
 import ConfirmationScene from './confirmationScene.js';
 
+import Phaser from 'phaser';
+
 export default class Level1Scene extends Phaser.Scene {
 
   constructor() {

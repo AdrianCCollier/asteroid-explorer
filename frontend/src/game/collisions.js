@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 export function addColliderWithWorld(scene, object) {
     // Check if scene and object are defined and object has a body property
     if(scene && object && object.body) {

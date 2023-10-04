@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 import {createAsteroid, applyRotation} from './asteroid.js';
 
 export function createDoor(scene, asteroid, w, h) {

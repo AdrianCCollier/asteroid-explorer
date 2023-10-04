@@ -1,10 +1,23 @@
-import { Header, CanvasContainer } from './containers'
+import { Header, CanvasContainer } from './containers';
+
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
+import Game from './game/index';
+
 
 // Style
 import './Solar.css'
 import './index.css'
 
-function Solar() {
+function ExplorerGame(){
+  return(
+    <div>
+      <Game />
+    </div>
+  );
+}
+
+function SolarSystem(){
   var asteroidData = null // Variable to hold the asteroid data
 
   // Fetch the asteroid data from backend/server.js when the component mounts
@@ -28,6 +41,21 @@ function Solar() {
       </div>
     </div>
   )
+}
+
+
+
+function Solar() {
+  return (
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/game" element = {<ExplorerGame />} />
+          <Route index element = {<SolarSystem />} />
+        </Routes>
+      </div>
+    </Router>
+  );
 }
 
 export default Solar

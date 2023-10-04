@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 export function createWeapon(scene, asteroid, w, h) {
 
   // Calculate position for the weapon

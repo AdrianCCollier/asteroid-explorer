@@ -2,6 +2,9 @@ import React from 'react';
 import { Button } from 'antd';
 import './menu.css';
 
+import { Link } from 'react-router-dom';
+
+
 // Menu will need a new prop for asteroid information
 function Menu({canvasDimensions, asteroidInformation}) {
 
@@ -31,7 +34,10 @@ function Menu({canvasDimensions, asteroidInformation}) {
                 </div>
                 
             </div>
-            <Button className = 'frontend__containers__menu__button custom-button'>EXPLORE</Button>
+            <Link to="/game">
+                <Button className='frontend__containers__menu__button custom-button'>EXPLORE</Button>
+            </Link>
+
         </div>
       );
     }

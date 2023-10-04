@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 export function createAsteroid(scene, game, r){
     // Creates asteroid object with properties
     let asteroid = {

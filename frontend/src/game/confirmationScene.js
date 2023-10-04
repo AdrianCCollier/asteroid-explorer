@@ -1,3 +1,5 @@
+import Phaser from 'phaser';
+
 class ConfirmationScene extends Phaser.Scene {
   constructor() {
       super({ key: 'ConfirmationScene' });

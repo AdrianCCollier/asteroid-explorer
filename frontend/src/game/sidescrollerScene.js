@@ -5,6 +5,8 @@ import { createBullet, handleBulletMovements, loadBulletImage } from './bullet.j
 import { createDoor, loadDoorImage } from './door.js';
 import { addColliderWithWorld, addColliderWithGround, addObjectToWorld } from './collisions.js';
 
+import Phaser from 'phaser';
+
 export default class SidescrollerScene extends Phaser.Scene {
     constructor() {
         super({ key: 'SidescrollerScene' }); // Assigning key to this Scene
