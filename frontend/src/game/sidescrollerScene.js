@@ -4,6 +4,8 @@ import { createWeaponInside, loadWeaponImage } from './weapons.js';
 import { createBullet, handleBulletMovements, loadBulletImage } from './bullet.js';
 import { createDoor, loadDoorImage } from './door.js';
 import { addColliderWithWorld, addColliderWithGround, addObjectToWorld } from './collisions.js';
+import GameOverScene from './gameOverScene.js';
+
 
 import Phaser from 'phaser';
 
@@ -56,7 +58,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     update() {
         // Handling Player and Enemy movements and interactions every frame
         handlePlayerMovementInside(this, this.player, this.shootControl, this.shootCooldown);
-        this.enemies.forEach(enemy => handleEnemyMovementInside(this, this.bullets, enemy));
+        this.enemies.forEach(enemy => handleEnemyMovementInside(this, this.bullets, enemy))
         handleBulletMovements(this.bullets);
 
         // Check for weapon pickup
@@ -80,6 +82,25 @@ export default class SidescrollerScene extends Phaser.Scene {
         if (this.checkAllEnemiesDeadTimer && this.areAllEnemiesDead()) {
             this.showCongratulationScreen();
         }
+
+        // Checks for enemy collision with player
+        // Iterate over each enemy
+        this.enemies.forEach(enemy => {
+            if (enemy && enemy.sprite) {
+                // Check if the bullet intersects with the enemy and destroy the enemy if true
+                if (Phaser.Geom.Intersects.RectangleToRectangle(enemy.sprite.getBounds(), this.player.sprite.getBounds())) {
+                    if (!enemy.destroyed){
+                        // empties enemies array
+                        this.enemies = [];
+                        this.waveCount = 0; // Initialize wave counter
+                        this.maxWaves = 5; // Maximum number of enemy waves
+                        this.scene.pause(); // Pause the current scene
+                        this.scene.stop(); // Stops current scene
+                        this.scene.launch('GameOverScene'); // Launch the ConfirmationScene
+                    }
+                }
+            }
+        });
     }
     // Spawn enemies in waves until the maximum number of waves is reached
     // Also checks for all enemies dead after all waves are spawned
@@ -115,7 +136,7 @@ export default class SidescrollerScene extends Phaser.Scene {
         
     // Return true if all enemies are dead or inactive
     areAllEnemiesDead() {
-        return this.enemies.length === 0 || this.enemies.every(enemy => !enemy.sprite.active);
+        return this.enemies.every(enemy => !enemy.sprite.active);
     }
 
     // If all enemies are dead, show congratulation screen and remove the check timer
@@ -133,7 +154,7 @@ export default class SidescrollerScene extends Phaser.Scene {
         this.congratsText = this.add.text(
             this.cameras.main.centerX,
             this.cameras.main.centerY,
-            'Congratulations! \n Press R to Head back to Surface!',
+            'Congratulations! \n Press R to Head back to Orbit!',
             { fontSize: '32px', color: '#fff' }
         ).setOrigin(0.5, 0.5);
 
@@ -141,7 +162,7 @@ export default class SidescrollerScene extends Phaser.Scene {
 
         this.keyR.once('down', () => {
             this.congratsText.destroy();
-            this.scene.start('Level1Scene');
+            window.location.href = '/'; // Change the URL to '/'
         });
     }
 }

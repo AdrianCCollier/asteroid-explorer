@@ -13,3 +13,17 @@
     left: 50%;
     transform: translate(-50%);
 }
+
+.gameContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw; /* 100% of the viewport width */
+    height: 100vh; /* 100% of the viewport height */
+    overflow: hidden; /* Hide any overflow content outside the container */
+    background-color: #0024; /* Optional background color for the container */
+}
+
+.gameContainer img {
+    width: 100%;
+}

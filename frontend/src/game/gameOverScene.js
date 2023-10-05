@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 
-class ConfirmationScene extends Phaser.Scene {
+class GameOverScene extends Phaser.Scene {
   constructor() {
-      super({ key: 'ConfirmationScene' });
+      super({ key: 'GameOverScene' });
   }
 
   create() {
@@ -11,7 +11,7 @@ class ConfirmationScene extends Phaser.Scene {
       rect.setAlpha(0.8);
       
       // Adding a title
-      const title = this.add.text(this.cameras.main.width / 2, this.cameras.main.height / 2 - 50, 'Do you want to proceed?', { color: '#ffffff', fontSize: '20px' });
+      const title = this.add.text(this.cameras.main.width / 2, this.cameras.main.height / 2 - 50, 'Game Over. Want To Try Again?', { color: '#ffffff', fontSize: '20px' });
       title.setOrigin(0.5, 0.5); // Centering text
       
       // Styling Yes Button
@@ -19,7 +19,7 @@ class ConfirmationScene extends Phaser.Scene {
           .setInteractive()
           .on('pointerdown', () => {
               this.scene.stop();
-              this.scene.get('Level1Scene').scene.start('SidescrollerScene');
+              this.scene.start('Level1Scene');
           })
           .on('pointerover', () => yesButton.setBackgroundColor('#555555')) // Changing background color when hovered
           .on('pointerout', () => yesButton.setBackgroundColor('#000000')); // Changing background color back when not hovered
@@ -29,11 +29,11 @@ class ConfirmationScene extends Phaser.Scene {
           .setInteractive()
           .on('pointerdown', () => {
               this.scene.stop();
-              this.scene.resume('Level1Scene');
+              window.location.href = '/'; // Change the URL to '/'
           })
           .on('pointerover', () => noButton.setBackgroundColor('#555555')) // Changing background color when hovered
           .on('pointerout', () => noButton.setBackgroundColor('#000000')); // Changing background color back when not hovered
   }
 }
 
-export default ConfirmationScene;
+export default GameOverScene;

@@ -10,6 +10,9 @@ import ConfirmationScene from './confirmationScene.js';
 
 import Phaser from 'phaser';
 
+import './game.css'
+
+
 export default class Level1Scene extends Phaser.Scene {
 
   constructor() {

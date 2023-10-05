@@ -14,7 +14,8 @@ export function createEnemy(scene, asteroid, w, h) {
         realDistance: asteroid.radius, // realDistance of the enemy set to the asteroid's radius
         sprite: scene.add.sprite(asteroid.x, asteroid.y, 'enemy'), // Adding enemy sprite to the scene at asteroid's position
         collider: null, // Initialize collider to null
-        rotation: null // Initialize rotation to null
+        rotation: null, // Initialize rotation to null
+        destroyed: false
     };
     
     // Set the enemy's collider
@@ -92,7 +93,10 @@ export function handleEnemyMovementInside(scene, bullets, enemy) {
         if (bullet && bullet.sprite) {
             if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
                 enemy.sprite.destroy();
+                enemy.destroyed = true;
+                return true;
             }
         }
     });
+    return false;
 }
