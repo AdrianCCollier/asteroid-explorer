@@ -39,7 +39,6 @@ function Menu({canvasDimensions, asteroidInformation, closeMenu}) {
             <Link to="/game">
                 <Button className='frontend__containers__menu__button custom-button'>EXPLORE</Button>
              </Link>
-           <div className = 'frontend__containers__menu-asteroid'></div>
 
         </div>
       );
