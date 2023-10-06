@@ -23,6 +23,7 @@ function SolarSystem(){
   const [showWelcomeScreen, setShowWelcomeScreen] = useState( true );
 
   useEffect( () => {
+    
     // Fetch the asteroid data from backend/server.js when the component mounts
     fetch('http://localhost:3000/asteroids') // Fetch from link
     .then((response) => { // Then take response and return it in json form so it is usable
@@ -45,7 +46,7 @@ function SolarSystem(){
 
   return (
     <div className="solar"> 
-      <Header className={showWelcomeScreen ? 'header-centered' : 'header-top' }/>
+      <Header />
       { showWelcomeScreen ? (
         <div className="solar__content-welcome">
           <h1>Weclome to Asteroid Explorer!</h1>

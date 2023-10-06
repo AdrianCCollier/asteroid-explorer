@@ -37,9 +37,6 @@ function Asteroids({ canvasRef }) {
             }
         });
 
-        return () => {
-            canvas.removeEventListener( "mousemove" );
-        }
     }, [canvasRef]);
 
     return null;
