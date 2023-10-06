@@ -6,20 +6,19 @@ import { Link } from 'react-router-dom';
 
 
 // Menu will need a new prop for asteroid information
-function Menu({canvasDimensions, asteroidInformation}) {
+function Menu({canvasDimensions, asteroidInformation, closeMenu}) {
 
-    console.log( 'Inside Asteroid Screen' );
+    console.log( 'Inside menu Screen' );
 
     const menuStyle = {
         width: `${canvasDimensions.width}px`,
         height: `${canvasDimensions.height}px`,
-    };
+    }; // end menuStyle
 
     const texstStyle = {
         width: `${canvasDimensions.width * 0.2}px`,
         height: `${canvasDimensions.height * 0.9}px`,      
-    }
-
+    }; // end textStyle
 
     return (
         <div className = 'frontend__containers__menu' style = {menuStyle}>
@@ -28,15 +27,19 @@ function Menu({canvasDimensions, asteroidInformation}) {
                     <h1>Name:</h1>
                     <p>{asteroidInformation.name}</p>
                     <h2>Diameter:</h2>
-                    <p>{asteroidInformation.diameter}</p>
+                    <p>{asteroidInformation.diameter} km</p>
                     <h2>Distance from Earth:</h2>
-                    <p>{asteroidInformation.distanceFromEarth}</p>
+                    <p>{asteroidInformation.distanceFromEarth} au</p>
                 </div>
+
                 
+                    
             </div>
+            <Button className = 'frontend__containers__menu-closeButton close-button' onClick={closeMenu}></Button>
             <Link to="/game">
                 <Button className='frontend__containers__menu__button custom-button'>EXPLORE</Button>
-            </Link>
+             </Link>
+           <div className = 'frontend__containers__menu-asteroid'></div>
 
         </div>
       );

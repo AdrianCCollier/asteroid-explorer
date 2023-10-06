@@ -14,6 +14,10 @@ function CanvasContainer({asteroids}) {
   const [ isMenuOpen, setMenuOpen ] = useState( false );
   const [ asteroidInformation, setAsteroidInformation ] = useState( {name: 'asteroid', diameter: 10, distanceFromEarth: 100 } );
 
+  const closeMenu = () => {
+    setMenuOpen( false );
+  };
+
   useLayoutEffect( () => {
     const canvas = canvasRef.current;
 
@@ -35,9 +39,17 @@ function CanvasContainer({asteroids}) {
     }
 
     resizeCanvas();
-
+    
     // eventListener to handle the clicking of an asteroid
     canvas.addEventListener( "click", function(e) {
+      
+      // Malyk 10/5/23
+      // you will get errors if you do not first check to ensure that asteroids is not empty even though asteroids should not be empty when we are at this point
+      // no I do not know why
+      if( !asteroids || asteroids.length < 3 ) {
+        return;
+      } // end if
+
       var rect = canvas.getBoundingClientRect();
       var mouseX = e.clientX - rect.left;
       var mouseY = e.clientY - rect.top;
@@ -57,39 +69,24 @@ function CanvasContainer({asteroids}) {
       var distance2 = Math.sqrt(( mouseX - ast2X ) ** 2 + ( mouseY - ast2Y ) ** 2);
       var distance3 = Math.sqrt(( mouseX - ast3X ) ** 2 + ( mouseY - ast3Y ) ** 2);
       
-      // fetch the asteroid data
-      var asteroidData = null // Variable to hold the asteroid data
-      var name;
-
-      // Fetch the asteroid data from backend/server.js when the component mounts
-      fetch('http://localhost:3000/asteroids') // Fetch from link
-      .then((response) => { // Then take response and return it in json form so it is usable
-        return response.json()
-      })
-      .then((data) => { // Then take the json data returned and set it to variable
-        console.log('Retrieved data inside canvas: ', data)
-        asteroidData = data // Save the asteroid data in a variable
-        if( distance1 < rad1 ) {
-          setMenuOpen( true );
-          console.log( 'Asteroid 1 clicked');
-          setAsteroidInformation( { name: asteroidData[0].name, diameter: asteroidData[0].esitmated_diameter.kilometers, distanceFromEarth: 2672 } );
-        }
-        else if( distance2 < rad2 ) {
-          setMenuOpen( true );
-          console.log( 'Asteroid 2 clicked');
-          setAsteroidInformation( { name: asteroidData[1].name, diameter: asteroidData[1].esitmated_diameter.kilometers, distanceFromEarth: 2672 } );
-        }
-        else if( distance3 < rad3 ) {
-          setMenuOpen( true );
-          console.log( 'Asteroid 3 clicked');
-          setAsteroidInformation( { name: asteroidData[2].name, diameter: asteroidData[2].esitmated_diameter.kilometers, distanceFromEarth: 2672 } );
-      }
-      })
-    .catch((error) => console.error('Error fetching asteroids:', error))
 
       // check if mouse is inside any of the circles
       // from here we will set setMenuOpen to true and pass asteroid information to Menu
-      
+      if( distance1 < rad1 ) {
+        setMenuOpen( true );
+        console.log( 'Asteroid 1 clicked');
+        setAsteroidInformation( { name: asteroids[0].name, diameter: asteroids[0].estimated_diameter.kilometers.estimated_diameter_max, distanceFromEarth: asteroids[0].orbital_data.perihelion_distance } );
+      } // end if
+      else if( distance2 < rad2 ) {
+        setMenuOpen( true );
+        console.log( 'Asteroid 2 clicked');
+        setAsteroidInformation( { name: asteroids[1].name, diameter: asteroids[1].estimated_diameter.kilometers.estimated_diameter_max, distanceFromEarth: asteroids[1].orbital_data.perihelion_distance } );
+      } // end else if
+      else if( distance3 < rad3 ) {
+        setMenuOpen( true );
+        console.log( 'Asteroid 3 clicked');
+        setAsteroidInformation( { name: asteroids[2].name, diameter: asteroids[2].estimated_diameter.kilometers.estimated_diameter_max, distanceFromEarth: asteroids[2].orbital_data.perihelion_distance } );
+      } // end else if
   });
   
   // working event listener to resize the canvas
@@ -104,8 +101,8 @@ function CanvasContainer({asteroids}) {
   return (
     <div className='frontend__containers__canvas'>   
       <canvas id = "frontend__containers__canvas__init" ref = {canvasRef}></canvas>
-      <Asteroids canvasRef={canvasRef} />
-      { isMenuOpen && < Menu canvasDimensions={canvasDimensions} asteroidInformation={asteroidInformation} /> }
+      {asteroids && <Asteroids canvasRef={canvasRef} /> }
+      { isMenuOpen && < Menu canvasDimensions={canvasDimensions} asteroidInformation={asteroidInformation} closeMenu={closeMenu} /> }
     </div>
   );
 }

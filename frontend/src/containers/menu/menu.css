@@ -40,3 +40,28 @@
     border: none;
     transition: color 0.3s;
   }
+
+  .frontend__containers__menu-closeButton {
+    position: absolute;
+    top: 0.5%;
+    right: 0.2%;
+  }
+
+  .close-button{
+    width: 1rem;
+    height: 2rem;
+    border-radius: 5rem;
+    background-color: #FF1600;
+    border: none;
+  }
+
+  .frontend__containers__menu-asteroid {
+    width: 25rem;
+    height: 25rem;
+    border-radius: 50%;
+    background-color: grey;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate( -50%, -50% );
+  }
