@@ -32,21 +32,22 @@ function Earth({ earthMenuVisible }) {
           
           // need to call functions to draw the Earth and Venus inside of resizeCanvas function so that
           // whenever the canvas is resized the Earth and Venus don't disapear
-          drawEarth( earthRadius );
+          drawEarth( earthRadius, canvas.width, canvas.height, context2);
           drawVenus( venusRadius );
           
         } // end resizeCanvas function
 
         // function to draw the earth
-        const drawEarth = ( radius ) => {
-            const x = canvas.width / 2;
-            const y = canvas.height / 2;
-            context2.beginPath();
-            context2.moveTo( x, y );
-            context2.arc( x, y, radius, 0, Math.PI * 2 );
-            context2.fillStyle = '#0076FF';
-            context2.fill();
-            context2.closePath();
+        const drawEarth = ( radius, canvasWidth, canvasHeight, context ) => {
+            // Create an image element for the Earth sprite
+            const earthImage = new Image();
+            earthImage.src = './assets/Earth.png';
+
+            // Wait for the image to load before drawing it
+            earthImage.onload = function() {
+                // Draw the Earth sprite on the canvas
+                context.drawImage(earthImage, (canvasWidth / 2) - (256 / 2), (canvasHeight / 2) - (256 / 2), 256, 256); // Adjust the size and position as needed
+            };
         } // end drawEarth function
 
         const drawVenus = ( radius ) => {
