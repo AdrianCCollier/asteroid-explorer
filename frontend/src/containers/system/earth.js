@@ -1,7 +1,7 @@
 function drawEarth( context, canvasHeight, canvasWidth ) {
     
     // a method to draw the earth
-        const x = canvasWidth / 1.25;
+        const x = canvasWidth * 0.95;
         const y = canvasHeight / 2;
         context.beginPath();
         context.moveTo( x, y );

@@ -1,7 +1,7 @@
 function drawSun( context, canvasHeight ) {
     context.beginPath();
-    context.moveTo(0, canvasHeight);
-    context.arc(0, canvasHeight, 600, 1.5 * Math.PI, 0);
+    context.moveTo(-400, canvasHeight / 2 );
+    context.arc(-400, canvasHeight / 2, 500, 3 * Math.PI / 2, Math.PI / 2);
     context.fillStyle = 'yellow';
     context.fill();
     context.closePath();

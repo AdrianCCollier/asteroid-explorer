@@ -1,6 +1,8 @@
-import React, {useRef, useLayoutEffect, useState } from 'react';
+import React, {useRef, useLayoutEffect, useState, useEffect } from 'react';
 import drawSun from '../system/sun';
 import drawEarth from '../system/earth';
+import drawMercury from '../system/mercury';
+import drawVenus from '../system/venus';
 import Asteroids from '../system/Asteroids.jsx';
 import Menu from '../menu/Menu.jsx';
 import './canvas.css';
@@ -18,6 +20,55 @@ function CanvasContainer({asteroids}) {
     setMenuOpen( false );
   };
 
+  useEffect( () => {
+    const canvas = canvasRef.current;
+
+    canvas.addEventListener( "mousemove", function(e) {
+        var rect = canvas.getBoundingClientRect();
+        var mouseX = e.clientX - rect.left;
+        var mouseY = e.clientY - rect.top;
+
+        
+        var plan1X = canvas.width * 0.33; // for Mercury
+        var plan1Y = canvas.height / 2; // for Mercury
+        var plan2X = canvas.width * 0.66; // for Venus
+        var plan2Y = canvas.height / 2; // for Venus
+        var plan3X = canvas.width * 0.95; // for Earth
+        var plan3Y = canvas.height / 2; // for Earth
+        var ast4X = canvas.width * 0.75;
+        var ast4Y = canvas.height / 1.25;
+        var ast5X = canvas.width * 0.25;
+        var ast5Y = canvas.height * 0.1;
+        var ast6X = canvas.width / 1.08;
+        var ast6Y = canvas.height / 5;
+        var rad1 = 28.195; // radius of Mercury
+        var rad2 = 70.75; // radius of Venus
+        var rad3 = 75; // radius of Earth
+        var rad4 = 15; // radius of first asteroid
+        var rad5 = 12; // radius of second asteroid
+        var rad6 = 25; // radius of third asteroid
+
+        // calculate the distance from the mouse to each asteroids center
+        var distance1 = Math.sqrt(( mouseX - plan1X ) ** 2 + ( mouseY - plan1Y ) ** 2);
+        var distance2 = Math.sqrt(( mouseX - plan2X ) ** 2 + ( mouseY - plan2Y ) ** 2);
+        var distance3 = Math.sqrt(( mouseX - plan3X ) ** 2 + ( mouseY - plan3Y ) ** 2);
+        var distance4 = Math.sqrt(( mouseX - ast4X ) ** 2 + ( mouseY - ast4Y ) ** 2);
+        var distance5 = Math.sqrt(( mouseX - ast5X ) ** 2 + ( mouseY - ast5Y ) ** 2);
+        var distance6 = Math.sqrt(( mouseX - ast6X ) ** 2 + ( mouseY - ast6Y ) ** 2);
+
+        // check if mouse is inside any of the circles
+        if( distance1 < rad1 || distance2 < rad2 || distance3 < rad3 || distance4 < rad4 || distance5 < rad5 || distance6 < rad6 ) {
+            canvas.style.cursor = "pointer";
+        }
+        else {
+            canvas.style.cursor = "default";
+        }
+    });
+
+}, [canvasRef]);
+
+
+
   useLayoutEffect( () => {
     const canvas = canvasRef.current;
 
@@ -25,9 +76,8 @@ function CanvasContainer({asteroids}) {
 
     const resizeCanvas = () => {
       
-      const solarContent = document.querySelector( '.solar__content__holder');
-      canvas.width = solarContent.clientWidth * 0.99;
-      canvas.height = solarContent.clientHeight * 0.98;
+      canvas.width = window.innerWidth * 0.77;
+      canvas.height = window.innerHeight * 0.785;
 
       context.fillStyle = 'black';
       context.fillRect( 0, 0, canvas.width, canvas.height );
@@ -36,6 +86,8 @@ function CanvasContainer({asteroids}) {
       
       drawSun( context, canvas.height );
       drawEarth( context, canvas.height, canvas.width );
+      drawMercury( context, canvas.height, canvas.width );
+      drawVenus( context, canvas.height, canvas.width );
     }
 
     resizeCanvas();
