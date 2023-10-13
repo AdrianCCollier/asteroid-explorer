@@ -1,0 +1,14 @@
+.frontend__containers__venus {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate( -50%, -50% );
+}
+
+.venus-canvas{
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    margin-top: 3rem;
+}

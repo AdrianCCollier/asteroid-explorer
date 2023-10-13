@@ -11,7 +11,7 @@ function Menu({canvasDimensions, asteroidInformation, closeMenu}) {
     console.log( 'Inside menu Screen' );
 
     const menuStyle = {
-        width: `${canvasDimensions.width}px`,
+        width: `${window.innerWidth * 0.77}px`,
         height: `${canvasDimensions.height}px`,
     }; // end menuStyle
 

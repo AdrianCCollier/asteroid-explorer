@@ -1,14 +1,14 @@
 .solar {
-  text-align: center;
-  align-items: center;
-  align-content: center;
-  justify-content: center;
-  display: flex;
   width: 100vw;
   height: 100vh;
   background: url( './images/space_bg_blur.jpg' );
   background-size: cover;
-  flex-direction: column;
+}
+
+.solar__content-welcome {
+  justify-content: center;
+  display: flex;
+  align-items: center;
 }
 
 .solar__content__holder {
@@ -18,15 +18,23 @@
   padding: 0px 16px 16px 16px;
   border-radius: 16px;
   font-family: sans-serif;
-  width: 80vw;
+  width:95vw;
   height: 80vh;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
+  flex-direction: column;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-top: 3rem;
 }
 
 .solar__content-dynamic-canvas {
   margin-top: 1rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
 }
 
 .gradient__text {

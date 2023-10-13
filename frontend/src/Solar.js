@@ -1,5 +1,9 @@
 import { Header, CanvasContainer } from './containers';
 
+import QuickView from './containers/quickView/QuickView';
+
+import Earth from './containers/canvas/Earth.jsx';
+
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Game from './game/index';
@@ -10,6 +14,7 @@ import React, { useEffect, useState } from 'react'
 import './Solar.css'
 import './index.css'
 
+
 function ExplorerGame(){
   return(
     <div>
@@ -19,9 +24,14 @@ function ExplorerGame(){
 }
 
 function SolarSystem(){
+
   const [asteroidData, setAsteroidData] = useState(null);
   const [showWelcomeScreen, setShowWelcomeScreen] = useState( true );
+  const [showEarthScreen, setShowEarthScreen] = useState( false );
 
+
+  // effect to fetch asteroid data
+  // need to store it in local storage
   useEffect( () => {
     
     // Fetch the asteroid data from backend/server.js when the component mounts
@@ -34,28 +44,43 @@ function SolarSystem(){
       setAsteroidData(data);// Save the asteroid data in a variable
     })
   .catch((error) => console.error('Error fetching asteroids:', error))
+  
   }, []);
 
+
+  // effect to show welcome screen for two seconds
+  // will be deleted after landing page is implemented
   useEffect( () => {
     const timer = setTimeout( () => {
       setShowWelcomeScreen(false);
-    }, 2000);
+    }, 0);
 
     return () => clearTimeout( timer );
   }, []);
 
+
+
   return (
     <div className="solar"> 
       <Header />
+
       { showWelcomeScreen ? (
         <div className="solar__content-welcome">
           <h1>Weclome to Asteroid Explorer!</h1>
         </div>
       ) : (
-      <div className="solar__content__holder">
-        <div className="solar__content-dynamic-canvas">
+      <div className="">
+
+        <div className="solar__content__holder">
+          <div className="solar__content-dynamic-canvas">
           <CanvasContainer asteroids={asteroidData}/>
+          </div>
         </div>
+
+        <QuickView showEarthScreen={showEarthScreen} setShowEarthScreen={setShowEarthScreen}/>
+
+        {showEarthScreen && <Earth />}
+
       </div>
       )}
     </div>
