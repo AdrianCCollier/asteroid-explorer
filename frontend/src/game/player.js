@@ -39,11 +39,13 @@ export function createPlayer(scene, asteroid, w, h) {
 }
 
 // Vars for player movement
-var jumpTimer = 55;
+var jumpTimer = 10;
 var frameCounter = 0;
 var jumping = false;
 var falling = false;
 var spaceUp = false;
+
+
 
 export function handlePlayerMovement(scene, player, asteroid, shootControl, shootCooldown) {
     // defines key inputs
@@ -52,6 +54,7 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
     const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
+    
     if (kKey.isDown && shootControl.canShoot && player.hasWeapon){
         let bullet = createBullet(scene, player, 20, 20);
         scene.bullets.push(bullet); // Create a bullet when K is pressed
@@ -144,7 +147,7 @@ export function createPlayerInside(scene, x, y) {
         width: playerSprite.width,
         height: playerSprite.height,
         angle: 0, 
-        gravity: 0.044,
+        gravity: 0.4 ,
         hasWeapon: false,
         canShoot: false,
         sprite: playerSprite,
