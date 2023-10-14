@@ -68,11 +68,11 @@ export default class SidescrollerScene extends Phaser.Scene {
     // Create map
     const map = this.make.tilemap({ key: 'map' })
     const tileset = map.addTilesetImage('tiles1', 'tiles')
-    const layer = map.createLayer('surface', tileset, 0, 0)
+    this.layer = map.createLayer('surface', tileset, 0, 0)
 
     // Allow player to collide with Tiled layer
-    this.physics.add.collider(this.player.sprite, layer)
-    layer.setCollisionBetween(148, 149)
+    this.physics.add.collider(this.player.sprite, this.layer)
+    this.layer.setCollisionBetween(148, 149)
 
     // Camera setup
     this.cameras.main.startFollow(this.player.sprite)
@@ -89,12 +89,12 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.cursors = this.input.keyboard.createCursorKeys()
 
     // Enemy spawn timer
-    // this.time.addEvent({
-    //     delay: 2000,
-    //     callback: this.spawnWave,
-    //     callbackScope: this,
-    //     repeat: this.maxWaves - 1,
-    // });
+    this.time.addEvent({
+        delay: 2000,
+        callback: this.spawnWave,
+        callbackScope: this,
+        repeat: this.maxWaves - 1,
+    });
   }
 
   update() {
@@ -172,11 +172,12 @@ export default class SidescrollerScene extends Phaser.Scene {
         this.time.addEvent({
           delay: i * 500,
           callback: () => {
-            let enemy = createEnemyInside(this, 800, 568 - 50 - 10)
+            let enemy = createEnemyInside(this, 800, 568 - 100 - 10)
             this.enemies.push(enemy)
             addObjectToWorld(this, enemy.sprite)
             addColliderWithWorld(this, enemy.sprite)
             addColliderWithGround(this, enemy.sprite, this.ground)
+            this.physics.add.collider(enemy.sprite, this.layer);
           },
           callbackScope: this,
         })
