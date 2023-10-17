@@ -1,3 +1,6 @@
+body {
+    background-color: black;
+}
 #phaser-canvas-tall{
     position: absolute;
     width: 100%;
@@ -18,12 +21,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100vw; /* 100% of the viewport width */
-    height: 100vh; /* 100% of the viewport height */
-    overflow: hidden; /* Hide any overflow content outside the container */
-    background-color: #0024; /* Optional background color for the container */
+    width: 100vw; 
+    height: 100vh; 
+    overflow: hidden; 
+    background-color: #0024; 
 }
 
-.gameContainer img {
+/* .gameContainer img {
     width: 100%;
-}
+} */
