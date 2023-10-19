@@ -44,7 +44,7 @@ export function createBulletInside(scene, player, w, h) {
 
 
 export function handleBulletMovements(bullets) {
-  const maxDistance = 300; // Maximum distance a bullet can travel
+  const maxDistance = 850; // Maximum distance a bullet can travel
   
   // Iterate over each bullet and update its position, check the distance traveled, 
   // and remove it if it exceeds the maximum distance.
