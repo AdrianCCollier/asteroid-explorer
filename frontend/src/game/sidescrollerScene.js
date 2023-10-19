@@ -33,6 +33,7 @@ import galaxyBackground from './assets/spaceBackground1.png'
 // import new weapon
 import M16 from './assets/weapons/M16.png'
 import gunPickupSound from './assets/sounds/gunPickup.mp3'
+import customCursor from './assets/weapons/cursor.png'
 
 export default class SidescrollerScene extends Phaser.Scene {
   constructor() {
@@ -59,7 +60,7 @@ export default class SidescrollerScene extends Phaser.Scene {
 
   create() {
     // add background
-    this.add.image(960, 540, 'galaxy').setScrollFactor(0.1)
+    this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
 
     this.checkCollision = false // Initialize collision check
     // Setting a delayed timer to enable collision check
@@ -108,6 +109,8 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.cursors.pickup = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.E
     )
+
+    
 
     // Set up collider for weapon pickup
     this.physics.add.collider(
@@ -183,15 +186,32 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.pickupText.setVisible(false)
     }
 
+    const worldMouseX = this.input.x + this.cameras.main.scrollX;
+    const worldMouseY = this.input.y + this.cameras.main.scrollY;
+
     // If player has the M16
     if (this.player.weapon === 'M16') {
-      const offsetX = 30
       const offsetY = 10
-      this.m16.setPosition(
-        this.player.sprite.x + offsetX,
-        this.player.sprite.y + offsetY
-      )
+
+      if (worldMouseX > this.player.sprite.x) {
+        this.player.sprite.setFlipX(false) // face right
+        this.m16.setFlipX(false)
+        this.m16.setPosition(this.player.sprite.x + 30, this.player.sprite.y + offsetY);
+      } 
+      else {
+        this.player.sprite.setFlipX(true) // face left
+        this.m16.setFlipX(true)
+        this.m16.setPosition(this.player.sprite.x - 30, this.player.sprite.y + offsetY)
+      }
     }
+
+    // disable standard mouse features while in game
+    this.input.mouse.disableContextMenu();
+
+
+
+    
+
 
     // Adjust gun sprite position and rotation to match the player
     // if (this.player.hasWeapon) {
@@ -249,7 +269,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.m16.body.allowGravity = false
 
     this.player.weapon = 'M16'
-    this.sound.play('pickupSound');
+    // this.sound.play('pickupSound');
   }
   // Spawn enemies in waves until the maximum number of waves is reached
   // Also checks for all enemies dead after all waves are spawned

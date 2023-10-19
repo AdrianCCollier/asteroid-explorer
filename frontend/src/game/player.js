@@ -51,16 +51,16 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
     // defines key inputs
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    // const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
     
-    if (kKey.isDown && shootControl.canShoot && player.hasWeapon){
-        let bullet = createBullet(scene, player, 20, 20);
-        scene.bullets.push(bullet); // Create a bullet when K is pressed
-        shootControl.canShoot = false;
-        setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
-    }
+    // if (kKey.isDown && shootControl.canShoot && player.hasWeapon){
+    //     let bullet = createBullet(scene, player, 20, 20);
+    //     scene.bullets.push(bullet); // Create a bullet when K is pressed
+    //     shootControl.canShoot = false;
+    //     setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
+    // }
 
     // Move left
     if (aKey.isDown) {
@@ -166,38 +166,50 @@ export function createPlayerInside(scene, x, y) {
 }
 
 export function handlePlayerMovementInside(scene, player, shootControl, shootCooldown) {
-    const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-    const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
-    const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    var jumpTimer = 55;
-    var frameCounter = 0;
-    var jumping = false;
-    var falling = false;
-    const speed = 3;
-    if (kKey.isDown && shootControl.canShoot){
-        let bullet = createBulletInside(scene, player, 20, 20);
-        scene.bullets.push(bullet); // Create a bullet when K is pressed
-        shootControl.canShoot = false;
-        setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
-    }
+  const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+  const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
+  const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+  const spaceKey = scene.input.keyboard.addKey(
+    Phaser.Input.Keyboard.KeyCodes.SPACE
+  )
+  var jumpTimer = 55
+  var frameCounter = 0
+  var jumping = false
+  var falling = false
+  const speed = 3
 
-    // Move left
-    if (aKey.isDown) {
-        player.sprite.x -= speed;
-    }
+  if (kKey.isDown && shootControl.canShoot){
+      let bullet = createBulletInside(scene, player, 20, 20);
+      scene.bullets.push(bullet); // Create a bullet when K is pressed
+      shootControl.canShoot = false;
+      setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
+  }
 
-    // Move right
-    if (dKey.isDown){
-        player.sprite.x += speed;
-    }
+  // if (kKey.isDown && shootControl.canShoot){
+//   if (scene.input.activePointer.isDown && shootControl.canShoot) {
+//     let bullet = createBullet(scene, player, 20, 20)
+//     scene.bullets.push(bullet) // Create a bullet when mouse is clicked
+//     shootControl.canShoot = false
+//     setTimeout(() => {
+//       shootControl.canShoot = true
+//     }, shootCooldown)
+//   }
 
-    if (spaceKey.isDown){
-        player.sprite.y -= speed;
-    }
+  // Move left
+  if (aKey.isDown) {
+    player.sprite.x -= speed
+  }
 
+  // Move right
+  if (dKey.isDown) {
+    player.sprite.x += speed
+  }
 
-    // Updates the player collider position
-    player.collider.x = player.x;
-    player.collider.y = player.y;
+  if (spaceKey.isDown) {
+    player.sprite.y -= speed
+  }
+
+  // Updates the player collider position
+  player.collider.x = player.x
+  player.collider.y = player.y
 }
