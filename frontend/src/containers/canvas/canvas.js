@@ -6,6 +6,7 @@ import drawVenus from '../system/venus';
 import Asteroids from '../system/Asteroids.jsx';
 import Menu from '../menu/Menu.jsx';
 import './canvas.css';
+import {Button} from 'antd'
 
 // Adrian, 9/22. added asteroids as a prop here, being passed down from Solar.js, its coming all the way from localhost:3000/asteroids, it was sent to Solar.js, and now here. The goal is to display actual asteroid data when an asteroid is clicked, so its going to asteroids.js next
 // Malyk, 9/25. "click" event listening for asteroids has been moved into here. asteroid information should be passed to Menu inside return
@@ -141,17 +142,17 @@ function CanvasContainer({asteroids}) {
       } // end else if
   });
   
-  // working event listener to resize the canvas
-  // Asteroids will not be displayed after the canvas is resized
-  window.addEventListener( 'resize', resizeCanvas );
-    return () => {
-      window.removeEventListener( 'resize', resizeCanvas );
-    };
+    // working event listener to resize the canvas
+    // Asteroids will not be displayed after the canvas is resized
+    window.addEventListener( 'resize', resizeCanvas );
+      return () => {
+        window.removeEventListener( 'resize', resizeCanvas );
+      };
 
   }, [asteroids]);
 
   return (
-    <div className='frontend__containers__canvas'>   
+    <div className='frontend__containers__canvas'>
       <canvas id = "frontend__containers__canvas__init" ref = {canvasRef}></canvas>
       {asteroids && <Asteroids canvasRef={canvasRef} /> }
       { isMenuOpen && < Menu canvasDimensions={canvasDimensions} asteroidInformation={asteroidInformation} closeMenu={closeMenu} /> }
