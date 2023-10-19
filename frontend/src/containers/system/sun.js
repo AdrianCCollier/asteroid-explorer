@@ -6,7 +6,7 @@ function drawSun( context, canvasHeight ) {
     // Wait for the image to load before drawing it
     sunImage.onload = function() {
         // Draw the Sun sprite on the canvas
-        context.drawImage(sunImage, 0 - 236, (canvasHeight / 2) - (256 * (1.5/2)), 256 * 1.5, 256 * 1.5); // Adjust the size and position as needed
+        context.drawImage( sunImage, -236, ( canvasHeight / 2 ) - ( 256 * 0.75 ), 256 * 1.5, 256 * 1.5 ); // Adjust the size and position as needed
     };
 }
 

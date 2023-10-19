@@ -8,6 +8,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 import Game from './game/index';
 
+import Landing from './landing/Landing.jsx'
+import Signin from './landing/Signin.jsx'
+
 import React, { useEffect, useState } from 'react'
 
 // Style
@@ -27,7 +30,6 @@ function SolarSystem(){
 
   const [asteroidData, setAsteroidData] = useState(null);
   const [showWelcomeScreen, setShowWelcomeScreen] = useState( true );
-  const [showEarthScreen, setShowEarthScreen] = useState( false );
 
 
   // effect to fetch asteroid data
@@ -73,13 +75,11 @@ function SolarSystem(){
 
         <div className="solar__content__holder">
           <div className="solar__content-dynamic-canvas">
-          <CanvasContainer asteroids={asteroidData}/>
+          <CanvasContainer asteroids={asteroidData} />
           </div>
         </div>
 
-        <QuickView showEarthScreen={showEarthScreen} setShowEarthScreen={setShowEarthScreen}/>
-
-        {showEarthScreen && <Earth />}
+        <QuickView />
 
       </div>
       )}
@@ -95,7 +95,10 @@ function Solar() {
       <div className="App">
         <Routes>
           <Route path="/game" element = {<ExplorerGame />} />
-          <Route index element = {<SolarSystem />} />
+          <Route path="/landing" element = {<Landing />} />
+          <Route path="/solarSystem" element = {<SolarSystem />} />
+          <Route path="/signin" element = {<Signin />} />
+          <Route index element={<Landing />} />
         </Routes>
       </div>
     </Router>
