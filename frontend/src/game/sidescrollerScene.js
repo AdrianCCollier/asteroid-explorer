@@ -2,6 +2,7 @@ import {
   createPlayerInside,
   loadPlayerImage,
   handlePlayerMovementInside,
+  animationCreator
 } from './player.js'
 import {
   createEnemyInside,
@@ -23,6 +24,8 @@ import {
 } from './collisions.js'
 import GameOverScene from './gameOverScene.js'
 
+import { createPlayerWalk, updatePlayerWalk } from './animation.js'
+
 import Phaser from 'phaser'
 import tileSet from './assets/nightsky.png'
 import mapJSON from './assets/map.json'
@@ -32,6 +35,12 @@ import galaxyBackground from './assets/spaceBackground1.png'
 
 // import new weapon
 import M16 from './assets/weapons/M16.png'
+
+var animations = []
+
+let isWalkingForward = false;
+let isWalkingBackward = false;
+let isJumping = false;
 
 export default class SidescrollerScene extends Phaser.Scene {
   constructor() {
@@ -77,6 +86,8 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     // Player creation and setup
     this.player = createPlayerInside(this, 100, 450)
+    // Making sprite invisible so animation can play
+    this.player.sprite.alpha = 0;
     addObjectToWorld(this, this.player.sprite)
     addColliderWithWorld(this, this.player.sprite)
     addColliderWithGround(this, this.player.sprite, this.ground)
@@ -110,9 +121,124 @@ export default class SidescrollerScene extends Phaser.Scene {
     //     callbackScope: this,
     //     repeat: this.maxWaves - 1,
     // });
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Create the animations
+  this.anims.create({
+    key: "player_walk",
+    frames: this.anims.generateFrameNumbers("walk"),
+    frameRate: 10,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "player_idle",
+    frames: this.anims.generateFrameNumbers("idle"),
+    frameRate: 10,
+    repeat: -1,
+  });
+
+  this.anims.create({
+    key: "player_jump",
+    frames: this.anims.generateFrameNumbers("jump"),
+    frameRate: 16,
+    repeat: -1,
+  });
+
+
+
+  this.walk = this.add.sprite(this.player.sprite.x, this.player.sprite.y, "walk");
+  this.idle = this.add.sprite(this.player.sprite.x, this.player.sprite.y, "idle");
+  this.jump = this.add.sprite(this.player.sprite.x, this.player.sprite.y, "jump");
+
   }
 
   update() {
+    // Check keyboard input for "D" and "A" keys
+  const dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+  const aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+  const spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+  // Set animation flags based on key presses
+  isWalkingForward = dKey.isDown;
+  isWalkingBackward = aKey.isDown;
+  isJumping = spaceKey.isDown;
+
+  // Set sprite positions
+  this.walk.x = this.player.sprite.x;
+  this.walk.y = this.player.sprite.y;
+
+  this.idle.x = this.player.sprite.x;
+  this.idle.y = this.player.sprite.y;
+
+  this.jump.x = this.player.sprite.x;
+  this.jump.y = this.player.sprite.y;
+
+  // Play the appropriate animation
+  if (isJumping){
+    this.jump.anims.play("player_jump", true);
+    this.walk.alpha = 0;
+    this.idle.alpha = 0;
+    this.jump.alpha = 1;
+
+    if (isWalkingForward){
+      this.jump.setFlipX(false); // Reset sprite orientation (walk forward)
+    }
+    else if (isWalkingBackward){
+      this.jump.setFlipX(true); // Reset sprite orientation (walk forward)
+    }
+  }
+  else if (isWalkingForward && isWalkingBackward) {
+    this.idle.anims.play("player_idle", true);
+    this.walk.anims.stop();
+    this.walk.alpha = 0;
+    this.idle.alpha = 1;
+    this.jump.alpha = 0;
+  } else if (isWalkingForward) {
+    this.walk.anims.play("player_walk", true);
+
+    this.walk.setFlipX(false); // Reset sprite orientation (walk forward)
+    this.idle.setFlipX(false); // Reset sprite orientation (walk forward)
+    this.jump.setFlipX(false); // Reset sprite orientation (walk forward)
+
+    this.walk.alpha = 1;
+    this.idle.alpha = 0;
+    this.jump.alpha = 0;
+  } else if (isWalkingBackward) {
+    this.walk.anims.play("player_walk", true);
+
+    this.walk.setFlipX(true); // Flip sprite horizontally (walk backward)
+    this.idle.setFlipX(true); // Flip sprite horizontally (walk backward)
+    this.jump.setFlipX(true); // Flip sprite horizontally (walk backward)
+
+    this.walk.alpha = 1;
+    this.idle.alpha = 0;
+    this.jump.alpha = 0;
+  } else {
+    // If neither key is pressed, play the idle animation
+    this.idle.anims.play("player_idle", true);
+    this.walk.anims.stop();
+    this.walk.alpha = 0;
+    this.idle.alpha = 1;
+    this.jump.alpha = 0;
+  }
+    
     // Handling Player and Enemy movements and interactions every frame
     handlePlayerMovementInside(
       this,

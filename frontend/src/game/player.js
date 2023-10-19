@@ -132,6 +132,26 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
 
 export function loadPlayerImage(scene){
     scene.load.image('player', './assets/Skeleton.png');
+
+    scene.load.spritesheet("walk", "./assets/sprites/player_walk.png",{
+        frameWidth: 32,
+        frameHeight: 64}
+    );
+    
+    scene.load.spritesheet("run", "./assets/sprites/player_run.png",{
+        frameWidth: 32,
+        frameHeight: 64}
+    );
+
+    scene.load.spritesheet("jump", "./assets/sprites/player_jump.png",{
+        frameWidth: 32,
+        frameHeight: 64}
+    );
+
+    scene.load.spritesheet("idle", "./assets/sprites/player_idle.png",{
+        frameWidth: 32,
+        frameHeight: 64}
+    );
 }
 
 export function createPlayerInside(scene, x, y) {
@@ -200,4 +220,51 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     // Updates the player collider position
     player.collider.x = player.x;
     player.collider.y = player.y;
+}
+
+
+export function animationCreator(scene, w, a, s, d, space){
+    // Check for D key
+    scene.input.keyboard.on("keydown-D", () => {
+        d = true;
+    });
+    scene.input.keyboard.on("keyup-D", () => {
+    d = false;
+    scene.walk.anims.stop();
+    });
+
+    // Check for A key
+    scene.input.keyboard.on("keydown-A", () => {
+        a = true;
+    });
+    scene.input.keyboard.on("keyup-A", () => {
+    a = false;
+    //scene.walk.anims.stop();
+    });
+
+    // check for S key
+    scene.input.keyboard.on("keydown-S", () => {
+        s = true;
+    });
+    scene.input.keyboard.on("keyup-S", () => {
+    s = false;
+    //scene.walk.anims.stop();
+    });
+
+    // Check for W key
+    scene.input.keyboard.on("keydown-W", () => {
+        w = true;
+    });
+    scene.input.keyboard.on("keyup-W", () => {
+    w = false;
+    //scene.walk.anims.stop();
+    });
+
+
+        //this.walk.setFlipX(true);
+        if (d) {
+            scene.walk.anims.play("player_walk", true);
+          } else {
+            scene.walk.anims.stop();
+          }
 }
