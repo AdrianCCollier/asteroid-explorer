@@ -88,8 +88,7 @@ export default class SidescrollerScene extends Phaser.Scene {
       
       // Player creation and setup
       this.player = createPlayerInside(this, 100, 450)
-      // Making sprite invisible so animation can play
-      this.player.sprite.alpha = 0;
+      
       addObjectToWorld(this, this.player.sprite)
       addColliderWithWorld(this, this.player.sprite)
       addColliderWithGround(this, this.player.sprite, this.ground)
@@ -157,7 +156,8 @@ export default class SidescrollerScene extends Phaser.Scene {
 
 
 
-
+// Making sprite invisible so animation can play
+this.player.sprite.alpha = 0;
 
     // Create the animations
   this.anims.create({
@@ -181,6 +181,14 @@ export default class SidescrollerScene extends Phaser.Scene {
     repeat: -1,
   });
 
+  
+  this.anims.create({
+    key: "tall_walk_alien_agro",
+    frames: this.anims.generateFrameNumbers("tall_walk_agro"),
+    frameRate: 16,
+    repeat: -1,
+  });
+  
 
 
   this.walk = this.add.sprite(this.player.sprite.x, this.player.sprite.y, "walk");
@@ -273,6 +281,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.enemies.forEach((enemy) =>
       handleEnemyMovementInside(this, this.bullets, enemy)
     )
+
     handleBulletMovements(this.bullets)
 
     // weapon direction

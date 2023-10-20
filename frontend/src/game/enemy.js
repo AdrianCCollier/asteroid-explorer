@@ -54,6 +54,9 @@ export function loadEnemyImage(scene) {
 }
 
 export function createEnemyInside(scene, x, y) {
+    let anim = scene.tall_walk_agro = scene.add.sprite(x, y, "tall_walk_agro");
+
+
     // Create enemy sprite and enable physics on it
     let enemySprite = scene.add.sprite(x, y, 'enemy');
     scene.physics.world.enable(enemySprite);
@@ -65,6 +68,7 @@ export function createEnemyInside(scene, x, y) {
         y: y,
         sprite: enemySprite,
         speed: 1, // Speed of the enemy, adjustable as per need
+        animation: anim
     };
     return enemy;
 }
@@ -73,6 +77,15 @@ export function handleEnemyMovementInside(scene, bullets, enemy) {
     // Assuming scene.player is defined and has x and y properties representing the player's position.
     let player = scene.player;
     
+    // Flips animation
+    enemy.animation.setFlipX(true);
+    enemy.animation.anims.play("tall_walk_alien_agro", true); // plays animation
+
+    // Making sprite invisible so animation can play
+    enemy.sprite.alpha = 0;
+    enemy.animation.x = enemy.sprite.x; // updates animation position
+    enemy.animation.y = enemy.sprite.y; // updates animation position
+
     // Calculate the direction vector from the enemy to the player
     let dx = player.sprite.x - enemy.sprite.x;
     let dy = player.sprite.y - enemy.sprite.y;
@@ -94,6 +107,7 @@ export function handleEnemyMovementInside(scene, bullets, enemy) {
             if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
                 enemy.sprite.destroy();
                 enemy.destroyed = true;
+                enemy.animation.alpha = 0; // sets the enemie's animation to invisible.
                 return true;
             }
         }
