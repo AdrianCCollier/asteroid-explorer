@@ -50,6 +50,17 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.enemies = [] // Initialize enemies array
     this.waveCount = 0 // Initialize wave counter
     this.maxWaves = 5 // Maximum number of enemy waves
+
+    this.spawnPoints = [
+      { x: 1100, y: 300 },
+      { x: 2100, y: 0 },
+      { x: 5000, y: 400 },
+      { x: 6000, y: 400 },
+      { x: 7000, y: 400 },
+      { x: 8000, y: 400 },
+      { x: 9000, y: 400 },
+      { x: 10000, y: 400 },
+    ]
   }
 
   preload() {
@@ -97,9 +108,14 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.physics.add.collider(this.player.sprite, this.layer)
     this.layer.setCollisionBetween(130, 190)
 
+    // expand world bounds to entire map not just the camera view
+    this.physics.world.setBounds(0,0,map.widthInPixels, map.heightInPixels);
+
     // Camera setup
     this.cameras.main.startFollow(this.player.sprite)
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
+
+
 
     this.player.sprite.setCollideWorldBounds(false)
 
@@ -135,12 +151,12 @@ export default class SidescrollerScene extends Phaser.Scene {
     // placeholder
     this.healthBar = createStaticHealthBar(this)
 
-    // this.time.addEvent({
-    //   delay: 2000,
-    //   callback: this.spawnWave,
-    //   callbackScope: this,
-    //   repeat: this.maxWaves - 1,
-    // });
+   
+    this.time.addEvent({
+      delay: 2000,
+      callback: this.spawnAliens,
+      callbackScope: this,
+    });
 
     // Create weapon pick up message, be invisible by default
     this.pickupText = this.add.text(300, 100, 'Press E To Pick Up', {
@@ -394,15 +410,14 @@ export default class SidescrollerScene extends Phaser.Scene {
   }
 
   //spawn Aliens function, created to create individual aliens instead of waves
-  // spawnAliens() {
-
-    
-  //   spawnPoints.forEach((spawn) => {
-  //     const enemy = createEnemyInside(this, spawn.x, spawn.y)
-  //     // Store this enemy in an array or group for future reference or collision checks
-  //     this.enemies.push(enemy)
-  //   })
-  // }
+  spawnAliens() {
+    this.spawnPoints.forEach(spawn => {
+        const enemy = createEnemyInside(this, spawn.x, spawn.y);
+        this.enemies.push(enemy);
+        this.physics.add.collider(enemy.sprite, this.layer)
+        this.layer.setCollisionBetween(130, 190)
+    });
+}
 
   // Spawn enemies in waves until the maximum number of waves is reached
   // Also checks for all enemies dead after all waves are spawned
