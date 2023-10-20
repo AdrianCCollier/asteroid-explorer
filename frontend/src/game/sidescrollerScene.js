@@ -65,9 +65,11 @@ export default class SidescrollerScene extends Phaser.Scene {
   }
 
   create() {
+    
+    
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0)
-
+    
     this.checkCollision = false // Initialize collision check
     // Setting a delayed timer to enable collision check
     this.time.delayedCall(
@@ -77,53 +79,71 @@ export default class SidescrollerScene extends Phaser.Scene {
       },
       [],
       this
-    )
+      )
+      
+      // Create map
+      const map = this.make.tilemap({ key: 'map' })
+      const tileset = map.addTilesetImage('tiles1', 'tiles')
+      this.layer = map.createLayer('surface', tileset, 0, 0);
+      
+      // Player creation and setup
+      this.player = createPlayerInside(this, 100, 450)
+      // Making sprite invisible so animation can play
+      this.player.sprite.alpha = 0;
+      addObjectToWorld(this, this.player.sprite)
+      addColliderWithWorld(this, this.player.sprite)
+      addColliderWithGround(this, this.player.sprite, this.ground)
+      
+      // Allow player to collide with Tiled layer
+      this.physics.add.collider(this.player.sprite, this.layer)
+      this.layer.setCollisionBetween(130, 190)
+      
+      // Camera setup
+      this.cameras.main.startFollow(this.player.sprite)
+      this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
+      
+      this.player.sprite.setCollideWorldBounds(false)
+      
+      // Weapon creation and setup
+      this.weapon = createWeaponInside(this, 200, 470, 32, 32)
+      this.shootControl = { canShoot: true } // Initialize shooting control
+      this.shootCooldown = 500 // Time in ms between allowed shots
+      
+      this.m16 = this.physics.add.sprite(300, 300, 'M16')
+      this.m16.setScale(0.1)
+      this.m16.setCollideWorldBounds(true)
+      
+      // Setup input controls
+      this.cursors = this.input.keyboard.createCursorKeys()
+      
+      // placeholder
+      this.healthBar = createStaticHealthBar(this);
+     
 
-    // Create map
-    const map = this.make.tilemap({ key: 'map' })
-    const tileset = map.addTilesetImage('tiles1', 'tiles')
-    this.layer = map.createLayer('surface', tileset, 0, 0);
-
-    // Player creation and setup
-    this.player = createPlayerInside(this, 100, 450)
-    // Making sprite invisible so animation can play
-    this.player.sprite.alpha = 0;
-    addObjectToWorld(this, this.player.sprite)
-    addColliderWithWorld(this, this.player.sprite)
-    addColliderWithGround(this, this.player.sprite, this.ground)
-
-    // Allow player to collide with Tiled layer
-    this.physics.add.collider(this.player.sprite, this.layer)
-    this.layer.setCollisionBetween(130, 190)
-
-    // Camera setup
-    this.cameras.main.startFollow(this.player.sprite)
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
-
-    this.player.sprite.setCollideWorldBounds(false)
-
-    // Weapon creation and setup
-    this.weapon = createWeaponInside(this, 200, 470, 32, 32)
-    this.shootControl = { canShoot: true } // Initialize shooting control
-    this.shootCooldown = 500 // Time in ms between allowed shots
-
-    this.m16 = this.physics.add.sprite(300, 300, 'M16')
-    this.m16.setScale(0.1)
-    this.m16.setCollideWorldBounds(true)
-
-    // Setup input controls
-    this.cursors = this.input.keyboard.createCursorKeys()
-
-    // Enemy spawn timer
-    // this.time.addEvent({
-    //     delay: 2000,
-    //     callback: this.spawnWave,
-    //     callbackScope: this,
-    //     repeat: this.maxWaves - 1,
-    // });
-
-    
-    
+      this.time.addEvent({
+        delay: 2000,
+        callback: this.spawnWave,
+        callbackScope: this,
+        repeat: this.maxWaves - 1,
+      });
+      
+      
+      function createStaticHealthBar(scene) {
+        // Create a new graphics object
+        let healthBar = scene.add.graphics();
+        
+        // Set a fill style with a green color
+        healthBar.fillStyle(0x00ff00, 1);
+        
+        // Draw a filled rectangle in the top-left corner of the screen
+        // The rectangle will be 50 pixels wide and 5 pixels high, representing full health
+        healthBar.fillRect(10, 10, 50, 5);
+      
+        healthBar.lineStyle(2, 0xffffff, 1); // white border with a width of 2
+        healthBar.strokeRect(10, 10, 50, 5);
+      
+        return healthBar; // return the healthBar so you can reference it elsewhere
+      }
 
 
 
@@ -170,6 +190,10 @@ export default class SidescrollerScene extends Phaser.Scene {
   }
 
   update() {
+  // Update the health bar position to follow the player
+  this.healthBar.x = this.player.sprite.x -33; // Adjust the X-coordinate as needed
+  this.healthBar.y = this.player.sprite.y - 70; // Adjust the Y-coordinate as needed
+
     // Check keyboard input for "D" and "A" keys
   const dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
   const aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -251,6 +275,12 @@ export default class SidescrollerScene extends Phaser.Scene {
     )
     handleBulletMovements(this.bullets)
 
+    // weapon direction
+    if (this.player.facing === 'left') {
+      this.player.gunSprite.setTexture('weapon2'); // set to the image key for the left-facing weapon
+  } else {
+      this.player.gunSprite.setTexture('weapon1'); // set to the image key for the right-facing weapon
+  }
     // Check for weapon pickup
     if (
       this.weapon &&
@@ -270,8 +300,14 @@ export default class SidescrollerScene extends Phaser.Scene {
     }
 
     // Adjust gun sprite position and rotation to match the player
-    if (this.player.hasWeapon) {
-      this.player.gunSprite.x = this.player.sprite.x
+    if (this.player.hasWeapon && this.player.facing === 'left') {
+      this.player.gunSprite.x = this.player.sprite.x -25
+      this.player.gunSprite.y = this.player.sprite.y
+      this.player.gunSprite.rotation = this.player.sprite.rotation
+    }
+    // Adjust gun sprite position and rotation to match the player
+    if (this.player.hasWeapon && this.player.facing === 'right') {
+      this.player.gunSprite.x = this.player.sprite.x + 25
       this.player.gunSprite.y = this.player.sprite.y
       this.player.gunSprite.rotation = this.player.sprite.rotation
     }

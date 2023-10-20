@@ -17,7 +17,11 @@ export function createPlayer(scene, asteroid, w, h) {
         canShoot: false,
         sprite: scene.add.sprite(asteroid.x, asteroid.y, 'player'),
         rotation: null, // Player's tween rotation
-        collider: null // Player's collider circle
+        collider: null, // Player's collider circle
+        jumps: 0,  // added for jump boost
+        maxJumps: 2 ,
+        isBoosting: false, // This property will check if the player is boosting
+
     };
 
     // Applies the player's rotation
@@ -52,8 +56,10 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    const bKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
+ const spaceJustPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey);
+  const bKeyJustPressed = Phaser.Input.Keyboard.JustDown(this.bKey);
     
     if (kKey.isDown && shootControl.canShoot && player.hasWeapon){
         let bullet = createBullet(scene, player, 20, 20);
@@ -98,20 +104,7 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
         }
     }
 
-    // handles falling
-    if (falling){
-        player.vertical -= player.gravity;
-        console.log(player.collider.y);
-
-        // Check for collision
-        if ((Phaser.Geom.Intersects.CircleToCircle(asteroid.collider, player.collider))){
-            falling = false;
-
-            // Resets player position
-            player.vertical = (player.realDistance / 64) + 0.5;
-        }
-    }
-
+    
     // Updates player rotation angle
     player.rotation.updateTo('angle', player.angle);
 
@@ -166,17 +159,20 @@ export function createPlayerInside(scene, x, y) {
         y: y,
         width: playerSprite.width,
         height: playerSprite.height,
+        health: 100,
         angle: 0, 
+        health: 100, 
         gravity: 0.4 ,
         hasWeapon: false,
         canShoot: false,
         sprite: playerSprite,
         rotation: null,
-        collider: null
+        collider: null,
+        facing: 'right' // Default facing direction 
     };
 
     // Add a gun sprite if the player picks one up
-    player.gunSprite = scene.add.sprite(player.x, player.y, 'weapon');
+    player.gunSprite = scene.add.sprite(player.x, player.y, 'weapon1');
     player.gunSprite.setVisible(false);
 
     // Set the player's collider
@@ -189,12 +185,18 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    const bKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     var jumpTimer = 55;
     var frameCounter = 0;
     var jumping = false;
+    var doubleJump = false; // flag to check if double jump is available
     var falling = false;
     const speed = 3;
+    const gravity = 1.5; // gravity strength, increase to make the player fall faster
+    const jumpStrength = 5; // jump strength, increase to jump higher
+    player.velocityY = 0; // vertical velocity of the player
+
     if (kKey.isDown && shootControl.canShoot){
         let bullet = createBulletInside(scene, player, 20, 20);
         scene.bullets.push(bullet); // Create a bullet when K is pressed
@@ -205,23 +207,41 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     // Move left
     if (aKey.isDown) {
         player.sprite.x -= speed;
+        player.facing = 'left'; // Update facing direction
     }
 
     // Move right
     if (dKey.isDown){
         player.sprite.x += speed;
+        player.facing = 'right'; // Update facing direction
     }
 
-    if (spaceKey.isDown){
-        player.sprite.y -= speed;
+    // Regular jump
+    if (spaceKey.isDown && !jumping) {
+        player.velocityY = -jumpStrength; // going up
+        jumping = true;
     }
 
+    // Double jump
+    if (bKey.isDown && spaceKey.isDown) {
+        player.velocityY = -jumpStrength*1.8; // going up
+        doubleJump = true;
+    }
+
+    player.velocityY += gravity; // gravity pulls down
+    player.sprite.y += player.velocityY; // apply the current velocity to Y position (vertical movement)
+
+    // Check for landing - replace this with your actual collision detection logic
+    if (!jumping) {
+        jumping = false;
+        doubleJump = false;
+        player.velocityY = 0;
+    }
 
     // Updates the player collider position
-    player.collider.x = player.x;
-    player.collider.y = player.y;
+    player.collider.x = player.sprite.x;
+    player.collider.y = player.sprite.y;
 }
-
 
 export function animationCreator(scene, w, a, s, d, space){
     // Check for D key
@@ -267,4 +287,13 @@ export function animationCreator(scene, w, a, s, d, space){
           } else {
             scene.walk.anims.stop();
           }
+}
+
+export function handlePlayerDamage(player, amount) {
+    player.health -= amount;
+    if (player.health <= 0) {
+        // Trigger game over, respawn, etc.
+        player.health = 0; // Ensure health doesn't go negative
+        console.log("Player is dead!"); // Replace with your game over logic
+    }
 }
