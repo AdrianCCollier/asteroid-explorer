@@ -12,7 +12,8 @@
     "express": "^4.17.1",
     "fetch": "^1.1.0",
     "mongodb": "^6.1.0",
-    "mongoose": "^7.5.3"
+    "mongoose": "^7.5.3",
+    "redis": "^4.6.10"
   },
   "devDependencies": {
     "concurrently": "^8.2.1",
