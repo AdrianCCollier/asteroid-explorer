@@ -50,6 +50,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.enemies = [] // Initialize enemies array
     this.waveCount = 0 // Initialize wave counter
     this.maxWaves = 5 // Maximum number of enemy waves
+    this.map = null;
 
     this.spawnPoints = [
       { x: 1100, y: 300 },
@@ -93,9 +94,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     )
 
     // Create map
-    const map = this.make.tilemap({ key: 'map' })
-    const tileset = map.addTilesetImage('tiles1', 'tiles')
-    this.layer = map.createLayer('surface', tileset, 0, 0)
+    this.map = this.make.tilemap({ key: 'map' })
+    const tileset = this.map.addTilesetImage('tiles1', 'tiles')
+    this.layer = this.map.createLayer('surface', tileset, 0, 0)
 
     // Player creation and setup
     this.player = createPlayerInside(this, 100, 450)
@@ -109,11 +110,11 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.layer.setCollisionBetween(130, 190)
 
     // expand world bounds to entire map not just the camera view
-    this.physics.world.setBounds(0,0,map.widthInPixels, map.heightInPixels);
+    this.physics.world.setBounds(0,0,this.map.widthInPixels, this.map.heightInPixels);
 
     // Camera setup
     this.cameras.main.startFollow(this.player.sprite)
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
 
 
 
@@ -232,6 +233,13 @@ export default class SidescrollerScene extends Phaser.Scene {
   } // end create function
 
   update() {
+    // if the player falls off the map, end the game
+    if (this.player.sprite.y > this.map.heightInPixels) {
+      this.scene.pause() 
+      this.scene.stop()
+      this.scene.launch('GameOverScene')
+    }
+
     // Update the health bar position to follow the player
     this.healthBar.x = this.player.sprite.x - 33 // Adjust the X-coordinate as needed
     this.healthBar.y = this.player.sprite.y - 70 // Adjust the Y-coordinate as needed
@@ -257,8 +265,6 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     this.jump.x = this.player.sprite.x
     this.jump.y = this.player.sprite.y
-
-    
 
     // Play the appropriate animation
     if (isJumping) {
@@ -356,8 +362,6 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.player.gunSprite.y = this.player.sprite.y
       this.player.gunSprite.rotation = this.player.sprite.rotation
     }
-
-    
 
     // M16 weapon pickup logic
 

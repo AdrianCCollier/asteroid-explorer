@@ -19,7 +19,7 @@ class GameOverScene extends Phaser.Scene {
           .setInteractive()
           .on('pointerdown', () => {
               this.scene.stop();
-              this.scene.start('Level1Scene');
+              this.scene.start('SidescrollerScene');
           })
           .on('pointerover', () => yesButton.setBackgroundColor('#555555')) // Changing background color when hovered
           .on('pointerout', () => yesButton.setBackgroundColor('#000000')); // Changing background color back when not hovered
