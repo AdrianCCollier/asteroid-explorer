@@ -10,6 +10,8 @@ app.use(express.static('public'))
 app.use(express.static(path.join(__dirname, '../frontend/build')))
 app.use(express.json())
 
+const fs = require('fs')
+
 const API_KEY = process.env.API_KEY
 const CACHE_DURATION = 744 * 3600 * 1000 // Data is cached for a month
 const CACHE_FILE = path.join(__dirname, 'asteroidsCache.json')

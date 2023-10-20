@@ -64,12 +64,12 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.load.image('M16', M16)
   }
 
+  
+
   create() {
-    
-    
     // add background
-    this.add.image(960, 540, 'galaxy').setScrollFactor(0)
-    
+    this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
+
     this.checkCollision = false // Initialize collision check
     // Setting a delayed timer to enable collision check
     this.time.delayedCall(
@@ -79,198 +79,218 @@ export default class SidescrollerScene extends Phaser.Scene {
       },
       [],
       this
-      )
-      
-      // Create map
-      const map = this.make.tilemap({ key: 'map' })
-      const tileset = map.addTilesetImage('tiles1', 'tiles')
-      this.layer = map.createLayer('surface', tileset, 0, 0);
-      
-      // Player creation and setup
-      this.player = createPlayerInside(this, 100, 450)
-      
-      addObjectToWorld(this, this.player.sprite)
-      addColliderWithWorld(this, this.player.sprite)
-      addColliderWithGround(this, this.player.sprite, this.ground)
-      
-      // Allow player to collide with Tiled layer
-      this.physics.add.collider(this.player.sprite, this.layer)
-      this.layer.setCollisionBetween(130, 190)
-      
-      // Camera setup
-      this.cameras.main.startFollow(this.player.sprite)
-      this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
-      
-      this.player.sprite.setCollideWorldBounds(false)
-      
-      // Weapon creation and setup
-      this.weapon = createWeaponInside(this, 200, 470, 32, 32)
-      this.shootControl = { canShoot: true } // Initialize shooting control
-      this.shootCooldown = 500 // Time in ms between allowed shots
-      
-      this.m16 = this.physics.add.sprite(300, 300, 'M16')
-      this.m16.setScale(0.1)
-      this.m16.setCollideWorldBounds(true)
-      
-      // Setup input controls
-      this.cursors = this.input.keyboard.createCursorKeys()
-      
-      // placeholder
-      this.healthBar = createStaticHealthBar(this);
-     
+    )
 
-      this.time.addEvent({
-        delay: 2000,
-        callback: this.spawnWave,
-        callbackScope: this,
-        repeat: this.maxWaves - 1,
-      });
-      
-      
-      function createStaticHealthBar(scene) {
-        // Create a new graphics object
-        let healthBar = scene.add.graphics();
-        
-        // Set a fill style with a green color
-        healthBar.fillStyle(0x00ff00, 1);
-        
-        // Draw a filled rectangle in the top-left corner of the screen
-        // The rectangle will be 50 pixels wide and 5 pixels high, representing full health
-        healthBar.fillRect(10, 10, 50, 5);
-      
-        healthBar.lineStyle(2, 0xffffff, 1); // white border with a width of 2
-        healthBar.strokeRect(10, 10, 50, 5);
-      
-        return healthBar; // return the healthBar so you can reference it elsewhere
-      }
+    // Create map
+    const map = this.make.tilemap({ key: 'map' })
+    const tileset = map.addTilesetImage('tiles1', 'tiles')
+    this.layer = map.createLayer('surface', tileset, 0, 0)
 
+    // Player creation and setup
+    this.player = createPlayerInside(this, 100, 450)
 
+    addObjectToWorld(this, this.player.sprite)
+    addColliderWithWorld(this, this.player.sprite)
+    addColliderWithGround(this, this.player.sprite, this.ground)
 
+    // Allow player to collide with Tiled layer
+    this.physics.add.collider(this.player.sprite, this.layer)
+    this.layer.setCollisionBetween(130, 190)
 
+    // Camera setup
+    this.cameras.main.startFollow(this.player.sprite)
+    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 
+    this.player.sprite.setCollideWorldBounds(false)
 
+    // Weapon creation and setup
+    this.weapon = createWeaponInside(this, 200, 470, 32, 32)
+    this.shootControl = { canShoot: true } // Initialize shooting control
+    this.shootCooldown = 500 // Time in ms between allowed shots
 
+    this.m16 = this.physics.add.sprite(300, 300, 'M16')
+    this.m16.setScale(0.09)
+    this.m16.setGravityY(0)
+    this.physics.add.collider(this.m16, this.layer)
 
+    
 
+    // Setup input controls
+    this.cursors = this.input.keyboard.createCursorKeys()
 
+    // Add "E" key, add to its own function later
+    this.cursors.pickup = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.E
+    )
 
+    // Set up collider for weapon pickup
+    this.physics.add.collider(
+      this.player.sprite,
+      this.m16,
+      this.pickUpWeapon,
+      null,
+      this
+    )
 
+    // placeholder
+    this.healthBar = createStaticHealthBar(this)
 
-// Making sprite invisible so animation can play
-this.player.sprite.alpha = 0;
+    // this.time.addEvent({
+    //   delay: 2000,
+    //   callback: this.spawnWave,
+    //   callbackScope: this,
+    //   repeat: this.maxWaves - 1,
+    // });
+
+    // Create weapon pick up message, be invisible by default
+    this.pickupText = this.add.text(300, 100, 'Press E To Pick Up', {
+      fontSize: '24px',
+      fill: '#FFF',
+    })
+    this.pickupText.setVisible(false)
+
+    function createStaticHealthBar(scene) {
+      // Create a new graphics object
+      let healthBar = scene.add.graphics()
+
+      // Set a fill style with a green color
+      healthBar.fillStyle(0x00ff00, 1)
+
+      // Draw a filled rectangle in the top-left corner of the screen
+      // The rectangle will be 50 pixels wide and 5 pixels high, representing full health
+      healthBar.fillRect(10, 10, 50, 5)
+
+      healthBar.lineStyle(2, 0xffffff, 1) // white border with a width of 2
+      healthBar.strokeRect(10, 10, 50, 5)
+
+      return healthBar // return the healthBar so you can reference it elsewhere
+    }
+
+    // Making sprite invisible so animation can play
+    this.player.sprite.alpha = 0
 
     // Create the animations
-  this.anims.create({
-    key: "player_walk",
-    frames: this.anims.generateFrameNumbers("walk"),
-    frameRate: 10,
-    repeat: -1,
-  });
+    this.anims.create({
+      key: 'player_walk',
+      frames: this.anims.generateFrameNumbers('walk'),
+      frameRate: 10,
+      repeat: -1,
+    })
 
-  this.anims.create({
-    key: "player_idle",
-    frames: this.anims.generateFrameNumbers("idle"),
-    frameRate: 10,
-    repeat: -1,
-  });
+    this.anims.create({
+      key: 'player_idle',
+      frames: this.anims.generateFrameNumbers('idle'),
+      frameRate: 10,
+      repeat: -1,
+    })
 
-  this.anims.create({
-    key: "player_jump",
-    frames: this.anims.generateFrameNumbers("jump"),
-    frameRate: 16,
-    repeat: -1,
-  });
+    this.anims.create({
+      key: 'player_jump',
+      frames: this.anims.generateFrameNumbers('jump'),
+      frameRate: 16,
+      repeat: -1,
+    })
 
-  
-  this.anims.create({
-    key: "tall_walk_alien_agro",
-    frames: this.anims.generateFrameNumbers("tall_walk_agro"),
-    frameRate: 16,
-    repeat: -1,
-  });
-  
+    this.anims.create({
+      key: 'tall_walk_alien_agro',
+      frames: this.anims.generateFrameNumbers('tall_walk_agro'),
+      frameRate: 16,
+      repeat: -1,
+    })
 
-
-  this.walk = this.add.sprite(this.player.sprite.x, this.player.sprite.y, "walk");
-  this.idle = this.add.sprite(this.player.sprite.x, this.player.sprite.y, "idle");
-  this.jump = this.add.sprite(this.player.sprite.x, this.player.sprite.y, "jump");
-
-  }
+    this.walk = this.add.sprite(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      'walk'
+    )
+    this.idle = this.add.sprite(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      'idle'
+    )
+    this.jump = this.add.sprite(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      'jump'
+    )
+  } // end create function
 
   update() {
-  // Update the health bar position to follow the player
-  this.healthBar.x = this.player.sprite.x -33; // Adjust the X-coordinate as needed
-  this.healthBar.y = this.player.sprite.y - 70; // Adjust the Y-coordinate as needed
+    // Update the health bar position to follow the player
+    this.healthBar.x = this.player.sprite.x - 33 // Adjust the X-coordinate as needed
+    this.healthBar.y = this.player.sprite.y - 70 // Adjust the Y-coordinate as needed
 
     // Check keyboard input for "D" and "A" keys
-  const dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-  const aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-  const spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    const dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
+    const aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
+    const spaceKey = this.input.keyboard.addKey(
+      Phaser.Input.Keyboard.KeyCodes.SPACE
+    )
 
-  // Set animation flags based on key presses
-  isWalkingForward = dKey.isDown;
-  isWalkingBackward = aKey.isDown;
-  isJumping = spaceKey.isDown;
+    // Set animation flags based on key presses
+    isWalkingForward = dKey.isDown
+    isWalkingBackward = aKey.isDown
+    isJumping = spaceKey.isDown
 
-  // Set sprite positions
-  this.walk.x = this.player.sprite.x;
-  this.walk.y = this.player.sprite.y;
+    // Set sprite positions
+    this.walk.x = this.player.sprite.x
+    this.walk.y = this.player.sprite.y
 
-  this.idle.x = this.player.sprite.x;
-  this.idle.y = this.player.sprite.y;
+    this.idle.x = this.player.sprite.x
+    this.idle.y = this.player.sprite.y
 
-  this.jump.x = this.player.sprite.x;
-  this.jump.y = this.player.sprite.y;
+    this.jump.x = this.player.sprite.x
+    this.jump.y = this.player.sprite.y
 
-  // Play the appropriate animation
-  if (isJumping){
-    this.jump.anims.play("player_jump", true);
-    this.walk.alpha = 0;
-    this.idle.alpha = 0;
-    this.jump.alpha = 1;
-
-    if (isWalkingForward){
-      this.jump.setFlipX(false); // Reset sprite orientation (walk forward)
-    }
-    else if (isWalkingBackward){
-      this.jump.setFlipX(true); // Reset sprite orientation (walk forward)
-    }
-  }
-  else if (isWalkingForward && isWalkingBackward) {
-    this.idle.anims.play("player_idle", true);
-    this.walk.anims.stop();
-    this.walk.alpha = 0;
-    this.idle.alpha = 1;
-    this.jump.alpha = 0;
-  } else if (isWalkingForward) {
-    this.walk.anims.play("player_walk", true);
-
-    this.walk.setFlipX(false); // Reset sprite orientation (walk forward)
-    this.idle.setFlipX(false); // Reset sprite orientation (walk forward)
-    this.jump.setFlipX(false); // Reset sprite orientation (walk forward)
-
-    this.walk.alpha = 1;
-    this.idle.alpha = 0;
-    this.jump.alpha = 0;
-  } else if (isWalkingBackward) {
-    this.walk.anims.play("player_walk", true);
-
-    this.walk.setFlipX(true); // Flip sprite horizontally (walk backward)
-    this.idle.setFlipX(true); // Flip sprite horizontally (walk backward)
-    this.jump.setFlipX(true); // Flip sprite horizontally (walk backward)
-
-    this.walk.alpha = 1;
-    this.idle.alpha = 0;
-    this.jump.alpha = 0;
-  } else {
-    // If neither key is pressed, play the idle animation
-    this.idle.anims.play("player_idle", true);
-    this.walk.anims.stop();
-    this.walk.alpha = 0;
-    this.idle.alpha = 1;
-    this.jump.alpha = 0;
-  }
     
+
+    // Play the appropriate animation
+    if (isJumping) {
+      this.jump.anims.play('player_jump', true)
+      this.walk.alpha = 0
+      this.idle.alpha = 0
+      this.jump.alpha = 1
+
+      if (isWalkingForward) {
+        this.jump.setFlipX(false) // Reset sprite orientation (walk forward)
+      } else if (isWalkingBackward) {
+        this.jump.setFlipX(true) // Reset sprite orientation (walk forward)
+      }
+    } else if (isWalkingForward && isWalkingBackward) {
+      this.idle.anims.play('player_idle', true)
+      this.walk.anims.stop()
+      this.walk.alpha = 0
+      this.idle.alpha = 1
+      this.jump.alpha = 0
+    } else if (isWalkingForward) {
+      this.walk.anims.play('player_walk', true)
+
+      this.walk.setFlipX(false) // Reset sprite orientation (walk forward)
+      this.idle.setFlipX(false) // Reset sprite orientation (walk forward)
+      this.jump.setFlipX(false) // Reset sprite orientation (walk forward)
+
+      this.walk.alpha = 1
+      this.idle.alpha = 0
+      this.jump.alpha = 0
+    } else if (isWalkingBackward) {
+      this.walk.anims.play('player_walk', true)
+
+      this.walk.setFlipX(true) // Flip sprite horizontally (walk backward)
+      this.idle.setFlipX(true) // Flip sprite horizontally (walk backward)
+      this.jump.setFlipX(true) // Flip sprite horizontally (walk backward)
+
+      this.walk.alpha = 1
+      this.idle.alpha = 0
+      this.jump.alpha = 0
+    } else {
+      // If neither key is pressed, play the idle animation
+      this.idle.anims.play('player_idle', true)
+      this.walk.anims.stop()
+      this.walk.alpha = 0
+      this.idle.alpha = 1
+      this.jump.alpha = 0
+    }
+
     // Handling Player and Enemy movements and interactions every frame
     handlePlayerMovementInside(
       this,
@@ -286,10 +306,10 @@ this.player.sprite.alpha = 0;
 
     // weapon direction
     if (this.player.facing === 'left') {
-      this.player.gunSprite.setTexture('weapon2'); // set to the image key for the left-facing weapon
-  } else {
-      this.player.gunSprite.setTexture('weapon1'); // set to the image key for the right-facing weapon
-  }
+      this.player.gunSprite.setTexture('weapon2') // set to the image key for the left-facing weapon
+    } else {
+      this.player.gunSprite.setTexture('weapon1') // set to the image key for the right-facing weapon
+    }
     // Check for weapon pickup
     if (
       this.weapon &&
@@ -310,7 +330,7 @@ this.player.sprite.alpha = 0;
 
     // Adjust gun sprite position and rotation to match the player
     if (this.player.hasWeapon && this.player.facing === 'left') {
-      this.player.gunSprite.x = this.player.sprite.x -25
+      this.player.gunSprite.x = this.player.sprite.x - 25
       this.player.gunSprite.y = this.player.sprite.y
       this.player.gunSprite.rotation = this.player.sprite.rotation
     }
@@ -319,6 +339,28 @@ this.player.sprite.alpha = 0;
       this.player.gunSprite.x = this.player.sprite.x + 25
       this.player.gunSprite.y = this.player.sprite.y
       this.player.gunSprite.rotation = this.player.sprite.rotation
+    }
+
+    
+
+    // M16 weapon pickup logic
+
+    let distanceToWeapon = Phaser.Math.Distance.Between(
+      this.player.sprite.x,
+      this.player.sprite.y,
+      this.m16.x,
+      this.m16.y
+    )
+
+    if (distanceToWeapon < 50) {
+      this.pickupText.setVisible(true)
+
+      // pick up weapon
+      if (this.cursors.pickup.isDown) {
+        this.equipWeapon()
+      }
+    } else {
+      this.pickupText.setVisible(false)
     }
 
     // Check all enemies' status and show congratulation screen if conditions met
@@ -350,6 +392,18 @@ this.player.sprite.alpha = 0;
       }
     })
   }
+
+  //spawn Aliens function, created to create individual aliens instead of waves
+  // spawnAliens() {
+
+    
+  //   spawnPoints.forEach((spawn) => {
+  //     const enemy = createEnemyInside(this, spawn.x, spawn.y)
+  //     // Store this enemy in an array or group for future reference or collision checks
+  //     this.enemies.push(enemy)
+  //   })
+  // }
+
   // Spawn enemies in waves until the maximum number of waves is reached
   // Also checks for all enemies dead after all waves are spawned
   spawnWave() {
@@ -386,6 +440,27 @@ this.player.sprite.alpha = 0;
   // Return true if all enemies are dead or inactive
   areAllEnemiesDead() {
     return this.enemies.every((enemy) => !enemy.sprite.active)
+  }
+
+  // Equip M16 weapon
+  equipWeapon() {
+    const offsetX = 40
+    const offsetY = 0
+    this.m16.setVisible(true)
+    this.m16.setPosition(
+      this.player.sprite.x + offsetX,
+      this.player.sprite.y + offsetY
+    )
+    this.m16.setDepth(this.player.sprite.depth + 1)
+    this.pickupText.destroy()
+
+    // Disable physics properties once equipped
+    this.m16.setGravityY(0)
+    this.m16.setVelocity(0, 0)
+    this.m16.setImmovable(true)
+    this.m16.body.allowGravity = false
+
+    this.player.weapon = 'M16'
   }
 
   // If all enemies are dead, show congratulation screen and remove the check timer
