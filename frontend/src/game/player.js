@@ -48,6 +48,8 @@ var frameCounter = 0;
 var jumping = false;
 var falling = false;
 var spaceUp = false;
+var movingForward = false;
+var movingBackward = false;
 
 
 
@@ -125,26 +127,6 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
 
 export function loadPlayerImage(scene){
     scene.load.image('player', './assets/Skeleton.png');
-
-    scene.load.spritesheet("walk", "./assets/sprites/player_walk.png",{
-        frameWidth: 32,
-        frameHeight: 64}
-    );
-    
-    scene.load.spritesheet("run", "./assets/sprites/player_run.png",{
-        frameWidth: 32,
-        frameHeight: 64}
-    );
-
-    scene.load.spritesheet("jump", "./assets/sprites/player_jump.png",{
-        frameWidth: 32,
-        frameHeight: 64}
-    );
-
-    scene.load.spritesheet("idle", "./assets/sprites/player_idle.png",{
-        frameWidth: 32,
-        frameHeight: 64}
-    );
 }
 
 export function createPlayerInside(scene, x, y) {
@@ -168,7 +150,15 @@ export function createPlayerInside(scene, x, y) {
         sprite: playerSprite,
         rotation: null,
         collider: null,
-        facing: 'right' // Default facing direction 
+        facing: 'right', // Default facing direction 
+        animator: null, // variable that holds player's current animation
+        boostAnimator: null, // variable that holds player's booster animations
+        gunAnimator: null, // variable that holds player's gun animations
+        jumping: false,
+        doubleJumping: false,
+        idle: false,
+        walking: false
+        
     };
 
     // Add a gun sprite if the player picks one up
@@ -207,25 +197,43 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     // Move left
     if (aKey.isDown) {
         player.sprite.x -= speed;
+        
+        // Only updates the direction if the dKey hasn't been pressed
+        if (!dKey.isDown)
         player.facing = 'left'; // Update facing direction
     }
 
     // Move right
     if (dKey.isDown){
         player.sprite.x += speed;
-        player.facing = 'right'; // Update facing direction
+
+        // Only updates the direction if the aKey hasn't been pressed
+        if (!aKey.isDown)
+            player.facing = 'right'; // Update facing direction
     }
+
+    // Checking to see if player is walking in general
+    if (aKey.isDown || dKey.isDown){
+        player.walking = true;
+    }
+    else{
+        player.walking = false;
+    }
+
 
     // Regular jump
     if (spaceKey.isDown && !jumping) {
         player.velocityY = -jumpStrength; // going up
         jumping = true;
+        player.jumping = true;
     }
 
     // Double jump
     if (bKey.isDown && spaceKey.isDown) {
         player.velocityY = -jumpStrength*1.8; // going up
+
         doubleJump = true;
+        player.doubleJumping = true;
     }
 
     player.velocityY += gravity; // gravity pulls down
@@ -234,7 +242,11 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     // Check for landing - replace this with your actual collision detection logic
     if (!jumping) {
         jumping = false;
+        player.jumping = false;
+
         doubleJump = false;
+        player.doubleJumping = false;
+
         player.velocityY = 0;
     }
 

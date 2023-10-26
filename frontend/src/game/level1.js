@@ -29,11 +29,6 @@ export default class Level1Scene extends Phaser.Scene {
     loadWeaponImage(this);
     loadBulletImage(this);
     loadDoorImage(this);
-
-    this.load.spritesheet("tall_walk_agro", "./assets/sprites/tall_alien_walking_agro.png",{
-      frameWidth: 32,
-      frameHeight: 64}
-  );
   }
 
   create() {

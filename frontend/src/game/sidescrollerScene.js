@@ -24,7 +24,13 @@ import {
 } from './collisions.js'
 import GameOverScene from './gameOverScene.js'
 
-import { createPlayerWalk, updatePlayerWalk } from './animation.js'
+import { 
+  loadPlayerAnimations,
+  createPlayerAnimations, 
+  updatePlayerAnimations, 
+  loadEnemyAnimations,
+  createEnemyAnimations
+} from './animation.js'
 
 import Phaser from 'phaser'
 import tileSet from './assets/nightsky.png'
@@ -67,7 +73,9 @@ export default class SidescrollerScene extends Phaser.Scene {
   preload() {
     // Pre-loading necessary assets for the scene
     loadPlayerImage(this)
+    loadPlayerAnimations(this)
     loadEnemyImage(this)
+    loadEnemyAnimations(this)
     loadWeaponImage(this)
     loadBulletImage(this)
     this.load.image('tiles', tileSet)
@@ -183,53 +191,17 @@ export default class SidescrollerScene extends Phaser.Scene {
       return healthBar // return the healthBar so you can reference it elsewhere
     }
 
+
+
     // Making sprite invisible so animation can play
     this.player.sprite.alpha = 0
 
-    // Create the animations
-    this.anims.create({
-      key: 'player_walk',
-      frames: this.anims.generateFrameNumbers('walk'),
-      frameRate: 10,
-      repeat: -1,
-    })
+    // Creates animations for given scene
+    createPlayerAnimations(this, this.player);
 
-    this.anims.create({
-      key: 'player_idle',
-      frames: this.anims.generateFrameNumbers('idle'),
-      frameRate: 10,
-      repeat: -1,
-    })
+    // Creates enemy animations for given scene
+    createEnemyAnimations(this, this.player);
 
-    this.anims.create({
-      key: 'player_jump',
-      frames: this.anims.generateFrameNumbers('jump'),
-      frameRate: 16,
-      repeat: -1,
-    })
-
-    this.anims.create({
-      key: 'tall_walk_alien_agro',
-      frames: this.anims.generateFrameNumbers('tall_walk_agro'),
-      frameRate: 16,
-      repeat: -1,
-    })
-
-    this.walk = this.add.sprite(
-      this.player.sprite.x,
-      this.player.sprite.y,
-      'walk'
-    )
-    this.idle = this.add.sprite(
-      this.player.sprite.x,
-      this.player.sprite.y,
-      'idle'
-    )
-    this.jump = this.add.sprite(
-      this.player.sprite.x,
-      this.player.sprite.y,
-      'jump'
-    )
   } // end create function
 
   update() {
@@ -244,21 +216,14 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.healthBar.x = this.player.sprite.x - 33 // Adjust the X-coordinate as needed
     this.healthBar.y = this.player.sprite.y - 70 // Adjust the Y-coordinate as needed
 
-    // Check keyboard input for "D" and "A" keys
-    const dKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
-    const aKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
-    const spaceKey = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.SPACE
-    )
 
-    // Set animation flags based on key presses
-    isWalkingForward = dKey.isDown
-    isWalkingBackward = aKey.isDown
-    isJumping = spaceKey.isDown
+    updatePlayerAnimations(this);
+
+    
 
     // Set sprite positions
-    this.walk.x = this.player.sprite.x
-    this.walk.y = this.player.sprite.y
+    /*
+
 
     this.idle.x = this.player.sprite.x
     this.idle.y = this.player.sprite.y
@@ -311,7 +276,7 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.walk.alpha = 0
       this.idle.alpha = 1
       this.jump.alpha = 0
-    }
+    }*/
 
     // Handling Player and Enemy movements and interactions every frame
     handlePlayerMovementInside(
