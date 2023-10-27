@@ -102,7 +102,7 @@ export function handleEnemyMovementInside(scene, bullets, enemy) {
             if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
                 enemy.sprite.destroy();
                 enemy.destroyed = true;
-                enemy.animation.alpha = 0; // sets the enemie's animation to invisible.
+                enemy.animator.alpha = 0; // sets the enemie's animation to invisible.
                 return true;
             }
         }
