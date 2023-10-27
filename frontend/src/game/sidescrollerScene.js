@@ -106,39 +106,62 @@ export default class SidescrollerScene extends Phaser.Scene {
     const tileset = this.map.addTilesetImage('tiles1', 'tiles')
     this.layer = this.map.createLayer('surface', tileset, 0, 0)
 
-    // Player creation and setup
-    this.player = createPlayerInside(this, 100, 450)
+    // Create static physics group for collision layer object
+    const collisionObjects = this.physics.add.staticGroup()
 
-    addObjectToWorld(this, this.player.sprite)
-    addColliderWithWorld(this, this.player.sprite)
-    addColliderWithGround(this, this.player.sprite, this.ground)
+    this.map.getObjectLayer('surfaceCollision').objects.forEach((obj) => {
+      collisionObjects
+        .create(obj.x, obj.y - obj.height, null)
+        .setVisible(false)
+        .setSize(obj.width, obj.height)
+        .setOffset(15, 49)
+    })
+
+    // Player creation and setup
+    this.player = createPlayerInside(this, 100, 250)
+
+    // Customize dimensions of player hitbox, seen with debug mode enabled
+    this.player.sprite.body.setSize(25, 63)
+
+    this.physics.add.collider(this.player, collisionObjects)
 
     // Allow player to collide with Tiled layer
     this.physics.add.collider(this.player.sprite, this.layer)
     this.layer.setCollisionBetween(130, 190)
 
     // expand world bounds to entire map not just the camera view
-    this.physics.world.setBounds(0,0,this.map.widthInPixels, this.map.heightInPixels);
+    this.physics.world.setBounds(
+      0,
+      0,
+      this.map.widthInPixels,
+      this.map.heightInPixels
+    )
 
-    // Camera setup
+    // Set up camera to follow player
     this.cameras.main.startFollow(this.player.sprite)
-    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
 
+    // Set the bounds of the camera to stay within our Tiled map
+    this.cameras.main.setBounds(
+      0,
+      0,
+      this.map.widthInPixels,
+      this.map.heightInPixels
+    )
 
+    // allow player to fall off the map
+    // this.player.sprite.setCollideWorldBounds(false)
 
-    this.player.sprite.setCollideWorldBounds(false)
+    // this.physics.world.createDebugGraphic()
 
     // Weapon creation and setup
     this.weapon = createWeaponInside(this, 200, 470, 32, 32)
     this.shootControl = { canShoot: true } // Initialize shooting control
     this.shootCooldown = 500 // Time in ms between allowed shots
 
-    this.m16 = this.physics.add.sprite(300, 300, 'M16')
+    this.m16 = this.physics.add.sprite(900, 300, 'M16')
     this.m16.setScale(0.09)
     this.m16.setGravityY(0)
     this.physics.add.collider(this.m16, this.layer)
-
-    
 
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -160,12 +183,11 @@ export default class SidescrollerScene extends Phaser.Scene {
     // placeholder
     this.healthBar = createStaticHealthBar(this)
 
-   
     this.time.addEvent({
       delay: 2000,
       callback: this.spawnAliens,
       callbackScope: this,
-    });
+    })
 
     // Create weapon pick up message, be invisible by default
     this.pickupText = this.add.text(300, 100, 'Press E To Pick Up', {
@@ -191,23 +213,26 @@ export default class SidescrollerScene extends Phaser.Scene {
       return healthBar // return the healthBar so you can reference it elsewhere
     }
 
-
-
     // Making sprite invisible so animation can play
     this.player.sprite.alpha = 0
 
     // Creates animations for given scene
-    createPlayerAnimations(this, this.player);
+    createPlayerAnimations(this, this.player)
 
     // Creates enemy animations for given scene
-    createEnemyAnimations(this, this.player);
-
+    createEnemyAnimations(this, this.player)
   } // end create function
 
   update() {
     // if the player falls off the map, end the game
     if (this.player.sprite.y > this.map.heightInPixels) {
-      this.scene.pause() 
+
+      // reset variables before restarting game to avoid undefined properties error
+      this.bullets = [] 
+      this.enemies = [] 
+      this.waveCount = 0 
+      this.maxWaves = 5 
+      this.scene.pause()
       this.scene.stop()
       this.scene.launch('GameOverScene')
     }
