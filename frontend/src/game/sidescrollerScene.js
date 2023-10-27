@@ -24,6 +24,7 @@ import {
 } from './collisions.js'
 import GameOverScene from './gameOverScene.js'
 
+
 import { 
   loadPlayerAnimations,
   createPlayerAnimations, 
@@ -42,11 +43,7 @@ import galaxyBackground from './assets/spaceBackground1.png'
 // import new weapon
 import M16 from './assets/weapons/M16.png'
 
-var animations = []
-
-let isWalkingForward = false;
-let isWalkingBackward = false;
-let isJumping = false;
+import { loadHealthBar, loadShieldBar, updateBars } from './health'
 
 export default class SidescrollerScene extends Phaser.Scene {
   constructor() {
@@ -82,6 +79,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.load.tilemapTiledJSON('map', mapJSON)
     this.load.image('galaxy', galaxyBackground)
     this.load.image('M16', M16)
+
+    loadHealthBar(this);
+    loadShieldBar(this);
   }
 
   
@@ -244,64 +244,9 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     updatePlayerAnimations(this);
 
+    updateBars(this);
     
 
-    // Set sprite positions
-    /*
-
-
-    this.idle.x = this.player.sprite.x
-    this.idle.y = this.player.sprite.y
-
-    this.jump.x = this.player.sprite.x
-    this.jump.y = this.player.sprite.y
-
-    // Play the appropriate animation
-    if (isJumping) {
-      this.jump.anims.play('player_jump', true)
-      this.walk.alpha = 0
-      this.idle.alpha = 0
-      this.jump.alpha = 1
-
-      if (isWalkingForward) {
-        this.jump.setFlipX(false) // Reset sprite orientation (walk forward)
-      } else if (isWalkingBackward) {
-        this.jump.setFlipX(true) // Reset sprite orientation (walk forward)
-      }
-    } else if (isWalkingForward && isWalkingBackward) {
-      this.idle.anims.play('player_idle', true)
-      this.walk.anims.stop()
-      this.walk.alpha = 0
-      this.idle.alpha = 1
-      this.jump.alpha = 0
-    } else if (isWalkingForward) {
-      this.walk.anims.play('player_walk', true)
-
-      this.walk.setFlipX(false) // Reset sprite orientation (walk forward)
-      this.idle.setFlipX(false) // Reset sprite orientation (walk forward)
-      this.jump.setFlipX(false) // Reset sprite orientation (walk forward)
-
-      this.walk.alpha = 1
-      this.idle.alpha = 0
-      this.jump.alpha = 0
-    } else if (isWalkingBackward) {
-      this.walk.anims.play('player_walk', true)
-
-      this.walk.setFlipX(true) // Flip sprite horizontally (walk backward)
-      this.idle.setFlipX(true) // Flip sprite horizontally (walk backward)
-      this.jump.setFlipX(true) // Flip sprite horizontally (walk backward)
-
-      this.walk.alpha = 1
-      this.idle.alpha = 0
-      this.jump.alpha = 0
-    } else {
-      // If neither key is pressed, play the idle animation
-      this.idle.anims.play('player_idle', true)
-      this.walk.anims.stop()
-      this.walk.alpha = 0
-      this.idle.alpha = 1
-      this.jump.alpha = 0
-    }*/
 
     // Handling Player and Enemy movements and interactions every frame
     handlePlayerMovementInside(
