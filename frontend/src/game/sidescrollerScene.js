@@ -101,21 +101,8 @@ export default class SidescrollerScene extends Phaser.Scene {
       this
     )
 
-    // Create map
-    this.map = this.make.tilemap({ key: 'map' })
-    const tileset = this.map.addTilesetImage('tiles1', 'tiles')
-    this.layer = this.map.createLayer('surface', tileset, 0, 0)
-
-    // Create static physics group for collision layer object
-    const collisionObjects = this.physics.add.staticGroup()
-
-    this.map.getObjectLayer('surfaceCollision').objects.forEach((obj) => {
-      collisionObjects
-        .create(obj.x, obj.y - obj.height, null)
-        .setVisible(false)
-        .setSize(obj.width, obj.height)
-        .setOffset(15, 49)
-    })
+    // turned on for debugging mode
+    this.physics.world.createDebugGraphic()
 
     // Player creation and setup
     this.player = createPlayerInside(this, 100, 250)
@@ -123,9 +110,39 @@ export default class SidescrollerScene extends Phaser.Scene {
     // Customize dimensions of player hitbox, seen with debug mode enabled
     this.player.sprite.body.setSize(25, 63)
 
-    this.physics.add.collider(this.player, collisionObjects)
+    // Create map using tileset with Tiled
+    this.map = this.make.tilemap({ key: 'map' })
+    const tileset = this.map.addTilesetImage('tiles1', 'tiles')
 
-    // Allow player to collide with Tiled layer
+    // create surface layer, this is the visual asteroid rocky layer seen
+    this.layer = this.map.createLayer('surface', tileset, 0, 0)
+
+     // Initialize an static group for obstacles, set to static to make them immovable and meant to block player movement.
+     this.obstaclesGroup = this.physics.add.staticGroup()
+
+
+     // In Tiled, the object layer I created is called 'surfaceCollision' and Im referencing it here, it works correctly as the player can jump on the layer, but collision from the sides and bottom still doesn't work
+     let obstacleObjects = this.map.getObjectLayer('surfaceCollision').objects
+     obstacleObjects.forEach((obstacleObject) => {
+       let obstacle = this.add.rectangle(
+         obstacleObject.x + obstacleObject.width / 2, 
+         obstacleObject.y + 16,
+         obstacleObject.width,
+         obstacleObject.height
+       )
+       this.obstaclesGroup.add(obstacle)
+     })
+
+     // Allow player to collide with object layer squares
+     this.physics.add.collider(
+       this.player.sprite,
+       this.obstaclesGroup,
+       function () {
+         console.log('Player collided with obstacle!')
+       }
+     )
+
+    // Allow player to collide with tileset surface layer
     this.physics.add.collider(this.player.sprite, this.layer)
     this.layer.setCollisionBetween(130, 190)
 
@@ -147,11 +164,6 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.map.widthInPixels,
       this.map.heightInPixels
     )
-
-    // allow player to fall off the map
-    // this.player.sprite.setCollideWorldBounds(false)
-
-    // this.physics.world.createDebugGraphic()
 
     // Weapon creation and setup
     this.weapon = createWeaponInside(this, 200, 470, 32, 32)
