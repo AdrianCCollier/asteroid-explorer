@@ -151,15 +151,33 @@ export function createPlayerInside(scene, x, y) {
         rotation: null,
         collider: null,
         facing: 'right', // Default facing direction 
-        animator: null, // variable that holds player's current animation
-        boostAnimator: null, // variable that holds player's booster animations
-        gunAnimator: null, // variable that holds player's gun animations
+        healthContainer: scene.add.sprite(160, 43, 'health_container'),
+        healthBar: scene.add.sprite(191, 43, 'health_bar'),
+        shieldContainer: scene.add.sprite(160, 110, 'shield_container'),
+        shieldBar: scene.add.sprite(191, 111, 'shield_bar'),
+        barOffsets: [160, 43, 191, 43, 160, 110, 191, 111],
+        animator: null, // player's current main animation
+        shootingAnimator: null, // player's current main animation while shooting
+        boostAnimator: null, // booster animations
+        gunAnimator: null, // gun animations
+        armAnimator: null, // arm animations
+        strapAnimator: null, // strap animation
+        weaponSprite: null,
+        weaponHolsteredSprite: null,
         jumping: false,
         doubleJumping: false,
         idle: false,
-        walking: false
-        
+        walking: false,
+        shoot: false,
+        unholstering: false,
+        holstered: true,
+        holstering: false,
     };
+
+    player.healthBar.setScale(2);
+    player.healthContainer.setScale(2);
+    player.shieldBar.setScale(2);
+    player.shieldContainer.setScale(2);
 
     // Add a gun sprite if the player picks one up
     player.gunSprite = scene.add.sprite(player.x, player.y, 'weapon1');
@@ -192,6 +210,11 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
         scene.bullets.push(bullet); // Create a bullet when K is pressed
         shootControl.canShoot = false;
         setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
+        scene.player.shoot = true;
+    }
+
+    if (!kKey.isDown){
+        scene.player.shoot = false;
     }
 
     // Move left
