@@ -22,7 +22,7 @@ export function createBullet(scene, player, w, h) {
 }
 
 export function createBulletInside(scene, player, w, h) {
-  let speed = 10; // Speed of the bullet
+  let speed = 15; // Speed of the bullet
 
   // Calculate the offset for the bullet's starting position based on the player's facing direction
   let offsetX = player.facing === 'left' ? -player.sprite.width / 2 - w / 2 : player.sprite.width / 2 + w / 2;
@@ -57,29 +57,25 @@ export function createBulletInside(scene, player, w, h) {
 
 
 export function handleBulletMovements(bullets) {
-  const maxDistance = 300; // Maximum distance a bullet can travel
+  const maxDistance = 500 // Maximum distance a bullet can travel
 
-  // Iterate over each bullet and update its position, check the distance traveled, 
-  // and remove it if it exceeds the maximum distance.
-  bullets.forEach((bullet, index) => {
-    bullet.x += bullet.velX; // Update bullet's x coordinate
-    bullet.y += bullet.velY; // Update bullet's y coordinate
-    bullet.sprite.x = bullet.x; // Reflect the change in sprite's x coordinate
-    bullet.sprite.y = bullet.y; // Reflect the change in sprite's y coordinate
-    
+  // Adrian 10/28 - Fixed bullet not disappearing bug, we were previously using a forEach loop to iterate over the array, and were removing the bullets, but some bullets were getting skipped as the arrays length was decreasing. Iterating over the array in reverse fixed this issue
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    const bullet = bullets[i]
+    bullet.x += bullet.velX // Update bullet's x coordinate
+    bullet.y += bullet.velY // Update bullet's y coordinate
+    bullet.sprite.x = bullet.x // Reflect the change in sprite's x coordinate
+    bullet.sprite.y = bullet.y // Reflect the change in sprite's y coordinate
+
     // Calculate and update distance traveled by the bullet
-    bullet.distanceTraveled += Math.sqrt(bullet.velX ** 2 + bullet.velY ** 2);
-    
+    bullet.distanceTraveled += Math.sqrt(bullet.velX ** 2 + bullet.velY ** 2)
+
     // Check if bullet has traveled the maximum distance, if so, destroy the sprite and remove the bullet
     if (bullet.distanceTraveled >= maxDistance) {
-      bullet.sprite.destroy(); // Destroy the sprite associated with the bullet
-      bullets.splice(index, 1); // Remove the bullet from the bullets array
+      bullet.sprite.destroy()
+      bullets.splice(i, 1)
     }
-    if (bullet.distanceTraveled >= maxDistance) {
-      bullet.sprite.destroy(); // Destroy the sprite associated with the bullet
-      bullets.splice(index, 1); // Remove the bullet from the bullets array
-    }
-  });
+  }
 }
 
 // load bullet image

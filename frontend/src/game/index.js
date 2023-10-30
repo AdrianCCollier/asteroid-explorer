@@ -14,6 +14,8 @@ class Game extends Component {
 
   // function called after a game is mounted for setup
   componentDidMount() {
+
+    
     let config = {
       type: Phaser.AUTO,
       width: 900,

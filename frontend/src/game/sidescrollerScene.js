@@ -1,8 +1,10 @@
 import {
   createPlayerInside,
   loadPlayerImage,
+  initializePlayerControls,
   handlePlayerMovementInside,
-  animationCreator
+  animationCreator,
+  loadWeaponSounds
 } from './player.js'
 import {
   createEnemyInside,
@@ -24,14 +26,13 @@ import {
 } from './collisions.js'
 import GameOverScene from './gameOverScene.js'
 
-
-import { 
-  loadPlayerAnimations,
-  createPlayerAnimations, 
-  updatePlayerAnimations, 
-  loadEnemyAnimations,
-  createEnemyAnimations
-} from './animation.js'
+// import {
+//   loadPlayerAnimations,
+//   createPlayerAnimations,
+//   updatePlayerAnimations,
+//   loadEnemyAnimations,
+//   createEnemyAnimations,
+// } from './animation.js'
 
 import Phaser from 'phaser'
 import tileSet from './assets/nightsky.png'
@@ -43,7 +44,13 @@ import galaxyBackground from './assets/spaceBackground1.png'
 // import new weapon
 import M16 from './assets/weapons/M16.png'
 
-import { loadHealthBar, loadShieldBar, updateBars } from './health'
+
+
+var animations = []
+
+let isWalkingForward = false
+let isWalkingBackward = false
+let isJumping = false
 
 export default class SidescrollerScene extends Phaser.Scene {
   constructor() {
@@ -53,10 +60,10 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.enemies = [] // Initialize enemies array
     this.waveCount = 0 // Initialize wave counter
     this.maxWaves = 5 // Maximum number of enemy waves
-    this.map = null;
+    this.map = null
 
     this.spawnPoints = [
-      { x: 1100, y: 300 },
+      { x: 1000, y: 300 },
       { x: 2100, y: 0 },
       { x: 5000, y: 400 },
       { x: 6000, y: 400 },
@@ -70,21 +77,18 @@ export default class SidescrollerScene extends Phaser.Scene {
   preload() {
     // Pre-loading necessary assets for the scene
     loadPlayerImage(this)
-    loadPlayerAnimations(this)
+    // loadPlayerAnimations(this)
     loadEnemyImage(this)
-    loadEnemyAnimations(this)
+    // loadEnemyAnimations(this)
     loadWeaponImage(this)
     loadBulletImage(this)
+    loadWeaponSounds(this)
     this.load.image('tiles', tileSet)
     this.load.tilemapTiledJSON('map', mapJSON)
     this.load.image('galaxy', galaxyBackground)
-    this.load.image('M16', M16)
-
-    loadHealthBar(this);
-    loadShieldBar(this);
+    // this.load.image('M16', M16)
+    // this.load.audio('fireSound', fireSound);
   }
-
-  
 
   create() {
     // add background
@@ -117,30 +121,29 @@ export default class SidescrollerScene extends Phaser.Scene {
     // create surface layer, this is the visual asteroid rocky layer seen
     this.layer = this.map.createLayer('surface', tileset, 0, 0)
 
-     // Initialize an static group for obstacles, set to static to make them immovable and meant to block player movement.
-     this.obstaclesGroup = this.physics.add.staticGroup()
+    // Initialize an static group for obstacles, set to static to make them immovable and meant to block player movement.
+    this.obstaclesGroup = this.physics.add.staticGroup()
 
+    // In Tiled, the object layer I created is called 'surfaceCollision' and Im referencing it here, it works correctly as the player can jump on the layer, but collision from the sides
+    let obstacleObjects = this.map.getObjectLayer('surfaceCollision').objects
+    obstacleObjects.forEach((obstacleObject) => {
+      let obstacle = this.add.rectangle(
+        obstacleObject.x + obstacleObject.width / 2,
+        obstacleObject.y + 16,
+        obstacleObject.width,
+        obstacleObject.height
+      )
+      this.obstaclesGroup.add(obstacle)
+    })
 
-     // In Tiled, the object layer I created is called 'surfaceCollision' and Im referencing it here, it works correctly as the player can jump on the layer, but collision from the sides and bottom still doesn't work
-     let obstacleObjects = this.map.getObjectLayer('surfaceCollision').objects
-     obstacleObjects.forEach((obstacleObject) => {
-       let obstacle = this.add.rectangle(
-         obstacleObject.x + obstacleObject.width / 2, 
-         obstacleObject.y + 16,
-         obstacleObject.width,
-         obstacleObject.height
-       )
-       this.obstaclesGroup.add(obstacle)
-     })
-
-     // Allow player to collide with object layer squares
-     this.physics.add.collider(
-       this.player.sprite,
-       this.obstaclesGroup,
-       function () {
-         console.log('Player collided with obstacle!')
-       }
-     )
+    // Allow player to collide with object layer squares
+    this.physics.add.collider(
+      this.player.sprite,
+      this.obstaclesGroup,
+      function () {
+        console.log('Player collided with obstacle!')
+      }
+    )
 
     // Allow player to collide with tileset surface layer
     this.physics.add.collider(this.player.sprite, this.layer)
@@ -165,32 +168,63 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.map.heightInPixels
     )
 
+    // // Multi-directional firing
+    // this.leftMouseClick = { isDown: false, justPressed: false }
+
+    // // Set the listener for the left-click
+    // this.input.on('pointerdown', function (pointer) {
+    //   if (pointer.button === 0) {
+    //     this.leftMouseClick.isDown = true
+    //     this.leftMouseClick.justPressed = true
+    //   }
+    // })
+
+    // // Reset the 'justPressed' state when the click is released
+    // this.input.on('pointerup', function (pointer) {
+    //   if (pointer.button === 0) {
+    //     this.leftMouseClick.isDown = false
+    //     this.leftMouseClick.justPressed = false
+    //   }
+    // })
+
+    // this.input.on('pointerdown', function(pointer) {
+    //   if(pointer.leftButtonDown()) {
+    //     console.log('left mouse button clicked');
+
+    //   }
+    // })
+
+    // initialize mouse control
+    initializePlayerControls(this)
+
+    loadWeaponSounds(this)
+
     // Weapon creation and setup
     this.weapon = createWeaponInside(this, 200, 470, 32, 32)
     this.shootControl = { canShoot: true } // Initialize shooting control
     this.shootCooldown = 500 // Time in ms between allowed shots
 
-    this.m16 = this.physics.add.sprite(900, 300, 'M16')
-    this.m16.setScale(0.09)
-    this.m16.setGravityY(0)
-    this.physics.add.collider(this.m16, this.layer)
+    // this.m16 = this.physics.add.sprite(900, 300, 'M16')
+    // this.m16.setScale(0.09)
+    // this.m16.setGravityY(0)
+    // this.physics.add.collider(this.m16, this.layer)
 
     // Setup input controls
-    this.cursors = this.input.keyboard.createCursorKeys()
+    // this.cursors = this.input.keyboard.createCursorKeys()
 
-    // Add "E" key, add to its own function later
-    this.cursors.pickup = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.E
-    )
+    // // Add "E" key, add to its own function later
+    // this.cursors.pickup = this.input.keyboard.addKey(
+    //   Phaser.Input.Keyboard.KeyCodes.E
+    // )
 
-    // Set up collider for weapon pickup
-    this.physics.add.collider(
-      this.player.sprite,
-      this.m16,
-      this.pickUpWeapon,
-      null,
-      this
-    )
+    // // Set up collider for weapon pickup
+    // this.physics.add.collider(
+    //   this.player.sprite,
+    //   this.m16,
+    //   this.pickUpWeapon,
+    //   null,
+    //   this
+    // )
 
     // placeholder
     this.healthBar = createStaticHealthBar(this)
@@ -226,24 +260,23 @@ export default class SidescrollerScene extends Phaser.Scene {
     }
 
     // Making sprite invisible so animation can play
-    this.player.sprite.alpha = 0
+    // this.player.sprite.alpha = 0
 
-    // Creates animations for given scene
-    createPlayerAnimations(this, this.player)
+    // // Creates animations for given scene
+    // createPlayerAnimations(this, this.player)
 
-    // Creates enemy animations for given scene
-    createEnemyAnimations(this, this.player)
+    // // Creates enemy animations for given scene
+    // createEnemyAnimations(this, this.player)
   } // end create function
 
   update() {
     // if the player falls off the map, end the game
+    // reset variables before restarting game to avoid undefined properties error
     if (this.player.sprite.y > this.map.heightInPixels) {
-
-      // reset variables before restarting game to avoid undefined properties error
-      this.bullets = [] 
-      this.enemies = [] 
-      this.waveCount = 0 
-      this.maxWaves = 5 
+      this.bullets = []
+      this.enemies = []
+      this.waveCount = 0
+      this.maxWaves = 5
       this.scene.pause()
       this.scene.stop()
       this.scene.launch('GameOverScene')
@@ -253,19 +286,72 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.healthBar.x = this.player.sprite.x - 33 // Adjust the X-coordinate as needed
     this.healthBar.y = this.player.sprite.y - 70 // Adjust the Y-coordinate as needed
 
+    // updatePlayerAnimations(this)
 
-    updatePlayerAnimations(this);
+    // Set sprite positions
+    /*
 
-    updateBars(this);
-    
 
+    this.idle.x = this.player.sprite.x
+    this.idle.y = this.player.sprite.y
+
+    this.jump.x = this.player.sprite.x
+    this.jump.y = this.player.sprite.y
+
+    // Play the appropriate animation
+    if (isJumping) {
+      this.jump.anims.play('player_jump', true)
+      this.walk.alpha = 0
+      this.idle.alpha = 0
+      this.jump.alpha = 1
+
+      if (isWalkingForward) {
+        this.jump.setFlipX(false) // Reset sprite orientation (walk forward)
+      } else if (isWalkingBackward) {
+        this.jump.setFlipX(true) // Reset sprite orientation (walk forward)
+      }
+    } else if (isWalkingForward && isWalkingBackward) {
+      this.idle.anims.play('player_idle', true)
+      this.walk.anims.stop()
+      this.walk.alpha = 0
+      this.idle.alpha = 1
+      this.jump.alpha = 0
+    } else if (isWalkingForward) {
+      this.walk.anims.play('player_walk', true)
+
+      this.walk.setFlipX(false) // Reset sprite orientation (walk forward)
+      this.idle.setFlipX(false) // Reset sprite orientation (walk forward)
+      this.jump.setFlipX(false) // Reset sprite orientation (walk forward)
+
+      this.walk.alpha = 1
+      this.idle.alpha = 0
+      this.jump.alpha = 0
+    } else if (isWalkingBackward) {
+      this.walk.anims.play('player_walk', true)
+
+      this.walk.setFlipX(true) // Flip sprite horizontally (walk backward)
+      this.idle.setFlipX(true) // Flip sprite horizontally (walk backward)
+      this.jump.setFlipX(true) // Flip sprite horizontally (walk backward)
+
+      this.walk.alpha = 1
+      this.idle.alpha = 0
+      this.jump.alpha = 0
+    } else {
+      // If neither key is pressed, play the idle animation
+      this.idle.anims.play('player_idle', true)
+      this.walk.anims.stop()
+      this.walk.alpha = 0
+      this.idle.alpha = 1
+      this.jump.alpha = 0
+    }*/
 
     // Handling Player and Enemy movements and interactions every frame
     handlePlayerMovementInside(
       this,
       this.player,
       this.shootControl,
-      this.shootCooldown
+      this.shootCooldown,
+      this.leftMouseButtonDown
     )
     this.enemies.forEach((enemy) =>
       handleEnemyMovementInside(this, this.bullets, enemy)
@@ -312,23 +398,23 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     // M16 weapon pickup logic
 
-    let distanceToWeapon = Phaser.Math.Distance.Between(
-      this.player.sprite.x,
-      this.player.sprite.y,
-      this.m16.x,
-      this.m16.y
-    )
+    // let distanceToWeapon = Phaser.Math.Distance.Between(
+    //   this.player.sprite.x,
+    //   this.player.sprite.y,
+    //   this.m16.x,
+    //   this.m16.y
+    // )
 
-    if (distanceToWeapon < 50) {
-      this.pickupText.setVisible(true)
+    // if (distanceToWeapon < 50) {
+    //   this.pickupText.setVisible(true)
 
-      // pick up weapon
-      if (this.cursors.pickup.isDown) {
-        this.equipWeapon()
-      }
-    } else {
-      this.pickupText.setVisible(false)
-    }
+    //   // pick up weapon
+    //   if (this.cursors.pickup.isDown) {
+    //     this.equipWeapon()
+    //   }
+    // } else {
+    //   this.pickupText.setVisible(false)
+    // }
 
     // Check all enemies' status and show congratulation screen if conditions met
     if (this.checkAllEnemiesDeadTimer && this.areAllEnemiesDead()) {
@@ -362,13 +448,13 @@ export default class SidescrollerScene extends Phaser.Scene {
 
   //spawn Aliens function, created to create individual aliens instead of waves
   spawnAliens() {
-    this.spawnPoints.forEach(spawn => {
-        const enemy = createEnemyInside(this, spawn.x, spawn.y);
-        this.enemies.push(enemy);
-        this.physics.add.collider(enemy.sprite, this.layer)
-        this.layer.setCollisionBetween(130, 190)
-    });
-}
+    this.spawnPoints.forEach((spawn) => {
+      const enemy = createEnemyInside(this, spawn.x, spawn.y)
+      this.enemies.push(enemy)
+      this.physics.add.collider(enemy.sprite, this.layer)
+      this.layer.setCollisionBetween(130, 190)
+    })
+  }
 
   // Spawn enemies in waves until the maximum number of waves is reached
   // Also checks for all enemies dead after all waves are spawned

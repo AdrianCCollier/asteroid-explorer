@@ -2,6 +2,13 @@ import {createAsteroid, applyRotation} from './asteroid.js';
 import { createBullet, createBulletInside, handleBulletMovements, loadBulletImage } from './bullet.js';
 
 import Phaser from 'phaser';
+import fireSound from './assets/sounds/fireSound.mp3';
+import jetPackSound from './assets/sounds/jetPackSound.mp3'
+
+export function loadWeaponSounds(scene) {
+    scene.load.audio('weaponFireSound', fireSound);
+    scene.load.audio('jetPackSound', jetPackSound)
+}
 
 export function createPlayer(scene, asteroid, w, h) {
     let player = {
@@ -28,18 +35,18 @@ export function createPlayer(scene, asteroid, w, h) {
     player.rotation = applyRotation(scene, player);
 
     // Set's initial player distance to the surface of the asteroid
-    const verticalOrigin = (1 + (asteroid.radius / (player.width / 2))) / 2 + 0.5;
-    player.sprite.setOrigin(0.5, verticalOrigin);
+    // const verticalOrigin = (1 + (asteroid.radius / (player.width / 2))) / 2 + 0.5;
+    // player.sprite.setOrigin(0.5, verticalOrigin);
 
     // gets ready to add a gun sprite if the player pics one up
-    player.gunSprite = scene.add.sprite(player.x, player.y, 'weapon'); 
-    player.gunSprite.setVisible(false); 
+    // player.gunSprite = scene.add.sprite(player.x, player.y, 'weapon'); 
+    // player.gunSprite.setVisible(false); 
     
-    player.vertical = verticalOrigin;
+    // player.vertical = verticalOrigin;
 
     // Sets the player's collider
-    player.collider = new Phaser.Geom.Circle(player.x, player.y, player.width / 2);
-    return player;
+    // player.collider = new Phaser.Geom.Circle(player.x, player.y, player.width / 2);
+    // return player;
 }
 
 // Vars for player movement
@@ -57,7 +64,7 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
     // defines key inputs
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);  
     const bKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
  const spaceJustPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey);
@@ -70,15 +77,31 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
         setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
     }
 
-    // Move left
-    if (aKey.isDown) {
-        player.angle -= 1;
+    if (
+      scene.leftMouseClick.isDown &&
+      shootControl.canShoot &&
+      player.hasWeapon
+    ) {
+      let bullet = createBullet(scene, player, 20, 20)
+      scene.bullets.push(bullet)
+      shootControl.canShoot = false
+      setTimeout(() => {
+        shootControl.canShoot = true
+      }, shootCooldown)
+      scene.leftMouseClick.isDown = false // reset the click state after shooting
     }
 
-    // Move right
-    if (dKey.isDown){
-        player.angle += 1;
-    }
+
+
+    // // Move left
+    // if (aKey.isDown) {
+    //     player.angle -= 1;
+    // }
+
+    // // Move right
+    // if (dKey.isDown){
+    //     player.angle += 1;
+    // }
 
     // Jump
     if (spaceKey.isDown && !jumping && !falling && spaceUp){
@@ -94,35 +117,35 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
     }
 
     // Handles jumping
-    if (jumping){
-        frameCounter += 1;
-        if (frameCounter >= jumpTimer){
-            jumping = false;
-            falling = true;
-            frameCounter = 0;
-        }
-        else{
-            player.vertical += player.gravity;
-        }
-    }
+    // if (jumping){
+    //     frameCounter += 1;
+    //     if (frameCounter >= jumpTimer){
+    //         jumping = false;
+    //         falling = true;
+    //         frameCounter = 0;
+    //     }
+    //     else{
+    //         player.vertical += player.gravity;
+    //     }
+    // }
 
     
     // Updates player rotation angle
-    player.rotation.updateTo('angle', player.angle);
+    // player.rotation.updateTo('angle', player.angle);
 
     // updates player's vertical positon
-    player.sprite.setOrigin(0.5, player.vertical);
+    // player.sprite.setOrigin(0.5, player.vertical);
 
     // Calculates the real distance to the center of the asteroid, in regards to the player
-    player.realDistance = (player.vertical - 0.5) / 1 * 64;
+    // player.realDistance = (player.vertical - 0.5) / 1 * 64;
 
     // Calculates the x, and y positions of the player sprite
-    player.x = asteroid.x + (player.realDistance * Math.cos((player.angle - 90) * (Math.PI / 180)));
-    player.y = asteroid.y + (player.realDistance * Math.sin((player.angle - 90) * (Math.PI / 180)));
+    // player.x = asteroid.x + (player.realDistance * Math.cos((player.angle - 90) * (Math.PI / 180)));
+    // player.y = asteroid.y + (player.realDistance * Math.sin((player.angle - 90) * (Math.PI / 180)));
 
     // Updates the player collider position
-    player.collider.x = player.x;
-    player.collider.y = player.y;
+    // player.collider.x = player.x;
+    // player.collider.y = player.y;
 }
 
 export function loadPlayerImage(scene){
@@ -134,7 +157,7 @@ export function createPlayerInside(scene, x, y) {
     var playerSprite = scene.physics.add.sprite(x, y, 'player');
 
     // Enable physics on the player sprite
-    scene.physics.world.enable(playerSprite);
+    // scene.physics.world.enable(playerSprite);
 
     let player = {
         x: x,
@@ -189,12 +212,33 @@ export function createPlayerInside(scene, x, y) {
     return player;
 }
 
-export function handlePlayerMovementInside(scene, player, shootControl, shootCooldown) {
+// this function is to detect the state of our mouse controls so that they can be integrated into the existing weapon fire logic. This function is continously getting checked in the scene main function and will allow the player to now shoot with a left mouse click if conditions are met.
+export function initializePlayerControls(scene) {
+
+
+  scene.leftMouseButtonDown = false;
+
+  scene.input.on('pointerdown', function (pointer) {
+    if (pointer.leftButtonDown()) {
+      scene.leftMouseButtonDown = true;
+      console.log('Debugging: left mouse button pressed down')
+    }
+  })
+
+  scene.input.on('pointerup', function (pointer) {
+    scene.leftMouseButtonDown = false;
+    console.log('Debugging: left mouse button released')
+  })
+}
+
+export function handlePlayerMovementInside(scene, player, shootControl, shootCooldown, leftMouseButtonDown) {
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     const bKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+
     var jumpTimer = 55;
     var frameCounter = 0;
     var jumping = false;
@@ -204,6 +248,24 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     const gravity = 1.5; // gravity strength, increase to make the player fall faster
     const jumpStrength = 5; // jump strength, increase to jump higher
     player.velocityY = 0; // vertical velocity of the player
+
+
+    // console.log("Debugging: left mouse button state: ", leftMouseButtonDown)
+    // console.log("Debugging: can shoot state: ", shootControl.canShoot);
+    
+    // left mouse click equivalent of the below existing fire with 'K' logic
+    if (leftMouseButtonDown && shootControl.canShoot) {
+    console.log('Debugging: pew pew pew');
+    scene.sound.play('weaponFireSound')
+      let bullet = createBulletInside(scene, player, 20, 20)
+      scene.bullets.push(bullet) 
+      shootControl.canShoot = false
+      setTimeout(() => {
+        shootControl.canShoot = true
+      }, shootCooldown)
+      scene.player.shoot = true
+    }
+  
 
     if (kKey.isDown && shootControl.canShoot){
         let bullet = createBulletInside(scene, player, 20, 20);
@@ -257,7 +319,9 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
 
         doubleJump = true;
         player.doubleJumping = true;
+        // scene.sound.play('jetPackSound');
     }
+
 
     player.velocityY += gravity; // gravity pulls down
     player.sprite.y += player.velocityY; // apply the current velocity to Y position (vertical movement)

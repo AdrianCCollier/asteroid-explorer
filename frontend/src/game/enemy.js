@@ -26,6 +26,7 @@ export function createEnemy(scene, asteroid, w, h) {
     // Apply the rotation to the enemy
     enemy.rotation = applyRotation(scene, enemy); // Calls applyRotation function to apply rotation to the enemy
     
+    enemy.sprite.setSize(50, 50);
     // Set the vertical origin of the enemy based on the asteroid's radius and enemy's width
     const verticalOrigin = (1 + (asteroid.radius / (enemy.width / 2))) / 2 + 0.5;
     
@@ -60,6 +61,9 @@ export function createEnemyInside(scene, x, y) {
     let enemySprite = scene.add.sprite(x, y, 'enemy');
     scene.physics.world.enable(enemySprite);
     enemySprite.body.setCollideWorldBounds(true); // Make enemy collide with world bounds
+    enemySprite.body.setSize(25, 60)
+
+
     
     // Initialize an enemy object and return it
     let enemy = {

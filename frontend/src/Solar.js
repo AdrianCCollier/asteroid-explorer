@@ -18,12 +18,12 @@ import './Solar.css'
 import './index.css'
 
 
-function ExplorerGame(){
-  return(
+function ExplorerGame(props) {
+  return (
     <div>
-      <Game />
+      <Game scene={props.scene} />
     </div>
-  );
+  )
 }
 
 function SolarSystem(){
@@ -94,15 +94,33 @@ function Solar() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/game" element = {<ExplorerGame />} />
-          <Route path="/landing" element = {<Landing />} />
-          <Route path="/solarSystem" element = {<SolarSystem />} />
-          <Route path="/signin" element = {<Signin />} />
+          <Route path="/game" element={<ExplorerGame />} />
+
+          <Route
+            path="/game/scene0"
+            element={<ExplorerGame scene="scene0" />}
+          />
+          <Route
+            path="/game/scene1"
+            element={<ExplorerGame scene="scene1" />}
+          />
+          <Route
+            path="/game/scene2"
+            element={<ExplorerGame scene="scene2" />}
+          />
+          <Route
+            path="/game/defaultScene"
+            element={<ExplorerGame scene="defaultScene" />}
+          />
+
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/solarSystem" element={<SolarSystem />} />
+          <Route path="/signin" element={<Signin />} />
           <Route index element={<Landing />} />
         </Routes>
       </div>
     </Router>
-  );
+  )
 }
 
 export default Solar
