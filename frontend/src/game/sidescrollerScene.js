@@ -26,13 +26,13 @@ import {
 } from './collisions.js'
 import GameOverScene from './gameOverScene.js'
 
-// import {
-//   loadPlayerAnimations,
-//   createPlayerAnimations,
-//   updatePlayerAnimations,
-//   loadEnemyAnimations,
-//   createEnemyAnimations,
-// } from './animation.js'
+import {
+  loadPlayerAnimations,
+  createPlayerAnimations,
+  updatePlayerAnimations,
+  loadEnemyAnimations,
+  createEnemyAnimations,
+} from './animation.js'
 
 import Phaser from 'phaser'
 import tileSet from './assets/nightsky.png'
@@ -77,9 +77,9 @@ export default class SidescrollerScene extends Phaser.Scene {
   preload() {
     // Pre-loading necessary assets for the scene
     loadPlayerImage(this)
-    // loadPlayerAnimations(this)
+    loadPlayerAnimations(this)
     loadEnemyImage(this)
-    // loadEnemyAnimations(this)
+    loadEnemyAnimations(this)
     loadWeaponImage(this)
     loadBulletImage(this)
     loadWeaponSounds(this)
@@ -260,12 +260,13 @@ export default class SidescrollerScene extends Phaser.Scene {
     }
 
     // Making sprite invisible so animation can play
-    // this.player.sprite.alpha = 0
+    this.player.sprite.alpha = 0
 
     // // Creates animations for given scene
-    // createPlayerAnimations(this, this.player)
+    createPlayerAnimations(this, this.player)
 
     // // Creates enemy animations for given scene
+    // throws error
     // createEnemyAnimations(this, this.player)
   } // end create function
 
@@ -286,6 +287,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.healthBar.x = this.player.sprite.x - 33 // Adjust the X-coordinate as needed
     this.healthBar.y = this.player.sprite.y - 70 // Adjust the Y-coordinate as needed
 
+    // throws error
     // updatePlayerAnimations(this)
 
     // Set sprite positions
