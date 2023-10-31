@@ -60,8 +60,8 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
     const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     const bKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
- const spaceJustPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey);
-  const bKeyJustPressed = Phaser.Input.Keyboard.JustDown(this.bKey);
+    const spaceJustPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey);
+    const bKeyJustPressed = Phaser.Input.Keyboard.JustDown(this.bKey);
     
     if (kKey.isDown && shootControl.canShoot && player.hasWeapon){
         let bullet = createBullet(scene, player, 20, 20);
@@ -189,21 +189,24 @@ export function createPlayerInside(scene, x, y) {
     return player;
 }
 
+var stopped = false;
+var jumping = false;
+var doubleJumping = false;
+var timer = 0;
+var doubleJumpTimer = 10;
+var spaceUp = true;
+var falling = false;
+
+
+
 export function handlePlayerMovementInside(scene, player, shootControl, shootCooldown) {
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
-    const bKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.B);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    var jumpTimer = 55;
-    var frameCounter = 0;
-    var jumping = false;
-    var doubleJump = false; // flag to check if double jump is available
-    var falling = false;
-    const speed = 3;
-    const gravity = 1.5; // gravity strength, increase to make the player fall faster
-    const jumpStrength = 5; // jump strength, increase to jump higher
-    player.velocityY = 0; // vertical velocity of the player
+    const speed = 200;
+    const jumpStrength = 300;
+
 
     if (kKey.isDown && shootControl.canShoot){
         let bullet = createBulletInside(scene, player, 20, 20);
@@ -219,7 +222,7 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
 
     // Move left
     if (aKey.isDown) {
-        player.sprite.x -= speed;
+        player.sprite.setVelocityX(-speed);
         
         // Only updates the direction if the dKey hasn't been pressed
         if (!dKey.isDown)
@@ -228,11 +231,15 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
 
     // Move right
     if (dKey.isDown){
-        player.sprite.x += speed;
+        player.sprite.setVelocityX(speed);
 
         // Only updates the direction if the aKey hasn't been pressed
         if (!aKey.isDown)
             player.facing = 'right'; // Update facing direction
+    }
+
+    if (!aKey.isDown && !dKey.isDown){
+        player.sprite.setVelocityX(0);
     }
 
     // Checking to see if player is walking in general
@@ -244,38 +251,64 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     }
 
 
-    // Regular jump
-    if (spaceKey.isDown && !jumping) {
-        player.velocityY = -jumpStrength; // going up
+
+
+    // Checks if player's velocity = 0 (stopped falling or not)
+    if (player.sprite.body.velocity.y == 0){
+        stopped = true;
+        player.jumping = false;
+    }
+    else{
+        stopped = false;
+        player.jumping = true;
+    }
+        
+
+    // Main Jump check only runs if the player's velocity is 0 and they aren't already jumping
+    if (spaceKey.isDown && stopped && !jumping){
+        player.sprite.setVelocityY(-jumpStrength);
         jumping = true;
+        falling = false;
+        timer = 0;
+        spaceUp = false;
+
         player.jumping = true;
     }
 
-    // Double jump
-    if (bKey.isDown && spaceKey.isDown) {
-        player.velocityY = -jumpStrength*1.8; // going up
+    // increments timer for the double jump
+    timer += 1;
 
-        doubleJump = true;
-        player.doubleJumping = true;
+    // Checks if space has been let go before a double jump
+    if (!spaceKey.isDown){
+        spaceUp = true;
     }
 
-    player.velocityY += gravity; // gravity pulls down
-    player.sprite.y += player.velocityY; // apply the current velocity to Y position (vertical movement)
+    // Checks if already jumping
+    if (jumping){
+        if (timer > doubleJumpTimer){ // Allows double jump if timer is ready and space has been let go from inital jump
+            if (spaceUp && spaceKey.isDown && !doubleJumping){// Double Jump
+                player.sprite.setVelocityY(-jumpStrength);
+                doubleJumping = true;
+                falling = false;
+            }
+        }
 
-    // Check for landing - replace this with your actual collision detection logic
-    if (!jumping) {
-        jumping = false;
-        player.jumping = false;
+        // Checks to see if player is falling from their jump
+        if (player.sprite.body.velocity.y > 0){ // falling
+            falling = true;
+        }
 
-        doubleJump = false;
-        player.doubleJumping = false;
+        // Checks for when player hits the ground after falling from a jump
+        if (falling){
+            if (player.sprite.body.velocity.y == 0){ // hit ground
+                jumping = false;
+                doubleJumping = false;
+                falling = false;
 
-        player.velocityY = 0;
+                player.jumping = false;
+            }
+        }
     }
-
-    // Updates the player collider position
-    player.collider.x = player.sprite.x;
-    player.collider.y = player.sprite.y;
 }
 
 export function animationCreator(scene, w, a, s, d, space){
