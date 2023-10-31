@@ -149,7 +149,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     )
 
     // allow player to fall off the map
-    // this.player.sprite.setCollideWorldBounds(false)
+    this.player.sprite.setCollideWorldBounds(false)
 
     // this.physics.world.createDebugGraphic()
 
@@ -236,6 +236,7 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.scene.stop()
       this.scene.launch('GameOverScene')
     }
+
 
     // Update the health bar position to follow the player
     this.healthBar.x = this.player.sprite.x - 33 // Adjust the X-coordinate as needed

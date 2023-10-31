@@ -20,9 +20,10 @@ class Game extends Component {
       height: 500,
       physics: {
         default: 'arcade',
-        arcade: {
-          gravity: { y: 300 },
-        },
+        arcade:{
+          gravity: {y: 400},
+          debug: true
+        }
       },
       scene: [Level1Scene, SidescrollerScene, ConfirmationScene, GameOverScene],
     }
