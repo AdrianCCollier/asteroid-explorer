@@ -440,21 +440,21 @@ export function createEnemyAnimations(scene){
 
 export function createEnemyAnimator(scene, enemy){
   enemy.animator = scene.playerAnimation = scene.add.sprite(
-    enemy.sprite.x,
-    enemy.sprite.y,
+    enemy.x,
+    enemy.y,
     'tall_walk_agro'
   )
 }
 
 export function updateEnemyAnimations(scene, enemy){
   // Making sprite invisible so animation can play
-  enemy.sprite.alpha = 0;
+  enemy.alpha = 0;
   
   enemy.animator.setFlipX(true);
   enemy.animator.anims.play("tall_walk_alien_agro", true); // plays animation
 
-  enemy.animator.x = enemy.sprite.x; // updates animation position
-  enemy.animator.y = enemy.sprite.y; // updates animation position
+  enemy.animator.x = enemy.x; // updates animation position
+  enemy.animator.y = enemy.y; // updates animation position
 }
 
 
