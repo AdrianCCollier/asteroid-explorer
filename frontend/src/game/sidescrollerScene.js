@@ -5,10 +5,9 @@ import {
   animationCreator
 } from './player.js'
 import {
+  createEnemiesGroup,
   createEnemyInside,
-  loadEnemyImage,
   handleEnemyMovementInside,
-  handleEnemyMovement,
 } from './enemy.js'
 import { createWeaponInside, loadWeaponImage } from './weapons.js'
 import {
@@ -34,8 +33,10 @@ import {
 } from './animation.js'
 
 import Phaser from 'phaser'
-import tileSet from './assets/nightsky.png'
-import mapJSON from './assets/map.json'
+// import tileSet from './assets/nightsky.png'
+// import mapJSON from './assets/map.json'
+import tileSet from './assets/spritesheet.png'
+import mapJSON from './assets/map1.json'
 
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
@@ -50,20 +51,15 @@ export default class SidescrollerScene extends Phaser.Scene {
     super({ key: 'SidescrollerScene' }) // Assigning key to this Scene
     this.player = null // Initialize player
     this.bullets = [] // Initialize bullets array
-    this.enemies = [] // Initialize enemies array
-    this.waveCount = 0 // Initialize wave counter
-    this.maxWaves = 5 // Maximum number of enemy waves
     this.map = null;
 
     this.spawnPoints = [
-      { x: 1100, y: 300 },
-      { x: 2100, y: 0 },
-      { x: 5000, y: 400 },
-      { x: 6000, y: 400 },
-      { x: 7000, y: 400 },
-      { x: 8000, y: 400 },
-      { x: 9000, y: 400 },
-      { x: 10000, y: 400 },
+      { x: 425, y: 300 },
+      { x: 500, y: 400 },
+      { x: 600, y: 400 },
+      { x: 800, y: 400 },
+      { x: 900, y: 400 },
+      { x: 1000, y: 400 },
     ]
   }
 
@@ -71,7 +67,6 @@ export default class SidescrollerScene extends Phaser.Scene {
     // Pre-loading necessary assets for the scene
     loadPlayerImage(this)
     loadPlayerAnimations(this)
-    loadEnemyImage(this)
     loadEnemyAnimations(this)
     loadWeaponImage(this)
     loadBulletImage(this)
@@ -79,7 +74,6 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.load.tilemapTiledJSON('map', mapJSON)
     this.load.image('galaxy', galaxyBackground)
     this.load.image('M16', M16)
-
     loadHealthBar(this);
     loadShieldBar(this);
   }
@@ -89,11 +83,14 @@ export default class SidescrollerScene extends Phaser.Scene {
   create() {
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
-
+    this.enemies = createEnemiesGroup(this);
+    this.spawnPoints.forEach(spawn => {
+      createEnemyInside(this, this.enemies, spawn.x, spawn.y);
+    });
     this.checkCollision = false // Initialize collision check
     // Setting a delayed timer to enable collision check
     this.time.delayedCall(
-      1000,
+      500,
       () => {
         this.checkCollision = true
       },
@@ -102,33 +99,38 @@ export default class SidescrollerScene extends Phaser.Scene {
     )
 
     // Create map
+
+    // this.map = this.make.tilemap({ key: 'map' })
+    // const tileset = this.map.addTilesetImage('tiles1', 'tiles')
+    // this.layer = this.map.createLayer('surface', tileset, 0, 0)
     this.map = this.make.tilemap({ key: 'map' })
-    const tileset = this.map.addTilesetImage('tiles1', 'tiles')
-    this.layer = this.map.createLayer('surface', tileset, 0, 0)
-
+    const tileset = this.map.addTilesetImage('spritesheet', 'tiles')
+    this.layer = this.map.createLayer('Tile Layer 1', tileset, 0, 0)
     // Create static physics group for collision layer object
-    const collisionObjects = this.physics.add.staticGroup()
-
-    this.map.getObjectLayer('surfaceCollision').objects.forEach((obj) => {
-      collisionObjects
-        .create(obj.x, obj.y - obj.height, null)
-        .setVisible(false)
-        .setSize(obj.width, obj.height)
-        .setOffset(15, 49)
-    })
-
-    // Player creation and setup
-    this.player = createPlayerInside(this, 100, 250)
-
-    // Customize dimensions of player hitbox, seen with debug mode enabled
-    this.player.sprite.body.setSize(25, 63)
-
-    this.physics.add.collider(this.player, collisionObjects)
-
-    // Allow player to collide with Tiled layer
-    this.physics.add.collider(this.player.sprite, this.layer)
-    this.layer.setCollisionBetween(130, 190)
-
+    // const collisionObjects = this.physics.add.staticGroup()
+    // this.map.getObjectLayer('surfaceCollision').objects.forEach((obj) => {
+    //     collisionObjects
+    //       .create(obj.x, obj.y - obj.height, null)
+    //       .setVisible(false)
+    //       .setSize(obj.width, obj.height)
+    //       .setOffset(15, 49)
+    //   })
+      // Player creation and setup
+      this.player = createPlayerInside(this, 100, 250)
+      
+      // Customize dimensions of player hitbox, seen with debug mode enabled
+      this.player.sprite.body.setSize(25, 63)
+      
+      //this.physics.add.collider(this.player, collisionObjects)
+      
+      // Allow player to collide with Tiled layer
+      //this.physics.add.collider(this.player.sprite, this.layer)
+      //this.layer.setCollisionBetween(130, 190)
+      this.layer.setCollisionBetween(5, 35)
+      this.layer.setCollision(1);
+      this.layer.setCollision(3);
+      this.physics.add.collider(this.player.sprite, this.layer, this.handleTileCollision, null, this);
+      this.physics.add.collider(this.enemies, this.layer);
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
       0,
@@ -155,6 +157,7 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     // Weapon creation and setup
     this.weapon = createWeaponInside(this, 200, 470, 32, 32)
+    // fix shooting straight away
     this.shootControl = { canShoot: true } // Initialize shooting control
     this.shootCooldown = 500 // Time in ms between allowed shots
 
@@ -180,9 +183,6 @@ export default class SidescrollerScene extends Phaser.Scene {
       this
     )
 
-    // placeholder
-    this.healthBar = createStaticHealthBar(this)
-
     this.time.addEvent({
       delay: 2000,
       callback: this.spawnAliens,
@@ -196,22 +196,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     })
     this.pickupText.setVisible(false)
 
-    function createStaticHealthBar(scene) {
-      // Create a new graphics object
-      let healthBar = scene.add.graphics()
-
-      // Set a fill style with a green color
-      healthBar.fillStyle(0x00ff00, 1)
-
-      // Draw a filled rectangle in the top-left corner of the screen
-      // The rectangle will be 50 pixels wide and 5 pixels high, representing full health
-      healthBar.fillRect(10, 10, 50, 5)
-
-      healthBar.lineStyle(2, 0xffffff, 1) // white border with a width of 2
-      healthBar.strokeRect(10, 10, 50, 5)
-
-      return healthBar // return the healthBar so you can reference it elsewhere
-    }
+    
 
     // Making sprite invisible so animation can play
     this.player.sprite.alpha = 0
@@ -229,20 +214,13 @@ export default class SidescrollerScene extends Phaser.Scene {
 
       // reset variables before restarting game to avoid undefined properties error
       this.bullets = [] 
-      this.enemies = [] 
-      this.waveCount = 0 
-      this.maxWaves = 5 
       this.scene.pause()
       this.scene.stop()
       this.scene.launch('GameOverScene')
     }
-
-
-    // Update the health bar position to follow the player
-    this.healthBar.x = this.player.sprite.x - 33 // Adjust the X-coordinate as needed
-    this.healthBar.y = this.player.sprite.y - 70 // Adjust the Y-coordinate as needed
-
-
+    this.enemies.getChildren().forEach(enemy => {
+      handleEnemyMovementInside(this, this.bullets, enemy);
+    });
     updatePlayerAnimations(this);
 
     updateBars(this);
@@ -256,9 +234,7 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.shootControl,
       this.shootCooldown
     )
-    this.enemies.forEach((enemy) =>
-      handleEnemyMovementInside(this, this.bullets, enemy)
-    )
+    
 
     handleBulletMovements(this.bullets)
 
@@ -318,84 +294,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     } else {
       this.pickupText.setVisible(false)
     }
-
-    // Check all enemies' status and show congratulation screen if conditions met
-    if (this.checkAllEnemiesDeadTimer && this.areAllEnemiesDead()) {
-      this.showCongratulationScreen()
-    }
-
-    // Checks for enemy collision with player
-    // Iterate over each enemy
-    this.enemies.forEach((enemy) => {
-      if (enemy && enemy.sprite) {
-        // Check if the bullet intersects with the enemy and destroy the enemy if true
-        if (
-          Phaser.Geom.Intersects.RectangleToRectangle(
-            enemy.sprite.getBounds(),
-            this.player.sprite.getBounds()
-          )
-        ) {
-          if (!enemy.destroyed) {
-            // empties enemies array
-            this.enemies = []
-            this.waveCount = 0 // Initialize wave counter
-            this.maxWaves = 5 // Maximum number of enemy waves
-            this.scene.pause() // Pause the current scene
-            this.scene.stop() // Stops current scene
-            this.scene.launch('GameOverScene') // Launch the ConfirmationScene
-          }
-        }
-      }
-    })
   }
 
-  //spawn Aliens function, created to create individual aliens instead of waves
-  spawnAliens() {
-    this.spawnPoints.forEach(spawn => {
-        const enemy = createEnemyInside(this, spawn.x, spawn.y);
-        this.enemies.push(enemy);
-        this.physics.add.collider(enemy.sprite, this.layer)
-        this.layer.setCollisionBetween(130, 190)
-    });
-}
-
-  // Spawn enemies in waves until the maximum number of waves is reached
-  // Also checks for all enemies dead after all waves are spawned
-  spawnWave() {
-    if (this.waveCount < this.maxWaves) {
-      for (let i = 0; i < 5; i++) {
-        this.time.addEvent({
-          delay: i * 500,
-          callback: () => {
-            let enemy = createEnemyInside(this, 800, 568 - 100 - 10)
-            this.enemies.push(enemy)
-            addObjectToWorld(this, enemy.sprite)
-            addColliderWithWorld(this, enemy.sprite)
-            addColliderWithGround(this, enemy.sprite, this.ground)
-            this.physics.add.collider(enemy.sprite, this.layer)
-          },
-          callbackScope: this,
-        })
-      }
-      this.waveCount++
-
-      if (this.waveCount === this.maxWaves) {
-        this.time.delayedCall(5000, () => {
-          this.checkAllEnemiesDeadTimer = this.time.addEvent({
-            delay: 2000,
-            callback: this.checkAllEnemiesDead,
-            callbackScope: this,
-            loop: true,
-          })
-        })
-      }
-    }
-  }
-
-  // Return true if all enemies are dead or inactive
-  areAllEnemiesDead() {
-    return this.enemies.every((enemy) => !enemy.sprite.active)
-  }
+  // helpers
 
   // Equip M16 weapon
   equipWeapon() {
@@ -418,14 +319,6 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.player.weapon = 'M16'
   }
 
-  // If all enemies are dead, show congratulation screen and remove the check timer
-  checkAllEnemiesDead() {
-    if (this.areAllEnemiesDead()) {
-      this.showCongratulationScreen()
-      if (this.checkAllEnemiesDeadTimer) this.checkAllEnemiesDeadTimer.remove()
-    }
-  }
-
   // Displays congratulation message and restarts the level when 'R' is pressed
   showCongratulationScreen() {
     if (this.congratsText) return
@@ -445,5 +338,19 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.congratsText.destroy()
       window.location.href = '/' // Change the URL to '/'
     })
+  }
+
+  handleTileCollision(player, tile) {
+    if (tile.index === 3) {
+      // 
+      this.bullets = []; 
+      this.scene.pause();
+      this.scene.stop();
+      this.scene.launch('GameOverScene');
+    }
+    if (tile.index === 1) { // 
+      this.map.putTileAt(-1, tile.x, tile.y);
+      
+    }
   }
 }

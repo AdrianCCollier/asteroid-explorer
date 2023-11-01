@@ -54,36 +54,32 @@ export function loadEnemyImage(scene) {
     // Load the enemy image into the scene
     scene.load.image('enemy', './assets/alien.png');
 }
+///
+export function createEnemiesGroup(scene) {
+    let enemies = scene.physics.add.group();
+    return enemies;
+}
 
-export function createEnemyInside(scene, x, y) {
-    // Create enemy sprite and enable physics on it
-    let enemySprite = scene.add.sprite(x, y, 'enemy');
-    scene.physics.world.enable(enemySprite);
-    enemySprite.body.setCollideWorldBounds(true); // Make enemy collide with world bounds
+export function createEnemyInside(scene, group, x, y) {
+    let enemy = group.create(x, y, 'enemy');
+    enemy.setCollideWorldBounds(true); // Make enemy collide with world bounds
     
-    // Initialize an enemy object and return it
-    let enemy = {
-        x: x,
-        y: y,
-        sprite: enemySprite,
-        speed: 1, // Speed of the enemy, adjustable as per need
-        animator: null
-    };
-
+    // Attach properties to the sprite directly
+    enemy.speed = 50;
+    enemy.animator = null;
     createEnemyAnimator(scene, enemy);
 
     return enemy;
 }
 
 export function handleEnemyMovementInside(scene, bullets, enemy) {
-    // Assuming scene.player is defined and has x and y properties representing the player's position.
     let player = scene.player;
- 
-    updateEnemyAnimations(scene, enemy);
 
+    updateEnemyAnimations(scene, enemy);
+    
     // Calculate the direction vector from the enemy to the player
-    let dx = player.sprite.x - enemy.sprite.x;
-    let dy = player.sprite.y - enemy.sprite.y;
+    let dx = player.sprite.x - enemy.x;
+    let dy = player.sprite.y - enemy.y;
 
     // Calculate the distance between the enemy and the player
     let distance = Math.sqrt(dx * dx + dy * dy);
@@ -91,21 +87,17 @@ export function handleEnemyMovementInside(scene, bullets, enemy) {
     if (distance > 0) {
         let speed = enemy.speed; // Define speed of the enemy
         
-        // Normalize the direction vector and move the enemy towards the player.
-        enemy.sprite.x += (speed * dx) / distance;
-        enemy.sprite.y += (speed * dy) / distance;
-    }
+        // Normalize the direction vector 
+        enemy.setVelocityX(dx / distance * speed);
+        //enemy.setVelocityY(dy / distance * speed);
+        
+
+    }else{
+
+            // Normalize the direction vector 
+            enemy.setVelocityX(0);
+            enemy.setVelocityY(0);
     
-    // Check collision between each bullet and the enemy and destroy the enemy if they intersect
-    bullets.forEach(bullet => {
-        if (bullet && bullet.sprite) {
-            if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
-                enemy.sprite.destroy();
-                enemy.destroyed = true;
-                enemy.animator.alpha = 0; // sets the enemie's animation to invisible.
-                return true;
-            }
-        }
-    });
-    return false;
+        
+    }
 }
