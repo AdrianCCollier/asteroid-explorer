@@ -55,7 +55,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.map = null;
 
     this.spawnPoints = [
-      { x: 425, y: 300 },
+      { x: 400, y: 300 },
       { x: 500, y: 400 },
       { x: 600, y: 400 },
       { x: 800, y: 400 },
@@ -111,7 +111,7 @@ export default class SidescrollerScene extends Phaser.Scene {
       this
     )
 
-    // Create map
+    // Creat e map
     this.map = this.make.tilemap({ key: 'map' })
     const tileset = this.map.addTilesetImage('spritesheet', 'tiles')
     this.layer = this.map.createLayer('Tile Layer 1', tileset, 0, 0)

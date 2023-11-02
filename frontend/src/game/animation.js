@@ -566,12 +566,13 @@ export function createEnemyAnimator(scene, enemy){
 export function updateEnemyAnimations(scene, enemy){
   // Making sprite invisible so animation can play
   enemy.alpha = 0;
+
+  // Determine flip based on enemy's direction
+  enemy.animator.setFlipX(enemy.direction < 0); // Flip when direction is negative (moving left)
   
-  enemy.animator.setFlipX(true);
   enemy.animator.anims.play("tall_walk_alien_agro", true); // plays animation
 
   enemy.animator.x = enemy.x; // updates animation position
   enemy.animator.y = enemy.y; // updates animation position
 }
-
 
