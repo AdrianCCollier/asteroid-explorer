@@ -22,7 +22,6 @@ class Game extends Component {
         default: 'arcade',
         arcade:{
           gravity: {y: 400},
-          debug: true
         }
       },
       scene: [Level1Scene, SidescrollerScene, ConfirmationScene, GameOverScene],

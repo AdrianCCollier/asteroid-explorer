@@ -99,38 +99,28 @@ export default class SidescrollerScene extends Phaser.Scene {
     )
 
     // Create map
-
-    // this.map = this.make.tilemap({ key: 'map' })
-    // const tileset = this.map.addTilesetImage('tiles1', 'tiles')
-    // this.layer = this.map.createLayer('surface', tileset, 0, 0)
     this.map = this.make.tilemap({ key: 'map' })
     const tileset = this.map.addTilesetImage('spritesheet', 'tiles')
     this.layer = this.map.createLayer('Tile Layer 1', tileset, 0, 0)
-    // Create static physics group for collision layer object
-    // const collisionObjects = this.physics.add.staticGroup()
-    // this.map.getObjectLayer('surfaceCollision').objects.forEach((obj) => {
-    //     collisionObjects
-    //       .create(obj.x, obj.y - obj.height, null)
-    //       .setVisible(false)
-    //       .setSize(obj.width, obj.height)
-    //       .setOffset(15, 49)
-    //   })
-      // Player creation and setup
-      this.player = createPlayerInside(this, 100, 250)
-      
-      // Customize dimensions of player hitbox, seen with debug mode enabled
-      this.player.sprite.body.setSize(25, 63)
-      
-      //this.physics.add.collider(this.player, collisionObjects)
-      
-      // Allow player to collide with Tiled layer
-      //this.physics.add.collider(this.player.sprite, this.layer)
-      //this.layer.setCollisionBetween(130, 190)
-      this.layer.setCollisionBetween(5, 35)
-      this.layer.setCollision(1);
-      this.layer.setCollision(3);
-      this.physics.add.collider(this.player.sprite, this.layer, this.handleTileCollision, null, this);
-      this.physics.add.collider(this.enemies, this.layer);
+
+    // Player creation and setup
+    this.player = createPlayerInside(this, 100, 250)
+    
+    // Customize dimensions of player hitbox, seen with debug mode enabled
+    this.player.sprite.body.setSize(25, 63)
+    
+    //this.physics.add.collider(this.player, collisionObjects)
+    
+    // Allow player to collide with Tiled layer
+    //this.physics.add.collider(this.player.sprite, this.layer)
+    //this.layer.setCollisionBetween(130, 190)
+    this.layer.setCollisionBetween(5, 35)
+    this.layer.setCollision(1);
+    this.layer.setCollision(3);
+    this.physics.add.collider(this.player.sprite, this.layer, this.handleTileCollision, null, this);
+    this.physics.add.collider(this.enemies, this.layer);
+
+
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
       0,
@@ -159,7 +149,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.weapon = createWeaponInside(this, 200, 470, 32, 32)
     // fix shooting straight away
     this.shootControl = { canShoot: true } // Initialize shooting control
-    this.shootCooldown = 500 // Time in ms between allowed shots
+    this.shootCooldown = 400 // Time in ms between allowed shots
 
     this.m16 = this.physics.add.sprite(900, 300, 'M16')
     this.m16.setScale(0.09)

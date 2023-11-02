@@ -148,6 +148,7 @@ export function createPlayerInside(scene, x, y) {
         hasWeapon: false,
         canShoot: false,
         sprite: playerSprite,
+        angle: 0,
         rotation: null,
         collider: null,
         facing: 'right', // Default facing direction 
@@ -198,7 +199,6 @@ var spaceUp = true;
 var falling = false;
 
 
-
 export function handlePlayerMovementInside(scene, player, shootControl, shootCooldown) {
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
@@ -207,18 +207,29 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     const speed = 200;
     const jumpStrength = 300;
 
+    const leftMouseButton = scene.input.activePointer.leftButtonDown();
 
-    if (kKey.isDown && shootControl.canShoot){
-        let bullet = createBulletInside(scene, player, 20, 20);
+
+    if (leftMouseButton){
+        const crosshairX = scene.input.mousePointer.x + scene.cameras.main.worldView.x
+        const crosshairY = scene.input.mousePointer.y + scene.cameras.main.worldView.y
+
+        player.angle = Phaser.Math.Angle.Between(player.sprite.x, player.sprite.y, crosshairX, crosshairY);
+    }
+
+    // Handles shooting
+    if (leftMouseButton && shootControl.canShoot) {
+        let bullet = createBulletInside(scene, player, 20, 20, player.angle);
         scene.bullets.push(bullet); // Create a bullet when K is pressed
         shootControl.canShoot = false;
         setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
         scene.player.shoot = true;
     }
-
-    if (!kKey.isDown){
-        scene.player.shoot = false;
+    else{
+        if (shootControl.canShoot)
+            scene.player.shoot = false;
     }
+
 
     // Move left
     if (aKey.isDown) {
@@ -238,6 +249,7 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
             player.facing = 'right'; // Update facing direction
     }
 
+    // Not Moving
     if (!aKey.isDown && !dKey.isDown){
         player.sprite.setVelocityX(0);
     }
@@ -251,7 +263,7 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     }
 
 
-
+    // JUMPING: 
 
     // Checks if player's velocity = 0 (stopped falling or not)
     if (player.sprite.body.velocity.y == 0){
@@ -262,7 +274,6 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
         stopped = false;
         player.jumping = true;
     }
-        
 
     // Main Jump check only runs if the player's velocity is 0 and they aren't already jumping
     if (spaceKey.isDown && stopped && !jumping){
@@ -289,6 +300,8 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
             if (spaceUp && spaceKey.isDown && !doubleJumping){// Double Jump
                 player.sprite.setVelocityY(-jumpStrength);
                 doubleJumping = true;
+                player.doubleJumping = true;
+
                 falling = false;
             }
         }
@@ -303,6 +316,7 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
             if (player.sprite.body.velocity.y == 0){ // hit ground
                 jumping = false;
                 doubleJumping = false;
+                player.doubleJumping = false;
                 falling = false;
 
                 player.jumping = false;
