@@ -249,6 +249,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     updateBars(this);
     
 
+    if (this.enemies.getLength() <= 1){
+      this.showCongratulationScreen()
+    }
 
     // Handling Player and Enemy movements and interactions every frame
     handlePlayerMovementInside(
@@ -359,7 +362,7 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     this.keyR.once('down', () => {
       this.congratsText.destroy()
-      window.location.href = '/' // Change the URL to '/'
+      window.location.href = '/solarSystem' // Change the URL to '/'
     })
   }
 
