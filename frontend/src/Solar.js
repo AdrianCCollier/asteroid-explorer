@@ -18,12 +18,28 @@ import './Solar.css'
 import './index.css'
 
 
-function ExplorerGame(){
-  return(
+function ExplorerGame0() {
+  return (
     <div>
-      <Game />
+      <Game startingScene="SidescrollerScene" />
     </div>
-  );
+  )
+}
+
+function ExplorerGame1() {
+  return (
+    <div>
+      <Game startingScene="SidescrollerScene2" />
+    </div>
+  )
+}
+
+function ExplorerGame2() {
+  return (
+    <div>
+      <Game startingScene="SidescrollerScene3" />
+    </div>
+  )
 }
 
 function SolarSystem(){
@@ -68,7 +84,7 @@ function SolarSystem(){
 
       { showWelcomeScreen ? (
         <div className="solar__content-welcome">
-          <h1>Weclome to Asteroid Explorer!</h1>
+          <h1>Welcome to Asteroid Explorer!</h1>
         </div>
       ) : (
       <div className="">
@@ -94,15 +110,20 @@ function Solar() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/game" element = {<ExplorerGame />} />
-          <Route path="/landing" element = {<Landing />} />
-          <Route path="/solarSystem" element = {<SolarSystem />} />
-          <Route path="/signin" element = {<Signin />} />
+          <Route path="/level0" element={<ExplorerGame0 />} />
+
+          <Route path="/level1" element={<ExplorerGame1 />} />
+
+          <Route path="/level2" element={<ExplorerGame2 />} />
+
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/solarSystem" element={<SolarSystem />} />
+          <Route path="/signin" element={<Signin />} />
           <Route index element={<Landing />} />
         </Routes>
       </div>
     </Router>
-  );
+  )
 }
 
 export default Solar

@@ -1,3 +1,11 @@
+import Phaser from 'phaser'
+
+
+
+var pistol = null;
+
+
+
 export function loadPlayerAnimations(scene){
   // NORMAL ANIMS
   scene.load.spritesheet("walk", "./assets/sprites/player_walk.png",{
@@ -247,6 +255,10 @@ export function createPlayerAnimations(scene){
     'idle_shoot'
   )
 
+  scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'pistol');
+  scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'pistol_holstered');
+  scene.player.weaponSprite.alpha = 0;
+
   scene.player.armAnimator = scene.playerAnimation = scene.add.sprite(
     scene.player.sprite.x,
     scene.player.sprite.y,
@@ -255,9 +267,7 @@ export function createPlayerAnimations(scene){
 
 
 
-  scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'pistol');
-  scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'pistol_holstered');
-  scene.player.weaponSprite.alpha = 0;
+  
 
   scene.player.strapAnimator = scene.playerAnimation = scene.add.sprite(
     scene.player.sprite.x,
@@ -268,7 +278,10 @@ export function createPlayerAnimations(scene){
   scene.player.boostAnimator.alpha = 0;
 }
 
-var holsterCounter;
+var holsterMax = 250
+var holsterCounter = 0;
+var reversing = false;
+
 
 
 export function updatePlayerAnimations(scene){
@@ -294,33 +307,30 @@ export function updatePlayerAnimations(scene){
   scene.player.weaponHolsteredSprite.x = scene.player.sprite.x;
   scene.player.weaponHolsteredSprite.y = scene.player.sprite.y;
 
-  
 
-  // Sets alpha depending on shooting status
-  if (!scene.player.holstered){ //shooting
-    scene.player.animator.alpha = 0;
-    scene.player.shootingAnimator.alpha = 100;
-    scene.player.armAnimator.alpha = 100;
-    //scene.player.weaponSprite.alpha = 100;
-    scene.player.weaponHolsteredSprite.alpha = 0;
-  }
-  else{ // not shooting
-    scene.player.animator.alpha = 100;
-    scene.player.shootingAnimator.alpha = 0;
-    scene.player.armAnimator.alpha = 0;
-    scene.player.weaponSprite.alpha = 0;
-    scene.player.weaponHolsteredSprite.alpha = 100;
-  }
 
-  if (scene.player.unholstering){
-    if (!scene.player.armAnimator.anims.isPlaying){
-      scene.player.unholstering = false;
-      scene.player.armAnimator.play('player_shoot_straight', true);
-      scene.player.holstered = false;
+  // Plays unholstering animation
+  if (scene.player.shoot){
+    if (scene.player.holstered && !scene.player.unholstering){
+      scene.player.armAnimator.play('player_unholster', true);
+      scene.player.unholstering = true;
+      scene.player.weaponSprite.alpha = 0;
+    }
+
+    holsterCounter = 0;
+  }
+  else{
+    holsterCounter += 1;
+
+    if (holsterCounter >= holsterMax && !scene.player.holstered && !scene.player.holstering){
+      scene.player.armAnimator.play('player_holster', true);
+      scene.player.holstering = true;
+      scene.player.weaponSprite.alpha = 0;
     }
   }
 
   if (scene.player.holstering){
+    scene.player.armAnimator.alpha = 100;
     if (!scene.player.armAnimator.anims.isPlaying){
       scene.player.holstered = true;
       scene.player.holstering = false;
@@ -328,24 +338,141 @@ export function updatePlayerAnimations(scene){
     }
   }
 
-  if (scene.player.shoot){
-    if (scene.player.holstered){ // play unholster
-      scene.player.armAnimator.play('player_unholster', true);
-      scene.player.unholstering = true;
-      scene.player.holstered = false;
+  function switchArms(newArm){
+    if (scene.player.unholstering){
+      if (!scene.player.armAnimator.anims.isPlaying){
+        scene.player.unholstering = false;
+        scene.player.armAnimator.play(newArm, true);
+        scene.player.holstered = false;
+        scene.player.weaponSprite.alpha = 100;
+      }
     }
-
-    holsterCounter = 250;
+    else{
+      scene.player.armAnimator.play(newArm, true);
+    }
   }
-  else{
-    holsterCounter -= 1;
 
-    if (holsterCounter <= 0){
-      // player holster anim
-      scene.player.armAnimator.play('player_holster', true);
-      scene.player.holstering = true;
+
+  // SHOOTING
+  if ((scene.player.unholstering || !scene.player.holstered) && !scene.player.holstering){ //shooting
+    scene.player.animator.alpha = 0;
+    scene.player.shootingAnimator.alpha = 100;
+    scene.player.armAnimator.alpha = 100;
+    scene.player.weaponHolsteredSprite.alpha = 0;
+
+    scene.player.weaponSprite.setOrigin(0.5, 0.5);
+    
+    scene.player.weaponSprite.rotation = scene.player.angle;
+
+    let offset = {
+      x: Math.cos(scene.player.angle - 0.30) * 23,
+      y: Math.sin(scene.player.angle - 0.30) * 23
+    };
+
+    scene.player.weaponSprite.x = scene.player.weaponSprite.x + offset.x;
+    scene.player.weaponSprite.y = scene.player.weaponSprite.y + offset.y;
+
+    var angle = Phaser.Math.RadToDeg(scene.player.weaponSprite.rotation);
+
+
+    if (scene.player.walking && scene.player.facing == "left"){
+      if ((angle <= 90 && angle >= 0) || (angle >= -90 && angle <= 0)){
+        reversing = true;
+      }
     }
-    //count
+    else if (scene.player.walking && scene.player.facing == "right"){
+      if ((angle >= 90 && angle <= 180) || (angle <= -90 && angle >= -180)){
+        reversing = true;
+      }
+    }
+    else{
+      reversing = false;
+    }
+    
+
+    console.log(reversing);
+
+    if (angle >= 0 - 22.5 && angle <= 0 + 22.5){ // 0 - straight right
+      switchArms('player_shoot_straight');
+      scene.player.facing = "right";
+      scene.player.weaponSprite.setFlipY(false);
+    }
+    else if ((angle >= 180 - 22.5 && angle <= 180 + 22.5) || (angle >= -180 - 22.4 && angle <= -180 + 22.5) ){ // 180 or -180 straight left
+      switchArms('player_shoot_straight');
+      scene.player.facing = "left";
+
+      scene.player.weaponSprite.setFlipY(true);
+    }
+    else if (angle >= 45 - 22.5 && angle <= 45 + 22.5){ // 45 - right down
+      switchArms('player_shoot_down');
+      scene.player.facing = "right";
+      scene.player.weaponSprite.setFlipY(false);
+    }
+    else if (angle >= -45 - 22.5 && angle <= -45 + 22.5){ // -45 - up right
+      switchArms('player_shoot_up');
+      scene.player.facing = "right";
+      scene.player.weaponSprite.setFlipY(false);
+    }
+    else if (angle >= 90 - 22.5 && angle <= 90 + 22.5){ // 90 - straight down
+      switchArms('player_shoot_straight_down');
+      
+      // tell wheter player needs to turn around or not
+      if (angle < 90){
+        scene.player.facing = "right";
+      scene.player.weaponSprite.setFlipY(false);
+      }
+      else{
+        scene.player.facing = "left";
+      scene.player.weaponSprite.setFlipY(true);
+      }
+    }
+    else if (angle >= -90 - 22.5 && angle <= -90 + 22.5){ // -90 - straight up
+      switchArms('player_shoot_straight_up');
+
+      // tell wheter player needs to turn around or not
+      if (angle < -90){
+        scene.player.facing = "left";
+        scene.player.weaponSprite.setFlipY(true);
+      }
+      else{
+        scene.player.facing = "right";
+      scene.player.weaponSprite.setFlipY(false);
+      }
+    }
+    else if (angle >= 135 - 22.5 && angle <= 135 + 22.5){ // 135 - left down
+      switchArms('player_shoot_down');
+      scene.player.facing = "left";
+      scene.player.weaponSprite.setFlipY(true);
+    }
+    else if (angle >= -135 - 22.5 && angle <= -135 + 22.5){ // -135 - up left
+      switchArms('player_shoot_up');
+      scene.player.facing = "left";
+      scene.player.weaponSprite.setFlipY(true);
+    }
+    else{
+      console.log("ERROR");
+    }
+
+    // changes the origin of the sprite if the player faces left to fix incorrect offsit from flipping sprite
+    if (scene.player.facing == 'left')
+      scene.player.weaponSprite.setOrigin(0.5, 0);
+
+  }
+  else{ // not shooting
+    if (scene.player.holstering){
+      scene.player.animator.alpha = 100;
+      scene.player.shootingAnimator.alpha = 100;
+      scene.player.armAnimator.alpha = 100;
+      scene.player.weaponSprite.alpha = 0;
+      scene.player.weaponHolsteredSprite.alpha = 100;
+    }
+    else{
+      scene.player.animator.alpha = 100;
+      scene.player.shootingAnimator.alpha = 0;
+      scene.player.armAnimator.alpha = 0;
+      scene.player.weaponSprite.alpha = 0;
+      scene.player.weaponHolsteredSprite.alpha = 100;
+    }
   }
 
 
@@ -358,7 +485,6 @@ export function updatePlayerAnimations(scene){
     scene.player.armAnimator.setFlipX(true)
     scene.player.armAnimator.x = scene.player.sprite.x - 8;
 
-    scene.player.weaponSprite.setFlipX(true);
     scene.player.weaponHolsteredSprite.setFlipX(true);
   }
   else { // look forward
@@ -370,7 +496,6 @@ export function updatePlayerAnimations(scene){
     scene.player.armAnimator.setFlipX(false)
     scene.player.armAnimator.x = scene.player.sprite.x + 8;
 
-    scene.player.weaponSprite.setFlipX(false);
     scene.player.weaponHolsteredSprite.setFlipX(false);
   }
 
@@ -387,27 +512,19 @@ export function updatePlayerAnimations(scene){
 
   }
   else if (scene.player.walking){
+    if (!reversing){
     scene.player.animator.anims.play('player_walk', true)
     scene.player.shootingAnimator.anims.play('player_walk_shoot', true)
+    }
+    else{
+      scene.player.animator.anims.playReverse('player_walk', true)
+      scene.player.shootingAnimator.anims.playReverse('player_walk_shoot', true)
+    }
   }
   else{
     scene.player.animator.anims.play('player_idle', true)
     scene.player.shootingAnimator.anims.play('player_idle_shoot', true)
   }
-}
-
-export function updatePlayerWalk(scene){
-  scene.walk = scene.add.sprite(scene.player.x, scene.player.y, "walk");
-
-  // Create the animation
-  scene.anims.create({
-    key: "player_walk",
-    frames: scene.anims.generateFrameNumbers("walk"),
-    frameRate: 10,
-    repeat: -1,
-  });
-
-  return scene;
 }
 
 
@@ -440,21 +557,21 @@ export function createEnemyAnimations(scene){
 
 export function createEnemyAnimator(scene, enemy){
   enemy.animator = scene.playerAnimation = scene.add.sprite(
-    enemy.sprite.x,
-    enemy.sprite.y,
+    enemy.x,
+    enemy.y,
     'tall_walk_agro'
   )
 }
 
 export function updateEnemyAnimations(scene, enemy){
   // Making sprite invisible so animation can play
-  enemy.sprite.alpha = 0;
+  enemy.alpha = 0;
   
   enemy.animator.setFlipX(true);
   enemy.animator.anims.play("tall_walk_alien_agro", true); // plays animation
 
-  enemy.animator.x = enemy.sprite.x; // updates animation position
-  enemy.animator.y = enemy.sprite.y; // updates animation position
+  enemy.animator.x = enemy.x; // updates animation position
+  enemy.animator.y = enemy.y; // updates animation position
 }
 
 

@@ -199,10 +199,9 @@ export default class SidescrollerScene extends Phaser.Scene {
       callbackScope: this,
     })
 
-    // testing, display level message
-    // Add a text message to the top-center of the game view
+    // testing - ensure its a different map
     this.add
-      .text(this.cameras.main.centerX, 50, 'Level 0', {
+      .text(this.cameras.main.centerX, 50, 'Level 1', {
         fontSize: '32px',
         fill: '#fff',
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
