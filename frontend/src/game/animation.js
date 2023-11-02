@@ -390,7 +390,6 @@ export function updatePlayerAnimations(scene){
     }
     
 
-    console.log(reversing);
 
     if (angle >= 0 - 22.5 && angle <= 0 + 22.5){ // 0 - straight right
       switchArms('player_shoot_straight');

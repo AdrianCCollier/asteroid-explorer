@@ -96,11 +96,15 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
+    
     this.enemies = createEnemiesGroup(this)
+
     this.spawnPoints.forEach((spawn) => {
       createEnemyInside(this, this.enemies, spawn.x, spawn.y)
     })
+
     this.checkCollision = false // Initialize collision check
+
     // Setting a delayed timer to enable collision check
     this.time.delayedCall(
       500,
@@ -130,6 +134,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.layer.setCollisionBetween(5, 35)
     this.layer.setCollision(1)
     this.layer.setCollision(3)
+    
     this.physics.add.collider(
       this.player.sprite,
       this.layer,
@@ -230,6 +235,7 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     // Creates enemy animations for given scene
     createEnemyAnimations(this, this.player)
+
   } // end create function
 
   update() {
@@ -245,10 +251,11 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.enemies.getChildren().forEach(enemy => {
       handleEnemyMovementInside(this, this.bullets, enemy);
     });
+
+
     updatePlayerAnimations(this);
 
     updateBars(this);
-    
 
 
     // Handling Player and Enemy movements and interactions every frame
