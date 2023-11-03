@@ -214,12 +214,13 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
 
     const leftMouseButton = scene.input.activePointer.leftButtonDown();
 
+    const crosshairX = scene.input.mousePointer.x + scene.cameras.main.worldView.x
+    const crosshairY = scene.input.mousePointer.y + scene.cameras.main.worldView.y
+
+    player.angle = Phaser.Math.Angle.Between(player.sprite.x, player.sprite.y, crosshairX, crosshairY);
 
     if (leftMouseButton){
-        const crosshairX = scene.input.mousePointer.x + scene.cameras.main.worldView.x
-        const crosshairY = scene.input.mousePointer.y + scene.cameras.main.worldView.y
-
-        player.angle = Phaser.Math.Angle.Between(player.sprite.x, player.sprite.y, crosshairX, crosshairY);
+        
     }
 
     // Handles shooting

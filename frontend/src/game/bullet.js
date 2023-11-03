@@ -22,7 +22,7 @@ export function createBullet(scene, player, w, h) {
 }
 
 export function createBulletInside(scene, player, w, h, a) {
-  let speed = 8; // Speed of the bullet
+  let speed = 5; // Speed of the bullet
 
   // Determine the bullet's velocity based on the player's facing angle
   let velocity = {

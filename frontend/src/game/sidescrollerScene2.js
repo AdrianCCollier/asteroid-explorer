@@ -37,8 +37,8 @@ import {
 import Phaser from 'phaser'
 // import tileSet from './assets/nightsky.png'
 // import mapJSON from './assets/map.json'
-import tileSet from './assets/spritesheet.png'
-import mapJSON from './assets/map1.json'
+import tileSet from './assets/baseAsteroid.png'
+import mapJSON from './assets/mercuryAsteroid.json'
 
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
@@ -56,9 +56,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.map = null;
 
     this.spawnPoints = [
-      { x: 400, y: 375 },
-      { x: 550, y: 100 },
-      { x: 600, y: 280 },
+      { x: 400, y: 1500 },
+      { x: 500, y: 700 },
+      { x: 600, y: 975 },
     ]
   }
 
@@ -109,14 +109,14 @@ export default class SidescrollerScene extends Phaser.Scene {
       this
     )
 
-    // Creat e map
+    // Create map
     this.map = this.make.tilemap({ key: 'map' })
-    const tileset = this.map.addTilesetImage('spritesheet', 'tiles')
+    const tileset = this.map.addTilesetImage('surfaces', 'tiles')
     this.layer = this.map.createLayer('Tile Layer 1', tileset, 0, 0)
+    this.layer.setCollisionByProperty({ collides: true});
 
     // Player creation and setup
-    this.player = createPlayerInside(this, 100, 250)
-    this.player.isInvulnerable = false; // Player is not invulnerable initially.
+    this.player = createPlayerInside(this, 100, 1000)
 
     // Customize dimensions of player hitbox, seen with debug mode enabled
     this.player.sprite.body.setSize(25, 63)
@@ -126,6 +126,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     // Allow player to collide with Tiled layer
     //this.physics.add.collider(this.player.sprite, this.layer)
     //this.layer.setCollisionBetween(130, 190)
+    //this.layer.setCollisionBetween(0, 100)
+    //this.layer.setCollision(1)
+    //this.layer.setCollision(3)
     this.layer.setCollisionBetween(5, 35)
     this.layer.setCollision(1)
     this.layer.setCollision(3)
@@ -137,8 +140,8 @@ export default class SidescrollerScene extends Phaser.Scene {
       this
     )
     this.physics.add.collider(this.enemies, this.layer)
-// Add collider between the player and the enemies
-this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
+    // Add collider between the player and the enemies
+    this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -250,9 +253,14 @@ this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCol
     updateBars(this);
     
 
+
     if (this.enemies.getLength() <= 0){
-      this.showCongratulationScreen()
+      //this.showCongratulationScreen()
+      this.scene.pause();
+      this.scene.stop();
+      this.scene.launch('WinScene')
     }
+
 
     // Handling Player and Enemy movements and interactions every frame
     handlePlayerMovementInside(

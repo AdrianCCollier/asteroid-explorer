@@ -5,6 +5,7 @@ import SidescrollerScene2 from './sidescrollerScene2.js'
 import SidescrollerScene3 from './sidescrollerScene3.js'
 import ConfirmationScene from './confirmationScene.js'
 import GameOverScene from './gameOverScene.js'
+import WinScene from './winScene.js'
 
 import React, { useRef, Component } from 'react'
 import Phaser from 'phaser'
@@ -22,13 +23,13 @@ class Game extends Component {
     let scenes = []
     switch (startingScene) {
       case 'SidescrollerScene':
-        scenes = [SidescrollerScene, ConfirmationScene, GameOverScene]
+        scenes = [SidescrollerScene, ConfirmationScene, GameOverScene, WinScene]
         break
       case 'SidescrollerScene2':
-        scenes = [SidescrollerScene2, ConfirmationScene, GameOverScene]
+        scenes = [SidescrollerScene2, ConfirmationScene, GameOverScene, WinScene]
         break
       case 'SidescrollerScene3':
-        scenes = [SidescrollerScene3, ConfirmationScene, GameOverScene]
+        scenes = [SidescrollerScene3, ConfirmationScene, GameOverScene, WinScene]
         break
       default:
         scenes = [GameOverScene] // default case
@@ -37,13 +38,12 @@ class Game extends Component {
 
     let config = {
       type: Phaser.AUTO,
-      width: 900,
-      height: 500,
+      width: 1280,
+      height: 720,
       physics: {
         default: 'arcade',
         arcade: {
           gravity: { y: 400 },
-          debug:true
         },
       },
       scene: scenes,

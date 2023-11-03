@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 
-class GameOverScene extends Phaser.Scene {
+class WinScene extends Phaser.Scene {
   constructor() {
-      super({ key: 'GameOverScene' });
+      super({ key: 'WinScene' });
   }
 
   create() {
@@ -11,10 +11,15 @@ class GameOverScene extends Phaser.Scene {
       rect.setAlpha(0.8);
       
       // Adding a title
-      const title = this.add.text(this.cameras.main.width / 2, this.cameras.main.height / 2 - 50, 'Game Over. Want To Try Again?', { color: '#ffffff', fontSize: '20px' });
+      const title = this.add.text(this.cameras.main.width / 2, this.cameras.main.height / 2 - 50, 'Nice Job! Returning to orbit', { color: '#ffffff', fontSize: '20px' });
       title.setOrigin(0.5, 0.5); // Centering text
+
+      this.time.delayedCall(3000, () => {
+        // Redirect to '/' after 3 seconds (3000 milliseconds)
+        window.location.href = '/solarSystem';
+      }, [], this);
       
-      // Styling Yes Button
+      /*// Styling Yes Button
       const yesButton = this.add.text(this.cameras.main.width / 2 - 70, this.cameras.main.height / 2 + 20, 'Yes', { fill: '#0f0', fontSize: '32px', padding: { x: 20, y: 10 }, backgroundColor: '#000000' })
           .setInteractive()
           .on('pointerdown', () => {
@@ -29,11 +34,11 @@ class GameOverScene extends Phaser.Scene {
           .setInteractive()
           .on('pointerdown', () => {
               this.scene.stop();
-              window.location.href = '/solarSystem'; // Change the URL to '/'
+              window.location.href = '/'; // Change the URL to '/'
           })
           .on('pointerover', () => noButton.setBackgroundColor('#555555')) // Changing background color when hovered
-          .on('pointerout', () => noButton.setBackgroundColor('#000000')); // Changing background color back when not hovered
+          .on('pointerout', () => noButton.setBackgroundColor('#000000')); // Changing background color back when not hovered*/
   }
 }
 
-export default GameOverScene;
+export default WinScene;

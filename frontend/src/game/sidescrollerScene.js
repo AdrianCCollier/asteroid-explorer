@@ -3,7 +3,9 @@ import {
   loadPlayerImage,
   handlePlayerMovementInside,
   animationCreator,
-  loadWeaponSounds
+  loadWeaponSounds,
+  handlePlayerDamage
+
 } from './player.js'
 import {
   createEnemiesGroup,
@@ -36,8 +38,8 @@ import {
 import Phaser from 'phaser'
 // import tileSet from './assets/nightsky.png'
 // import mapJSON from './assets/map.json'
-import tileSet from './assets/spritesheet.png'
-import mapJSON from './assets/map1.json'
+import tileSet from './assets/baseAsteroid.png'
+import mapJSON from './assets/venusAsteroid.json'
 
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
@@ -55,12 +57,14 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.map = null;
 
     this.spawnPoints = [
-      { x: 425, y: 300 },
-      { x: 500, y: 400 },
-      { x: 600, y: 400 },
-      { x: 800, y: 400 },
-      { x: 900, y: 400 },
-      { x: 1000, y: 400 },
+      { x: 900, y: 3450 },
+      { x: 1700, y: 3100 },
+      { x: 2800, y: 2800 },
+      { x: 2624, y: 2800 },
+      { x: 3032, y: 2800 },
+      { x: 4932, y: 3075 },
+      { x: 4632, y: 3275 },
+      { x: 4632, y: 4700 },
     ]
   }
 
@@ -117,11 +121,12 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     // Create map
     this.map = this.make.tilemap({ key: 'map' })
-    const tileset = this.map.addTilesetImage('spritesheet', 'tiles')
+    const tileset = this.map.addTilesetImage('surfaces', 'tiles')
     this.layer = this.map.createLayer('Tile Layer 1', tileset, 0, 0)
+    this.layer.setCollisionByProperty({ collides: true});
 
     // Player creation and setup
-    this.player = createPlayerInside(this, 100, 250)
+    this.player = createPlayerInside(this, 100, 3700)
 
     // Customize dimensions of player hitbox, seen with debug mode enabled
     this.player.sprite.body.setSize(25, 63)
@@ -131,9 +136,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     // Allow player to collide with Tiled layer
     //this.physics.add.collider(this.player.sprite, this.layer)
     //this.layer.setCollisionBetween(130, 190)
-    this.layer.setCollisionBetween(5, 35)
-    this.layer.setCollision(1)
-    this.layer.setCollision(3)
+    //this.layer.setCollisionBetween(0, 100)
+    //this.layer.setCollision(1)
+    //this.layer.setCollision(3)
     
     this.physics.add.collider(
       this.player.sprite,
@@ -143,6 +148,9 @@ export default class SidescrollerScene extends Phaser.Scene {
       this
     )
     this.physics.add.collider(this.enemies, this.layer)
+
+    // Add collider between the player and the enemies
+    this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -176,10 +184,10 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.shootControl = { canShoot: true } // Initialize shooting control
     this.shootCooldown = 400 // Time in ms between allowed shots
 
-    this.m16 = this.physics.add.sprite(900, 300, 'M16')
+   /* this.m16 = this.physics.add.sprite(900, 300, 'M16')
     this.m16.setScale(0.09)
     this.m16.setGravityY(0)
-    this.physics.add.collider(this.m16, this.layer)
+    this.physics.add.collider(this.m16, this.layer)*/
 
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -192,7 +200,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     // Set up collider for weapon pickup
     this.physics.add.collider(
       this.player.sprite,
-      this.m16,
+      //this.m16,
       this.pickUpWeapon,
       null,
       this
@@ -207,7 +215,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     // testing, display level message
     // Add a text message to the top-center of the game view
     this.add
-      .text(this.cameras.main.centerX, 50, 'Level 0', {
+      .text(this.cameras.main.centerX, 50, '', {
         fontSize: '32px',
         fill: '#fff',
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
@@ -253,8 +261,11 @@ export default class SidescrollerScene extends Phaser.Scene {
     });
 
 
-    if (this.enemies.getLength() <= 1){
-      this.showCongratulationScreen()
+    if (this.enemies.getLength() <= 0){
+      //this.showCongratulationScreen()
+      this.scene.pause();
+      this.scene.stop();
+      this.scene.launch('WinScene')
     }
 
 
@@ -294,8 +305,8 @@ export default class SidescrollerScene extends Phaser.Scene {
       // Weapon picked up
       this.weapon.sprite.setVisible(false)
       this.player.gunSprite.setVisible(true)
-      this.player.hasWeapon = true
-      this.player.canShoot = true
+      this.player.hasWeapon = false
+      this.player.canShoot = false
     }
 
     // Adjust gun sprite position and rotation to match the player
@@ -316,8 +327,8 @@ export default class SidescrollerScene extends Phaser.Scene {
     let distanceToWeapon = Phaser.Math.Distance.Between(
       this.player.sprite.x,
       this.player.sprite.y,
-      this.m16.x,
-      this.m16.y
+      //this.m16.x,
+      //this.m16.y
     )
 
     if (distanceToWeapon < 50) {
@@ -325,7 +336,7 @@ export default class SidescrollerScene extends Phaser.Scene {
 
       // pick up weapon
       if (this.cursors.pickup.isDown) {
-        this.equipWeapon()
+        //dthis.equipWeapon()
       }
     } else {
       this.pickupText.setVisible(false)
@@ -388,5 +399,37 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.map.putTileAt(-1, tile.x, tile.y);
       
     }
+  }
+}
+
+
+
+function handlePlayerEnemyCollision(playerSprite, enemySprite) {
+  if (!this.player.isInvulnerable) {
+      // Handle player damage and invulnerability
+      handlePlayerDamage(this.player, 1, this); 
+      this.player.isInvulnerable = true;
+      this.time.delayedCall(1000, () => {
+          this.player.isInvulnerable = false;
+      }, [], this);
+
+      // const knockbackForce = 200;
+      // let knockbackDirection;
+      
+      // determine the direction of the knockback
+      // if (this.player.facing === 'left') {
+      //     knockbackDirection = 1; // Knockback to the right
+      // } else if (this.player.facing === 'right') {
+      //     knockbackDirection = -1; // Knockback to the left
+      // }
+
+      // // Apply a knockback force to the player using knockbackDirection
+      // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
+
+      // slight vertical knockback
+      playerSprite.setVelocityY(-150);
+
+      // Debugging line to check the calculated direction
+      // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);
   }
 }
