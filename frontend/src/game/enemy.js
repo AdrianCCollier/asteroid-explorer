@@ -42,7 +42,7 @@ export function handleEnemyMovement(scene, bullets, enemy) {
     bullets.forEach(bullet => {
         if (bullet && bullet.sprite) {
             // Check if the bullet intersects with the enemy and destroy the enemy if true
-            if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
+            if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.body.getBounds())) {
                 enemy.sprite.destroy();
             }
         }
@@ -77,7 +77,7 @@ export function createEnemyInside(scene, group, x, y) {
     enemy.body.setOffset(offsetX, offsetY);
 
     // Attach properties to the sprite directly
-    enemy.speed = 20;
+    enemy.speed = 50;
     enemy.direction = 1; // Enemy initial direction (1 for right, -1 for left)
     enemy.animator = null;
     createEnemyAnimator(scene, enemy);

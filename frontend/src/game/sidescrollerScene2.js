@@ -3,7 +3,8 @@ import {
   loadPlayerImage,
   handlePlayerMovementInside,
   animationCreator,
-  loadWeaponSounds
+  loadWeaponSounds,
+  handlePlayerDamage
 } from './player.js'
 import {
   createEnemiesGroup,
@@ -55,12 +56,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.map = null;
 
     this.spawnPoints = [
-      { x: 400, y: 300 },
-      { x: 500, y: 400 },
-      { x: 600, y: 400 },
-      { x: 800, y: 400 },
-      { x: 900, y: 400 },
-      { x: 1000, y: 400 },
+      { x: 400, y: 375 },
+      { x: 550, y: 100 },
+      { x: 600, y: 280 },
     ]
   }
 
@@ -118,6 +116,7 @@ export default class SidescrollerScene extends Phaser.Scene {
 
     // Player creation and setup
     this.player = createPlayerInside(this, 100, 250)
+    this.player.isInvulnerable = false; // Player is not invulnerable initially.
 
     // Customize dimensions of player hitbox, seen with debug mode enabled
     this.player.sprite.body.setSize(25, 63)
@@ -138,6 +137,8 @@ export default class SidescrollerScene extends Phaser.Scene {
       this
     )
     this.physics.add.collider(this.enemies, this.layer)
+// Add collider between the player and the enemies
+this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -249,7 +250,7 @@ export default class SidescrollerScene extends Phaser.Scene {
     updateBars(this);
     
 
-    if (this.enemies.getLength() <= 1){
+    if (this.enemies.getLength() <= 0){
       this.showCongratulationScreen()
     }
 
@@ -378,5 +379,34 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.map.putTileAt(-1, tile.x, tile.y);
       
     }
+  }
+}
+function handlePlayerEnemyCollision(playerSprite, enemySprite) {
+  if (!this.player.isInvulnerable) {
+      // Handle player damage and invulnerability
+      handlePlayerDamage(this.player, 1, this); 
+      this.player.isInvulnerable = true;
+      this.time.delayedCall(1000, () => {
+          this.player.isInvulnerable = false;
+      }, [], this);
+
+      // const knockbackForce = 200;
+      // let knockbackDirection;
+      
+      // determine the direction of the knockback
+      // if (this.player.facing === 'left') {
+      //     knockbackDirection = 1; // Knockback to the right
+      // } else if (this.player.facing === 'right') {
+      //     knockbackDirection = -1; // Knockback to the left
+      // }
+
+      // // Apply a knockback force to the player using knockbackDirection
+      // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
+
+      // slight vertical knockback
+      playerSprite.setVelocityY(-150);
+
+      // Debugging line to check the calculated direction
+      // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);
   }
 }
