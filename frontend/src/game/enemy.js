@@ -2,6 +2,8 @@ import Phaser from 'phaser';
 
 import {createAsteroid, applyRotation} from './asteroid.js';
 
+import {createEnemyAnimator, updateEnemyAnimations} from './animation'
+
 export function createEnemy(scene, asteroid, w, h) {
     // Initialize an enemy object with given properties
     let enemy = {
@@ -15,7 +17,7 @@ export function createEnemy(scene, asteroid, w, h) {
         sprite: scene.add.sprite(asteroid.x, asteroid.y, 'enemy'), // Adding enemy sprite to the scene at asteroid's position
         collider: null, // Initialize collider to null
         rotation: null, // Initialize rotation to null
-        destroyed: false
+        destroyed: false,
     };
     
     // Set the enemy's collider
@@ -52,51 +54,84 @@ export function loadEnemyImage(scene) {
     // Load the enemy image into the scene
     scene.load.image('enemy', './assets/alien.png');
 }
+///
+export function createEnemiesGroup(scene) {
+    let enemies = scene.physics.add.group();
+    return enemies;
+}
+export function createEnemyInside(scene, group, x, y) {
+    let enemy = group.create(x, y, 'enemy');
+    enemy.setCollideWorldBounds(true); // Make enemy collide with world bounds
 
-export function createEnemyInside(scene, x, y) {
-    // Create enemy sprite and enable physics on it
-    let enemySprite = scene.add.sprite(x, y, 'enemy');
-    scene.physics.world.enable(enemySprite);
-    enemySprite.body.setCollideWorldBounds(true); // Make enemy collide with world bounds
-    
-    // Initialize an enemy object and return it
-    let enemy = {
-        x: x,
-        y: y,
-        sprite: enemySprite,
-        speed: 1, // Speed of the enemy, adjustable as per need
-    };
+    // Adjust the size of the enemy's physics body
+    // Keep the width slightly less than full width for leniency
+    const collisionWidth = enemy.width * 0.8;
+    // Set the height to full height to cover the entire sprite
+    const collisionHeight = enemy.height*1.9;
+
+    // Offset to center since collision is changed
+    // Center the collision body on the sprite visually
+    const offsetX = (enemy.width - collisionWidth) / 2;
+    const offsetY = (enemy.height - collisionHeight) / 2;
+    enemy.body.setSize(collisionWidth, collisionHeight);
+    enemy.body.setOffset(offsetX, offsetY);
+
+    // Attach properties to the sprite directly
+    enemy.speed = 50;
+    enemy.direction = 1; // Enemy initial direction (1 for right, -1 for left)
+    enemy.animator = null;
+    createEnemyAnimator(scene, enemy);
+
     return enemy;
 }
-
 export function handleEnemyMovementInside(scene, bullets, enemy) {
-    // Assuming scene.player is defined and has x and y properties representing the player's position.
     let player = scene.player;
-    
-    // Calculate the direction vector from the enemy to the player
-    let dx = player.sprite.x - enemy.sprite.x;
-    let dy = player.sprite.y - enemy.sprite.y;
 
-    // Calculate the distance between the enemy and the player
+    // Calculate the direction vector from the enemy to the player.
+    let dx = player.sprite.x - enemy.x;
+    let dy = player.sprite.y - enemy.y;
+
+    // Calculate the distance between the enemy and the player.
     let distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance > 0) {
-        let speed = enemy.speed; // Define speed of the enemy
-        
-        // Normalize the direction vector and move the enemy towards the player.
-        enemy.sprite.x += (speed * dx) / distance;
-        enemy.sprite.y += (speed * dy) / distance;
-    }
+    const isSolidGroundAhead = checkForSolidGroundAhead(scene, enemy);
+    const shouldChasePlayer = distance < 200; // distance threshold to start chasing
+    const isAtEdge = !isSolidGroundAhead;
     
-    // Check collision between each bullet and the enemy and destroy the enemy if they intersect
-    bullets.forEach(bullet => {
-        if (bullet && bullet.sprite) {
-            if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
-                enemy.sprite.destroy();
-                enemy.destroyed = true;
-                return true;
-            }
-        }
-    });
-    return false;
+    if (shouldChasePlayer && !isAtEdge) {
+        // Normalize the direction vector 
+        let directionX = dx / distance; // Normalized direction for X
+        enemy.direction = Math.sign(directionX);
+        enemy.setVelocityX(directionX * enemy.speed);
+    } else if (isAtEdge && shouldChasePlayer) {
+        // Stop at the edge if there's no ground
+        enemy.setVelocityX(0);
+        // Optional: Enemy looks at the player
+        enemy.direction = dx > 0 ? 1 : -1;
+    } else {
+        // Patrol behavior
+        patrolBehavior(scene, enemy);
+    }
+
+    // Update enemy animations.
+    updateEnemyAnimations(scene, enemy);
+}
+
+function patrolBehavior(scene, enemy) {
+    // If there's ground ahead, keep moving
+    if (checkForSolidGroundAhead(scene, enemy)) {
+        enemy.setVelocityX(enemy.speed * enemy.direction);
+    } else {
+        // If there's no ground ahead, turn around
+        enemy.direction *= -1; // Reverse direction
+        enemy.setVelocityX(enemy.speed * enemy.direction); // Move in the new direction
+    }
+}
+
+// Check for solid ground ahead of the enemy with more leniency
+function checkForSolidGroundAhead(scene, enemy) {
+    const offsetX = enemy.width * 0.5 * enemy.direction; // Half width ahead of the enemy
+    const point = { x: enemy.x + offsetX, y: enemy.y + enemy.height * 1.9 }; // Half height to check ahead
+    const tile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Tile Layer 1');
+    return tile && tile.collides;
 }

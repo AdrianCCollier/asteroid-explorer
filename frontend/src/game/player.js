@@ -3,6 +3,12 @@ import { createBullet, createBulletInside, handleBulletMovements, loadBulletImag
 
 import Phaser from 'phaser';
 
+import fireSound from './assets/sounds/fireSound.mp3'
+
+export function loadWeaponSounds(scene) {
+  scene.load.audio('weaponFireSound', fireSound)
+}
+
 export function createPlayer(scene, asteroid, w, h) {
     let player = {
         x: asteroid.x, // Sprite's x position
@@ -17,7 +23,11 @@ export function createPlayer(scene, asteroid, w, h) {
         canShoot: false,
         sprite: scene.add.sprite(asteroid.x, asteroid.y, 'player'),
         rotation: null, // Player's tween rotation
-        collider: null // Player's collider circle
+        collider: null, // Player's collider circle
+        jumps: 0,  // added for jump boost
+        maxJumps: 2 ,
+        isBoosting: false, // This property will check if the player is boosting
+
     };
 
     // Applies the player's rotation
@@ -44,6 +54,8 @@ var frameCounter = 0;
 var jumping = false;
 var falling = false;
 var spaceUp = false;
+var movingForward = false;
+var movingBackward = false;
 
 
 
@@ -52,8 +64,10 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+    const bKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
+    const spaceJustPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey);
+    const bKeyJustPressed = Phaser.Input.Keyboard.JustDown(this.bKey);
     
     if (kKey.isDown && shootControl.canShoot && player.hasWeapon){
         let bullet = createBullet(scene, player, 20, 20);
@@ -98,20 +112,7 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
         }
     }
 
-    // handles falling
-    if (falling){
-        player.vertical -= player.gravity;
-        console.log(player.collider.y);
-
-        // Check for collision
-        if ((Phaser.Geom.Intersects.CircleToCircle(asteroid.collider, player.collider))){
-            falling = false;
-
-            // Resets player position
-            player.vertical = (player.realDistance / 64) + 0.5;
-        }
-    }
-
+    
     // Updates player rotation angle
     player.rotation.updateTo('angle', player.angle);
 
@@ -133,7 +134,7 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
 export function loadPlayerImage(scene){
     scene.load.image('player', './assets/Skeleton.png');
 }
-
+///
 export function createPlayerInside(scene, x, y) {
     // Create the player sprite with physics body
     var playerSprite = scene.physics.add.sprite(x, y, 'player');
@@ -147,16 +148,45 @@ export function createPlayerInside(scene, x, y) {
         width: playerSprite.width,
         height: playerSprite.height,
         angle: 0, 
+        health: 3, 
         gravity: 0.4 ,
         hasWeapon: false,
         canShoot: false,
         sprite: playerSprite,
         rotation: null,
-        collider: null
+        collider: null,
+        facing: 'right', // Default facing direction 
+        healthContainer: scene.add.sprite(160, 43, 'health_container'),
+        healthBar: scene.add.sprite(170, 43, 'health_bar'),
+        shieldContainer: scene.add.sprite(160, 110, 'shield_container'),
+        shieldBar: scene.add.sprite(191, 111, 'shield_bar'),
+        barOffsets: [160, 43, 191, 43, 160, 110, 191, 111],
+        animator: null, // player's current main animation
+        shootingAnimator: null, // player's current main animation while shooting
+        boostAnimator: null, // booster animations
+        gunAnimator: null, // gun animations
+        armAnimator: null, // arm animations
+        strapAnimator: null, // strap animation
+        weaponSprite: null,
+        weaponHolsteredSprite: null,
+        jumping: false,
+        doubleJumping: false,
+        idle: false,
+        walking: false,
+        shoot: false,
+        unholstering: false,
+        holstered: true,
+        holstering: false,
     };
 
+    player.healthBar.setScale(2);
+    player.healthContainer.setScale(2);
+    player.shieldBar.setScale(2);
+    player.shieldContainer.setScale(2);
+    player.healthBar.setOrigin(0, 0.5 );
+
     // Add a gun sprite if the player picks one up
-    player.gunSprite = scene.add.sprite(player.x, player.y, 'weapon');
+    player.gunSprite = scene.add.sprite(player.x, player.y, 'weapon1');
     player.gunSprite.setVisible(false);
 
     // Set the player's collider
@@ -165,39 +195,214 @@ export function createPlayerInside(scene, x, y) {
     return player;
 }
 
+var stopped = false;
+var jumping = false;
+var doubleJumping = false;
+var timer = 0;
+var doubleJumpTimer = 10;
+var spaceUp = true;
+var falling = false;
+
+
 export function handlePlayerMovementInside(scene, player, shootControl, shootCooldown) {
     const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
     const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-    var jumpTimer = 55;
-    var frameCounter = 0;
-    var jumping = false;
-    var falling = false;
-    const speed = 3;
-    if (kKey.isDown && shootControl.canShoot){
-        let bullet = createBulletInside(scene, player, 20, 20);
+    const speed = 200;
+    const jumpStrength = 300;
+
+    const leftMouseButton = scene.input.activePointer.leftButtonDown();
+
+
+    if (leftMouseButton){
+        const crosshairX = scene.input.mousePointer.x + scene.cameras.main.worldView.x
+        const crosshairY = scene.input.mousePointer.y + scene.cameras.main.worldView.y
+
+        player.angle = Phaser.Math.Angle.Between(player.sprite.x, player.sprite.y, crosshairX, crosshairY);
+    }
+
+    // Handles shooting
+    if (leftMouseButton && shootControl.canShoot) {
+        let bullet = createBulletInside(scene, player, 20, 20, player.angle);
+            scene.sound.play('weaponFireSound')
+
         scene.bullets.push(bullet); // Create a bullet when K is pressed
         shootControl.canShoot = false;
         setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
+        scene.player.shoot = true;
     }
+    else{
+        if (shootControl.canShoot)
+            scene.player.shoot = false;
+    }
+
 
     // Move left
     if (aKey.isDown) {
-        player.sprite.x -= speed;
+        player.sprite.setVelocityX(-speed);
+        
+        // Only updates the direction if the dKey hasn't been pressed
+        if (!dKey.isDown)
+        player.facing = 'left'; // Update facing direction
     }
 
     // Move right
     if (dKey.isDown){
-        player.sprite.x += speed;
+        player.sprite.setVelocityX(speed);
+
+        // Only updates the direction if the aKey hasn't been pressed
+        if (!aKey.isDown)
+            player.facing = 'right'; // Update facing direction
     }
 
-    if (spaceKey.isDown){
-        player.sprite.y -= speed;
+    // Not Moving
+    if (!aKey.isDown && !dKey.isDown){
+        player.sprite.setVelocityX(0);
+    }
+
+    // Checking to see if player is walking in general
+    if (aKey.isDown || dKey.isDown){
+        player.walking = true;
+    }
+    else{
+        player.walking = false;
     }
 
 
-    // Updates the player collider position
-    player.collider.x = player.x;
-    player.collider.y = player.y;
+    // JUMPING: 
+
+    // Checks if player's velocity = 0 (stopped falling or not)
+    if (player.sprite.body.velocity.y == 0){
+        stopped = true;
+        player.jumping = false;
+    }
+    else{
+        stopped = false;
+        player.jumping = true;
+    }
+
+    // Main Jump check only runs if the player's velocity is 0 and they aren't already jumping
+    if (spaceKey.isDown && stopped && !jumping){
+        player.sprite.setVelocityY(-jumpStrength);
+        jumping = true;
+        falling = false;
+        timer = 0;
+        spaceUp = false;
+
+        player.jumping = true;
+    }
+
+    // increments timer for the double jump
+    timer += 1;
+
+    // Checks if space has been let go before a double jump
+    if (!spaceKey.isDown){
+        spaceUp = true;
+    }
+
+    // Checks if already jumping
+    if (jumping){
+        if (timer > doubleJumpTimer){ // Allows double jump if timer is ready and space has been let go from inital jump
+            if (spaceUp && spaceKey.isDown && !doubleJumping){// Double Jump
+                player.sprite.setVelocityY(-jumpStrength);
+                doubleJumping = true;
+                player.doubleJumping = true;
+
+                falling = false;
+            }
+        }
+
+        // Checks to see if player is falling from their jump
+        if (player.sprite.body.velocity.y > 0){ // falling
+            falling = true;
+        }
+
+        // Checks for when player hits the ground after falling from a jump
+        if (falling){
+            if (player.sprite.body.velocity.y == 0){ // hit ground
+                jumping = false;
+                doubleJumping = false;
+                player.doubleJumping = false;
+                falling = false;
+
+                player.jumping = false;
+            }
+        }
+    }
+}
+
+export function handlePlayerDamage(player, amount, scene) {
+    player.health -= amount; // Deduct the amount of damage taken
+    
+    // Calculate the health bar scale based on the current health
+    const maxHealth = 3; // max is 3 for now
+    const healthPercentage = player.health / maxHealth;
+
+    // Update the health bar scale
+    player.healthBar.setScale(2 * healthPercentage, 2); // scaleX is now based on health
+    
+    // Align the left side of the health bar with the left side of the container after scaling
+    // This assumes the container's origin is (0, 0.5) and it does not change
+    const containerLeftEdge = player.healthContainer.x - (player.healthContainer.width * player.healthContainer.scaleX * 0.5);
+    player.healthBar.x = containerLeftEdge + (player.healthBar.width * player.healthBar.scaleX * 0.5);
+
+    if (player.health <= 0) {
+        player.health = 0; 
+        console.log("Game Over! Player has died.");
+        // Call functions to handle the game over scenario
+        scene.scene.pause();
+        scene.scene.stop();
+        scene.scene.launch('GameOverScene');
+    }
+}
+
+
+
+
+
+export function animationCreator(scene, w, a, s, d, space){
+    // Check for D key
+    scene.input.keyboard.on("keydown-D", () => {
+        d = true;
+    });
+    scene.input.keyboard.on("keyup-D", () => {
+    d = false;
+    scene.walk.anims.stop();
+    });
+
+    // Check for A key
+    scene.input.keyboard.on("keydown-A", () => {
+        a = true;
+    });
+    scene.input.keyboard.on("keyup-A", () => {
+    a = false;
+    //scene.walk.anims.stop();
+    });
+
+    // check for S key
+    scene.input.keyboard.on("keydown-S", () => {
+        s = true;
+    });
+    scene.input.keyboard.on("keyup-S", () => {
+    s = false;
+    //scene.walk.anims.stop();
+    });
+
+    // Check for W key
+    scene.input.keyboard.on("keydown-W", () => {
+        w = true;
+    });
+    scene.input.keyboard.on("keyup-W", () => {
+    w = false;
+    //scene.walk.anims.stop();
+    });
+
+
+        //this.walk.setFlipX(true);
+        if (d) {
+            scene.walk.anims.play("player_walk", true);
+          } else {
+            scene.walk.anims.stop();
+          }
 }

@@ -1,7 +1,7 @@
 {
   "name": "game",
   "scripts": {
-    "start": "command-to-start-phaser"
+    "dev": "cd ../../../backend && npm run dev"
   },
   "dependencies": {
     "phaser": "^3.60.0"

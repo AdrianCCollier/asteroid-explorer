@@ -36,12 +36,11 @@ export default class Level1Scene extends Phaser.Scene {
     // Set a delayed call to enable collision check after 1 second
     this.time.delayedCall(1000, () => { this.checkCollision = true; }, [], this);
 
-    
-
     // Create the world, door, player, and enemy
     this.asteroid = createAsteroid(this, this.game, 126);
     this.door = createDoor(this, this.asteroid, 55, 64);
     this.player = createPlayer(this, this.asteroid, 64, 64);
+    
     this.enemy = createEnemy(this, this.asteroid, 64, 64);
 
     // Set up the weapon configuration
@@ -59,8 +58,7 @@ export default class Level1Scene extends Phaser.Scene {
 
     // temporary fix, bypass level1.js 
     this.scene.start('SidescrollerScene')
-
-}
+  }
 
   update() {
     // Handle movements and actions on every frame update

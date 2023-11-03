@@ -1,6 +1,8 @@
 // Import different scenes
 import Level1Scene from './level1.js'
 import SidescrollerScene from './sidescrollerScene.js'
+import SidescrollerScene2 from './sidescrollerScene2.js'
+import SidescrollerScene3 from './sidescrollerScene3.js'
 import ConfirmationScene from './confirmationScene.js'
 import GameOverScene from './gameOverScene.js'
 
@@ -14,6 +16,25 @@ class Game extends Component {
 
   // function called after a game is mounted for setup
   componentDidMount() {
+    // props passed down from react to determine which scene to load
+    const { startingScene } = this.props
+
+    let scenes = []
+    switch (startingScene) {
+      case 'SidescrollerScene':
+        scenes = [SidescrollerScene, ConfirmationScene, GameOverScene]
+        break
+      case 'SidescrollerScene2':
+        scenes = [SidescrollerScene2, ConfirmationScene, GameOverScene]
+        break
+      case 'SidescrollerScene3':
+        scenes = [SidescrollerScene3, ConfirmationScene, GameOverScene]
+        break
+      default:
+        scenes = [GameOverScene] // default case
+        break
+    }
+
     let config = {
       type: Phaser.AUTO,
       width: 900,
@@ -21,10 +42,11 @@ class Game extends Component {
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 300 },
+          gravity: { y: 400 },
+          debug:true
         },
       },
-      scene: [Level1Scene, SidescrollerScene, ConfirmationScene, GameOverScene],
+      scene: scenes,
     }
     this.game = new Phaser.Game(config)
   }

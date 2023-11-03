@@ -11,14 +11,15 @@ export function createWeapon(scene, asteroid, w, h) {
       y: weaponSpawnY,
       width: w,
       height: h,
-      sprite: scene.add.sprite(weaponSpawnX, weaponSpawnY, 'weapon'),
+      sprite: scene.add.sprite(weaponSpawnX, weaponSpawnY, 'weapon1'),
       collider: new Phaser.Geom.Circle(weaponSpawnX, weaponSpawnY, w / 2),
   };
   return weapon;
 }
 
 export function loadWeaponImage(scene) {
-  scene.load.image('weapon', './assets/mini.png');
+  scene.load.image('weapon1', './assets/mini.png');
+  scene.load.image('weapon2', './assets/miniLeft.png');
 }
 
 export function createWeaponInside(scene, x, y, w, h) {
@@ -32,7 +33,7 @@ export function createWeaponInside(scene, x, y, w, h) {
       y: weaponSpawnY,
       width: w,
       height: h,
-      sprite: scene.add.sprite(weaponSpawnX, weaponSpawnY, 'weapon'),
+      sprite: scene.add.sprite(weaponSpawnX, weaponSpawnY, 'weapon1'),
       collider: new Phaser.Geom.Circle(weaponSpawnX, weaponSpawnY, w / 2),
   };
   return weapon;
