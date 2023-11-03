@@ -46,6 +46,7 @@ function CanvasContainer({asteroids}) {
       console.log( 'Inside handleAsteroidCLick const ' + index);
       return updatedTooltipVisible;
     })
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -240,5 +241,4 @@ function CanvasContainer({asteroids}) {
     </div>
   )
 }
-
 export default CanvasContainer;
