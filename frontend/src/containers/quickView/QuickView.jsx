@@ -1,8 +1,10 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 import {Button} from 'antd'
 import Earth from '../canvas/Earth.jsx'
 import Venus from '../canvas/Venus.jsx'
 import Mercury from '../canvas/Mercury.jsx'
+import { CloseOutlined, SoundOutlined } from '@ant-design/icons'
+import sound from './chiphead64-11pm.mp3'
 import './quickView.css'
 
 
@@ -12,6 +14,9 @@ const QuickView = () => {
     const [earthMenuVisible, setEarthMenuVisible] = useState( false );
     const [venusMenuVisible, setVenusMenuVisible] = useState( false );
     const [mercuryMenuVisible, setMercuryMenuVisible] = useState( false );
+    const [audioStarted, setAudioStarted] = useState( false );
+    const [soundMuteVisible, setSoundMuteVisible] = useState( true );
+    const audioRef = useRef( null );
     
     const handleSolarClick = () => {
             console.log( 'Solar button clicked!');
@@ -41,13 +46,46 @@ const QuickView = () => {
         setMercuryMenuVisible( !mercuryMenuVisible );
     } ;
 
+    const toggleMuteIcon = () => {
+        setSoundMuteVisible( ( prevVisible ) => !prevVisible );
+    };
+
 
     // method to dynamically resize the buttons
     const resizeButtons = () => {
     const screenWidth = window.innerWidth;
-    const newWidth = screenWidth * 0.07;
+    const newWidth = screenWidth * 0.06;
     setButtonWidth( `${newWidth}px` );
     };
+
+    // effect to handle starting and stopping of audio
+    useEffect( ()=> {
+        if( audioStarted ) {
+
+            if( audioRef.current ) {
+                audioRef.current.play();
+            } // end if
+
+            else {
+                const audio = new Audio( sound );
+                audioRef.current = audio;
+                audio.play();
+            } // end else
+
+        } // end if
+
+        else {
+            if( audioRef.current ) {
+                audioRef.current.pause();
+                audioRef.current.currentTime = 0;
+            } // end if
+        } // end else
+    }, [audioStarted]);
+
+    const startAudio = () => {
+        setAudioStarted( !audioStarted );
+        toggleMuteIcon();
+    }
 
     // effect to handle the resizing of buttons when the window is resized
     useEffect( () => {
@@ -74,6 +112,13 @@ const QuickView = () => {
                 <h1>Menus</h1>
                 <Button style={{ width: buttonWidth, height: buttonWidth }}>Inventory</Button>
                 <Button style={{ width: buttonWidth, height: buttonWidth }}>Equipment</Button>
+            </div>
+
+            <div className="quickView__soundControl" style={{ width: buttonWidth }}>
+                <Button className='toggleSound' onClick = {startAudio} icon={<SoundOutlined style ={{ fontSize: '35px' }} /> } />
+                {soundMuteVisible && (
+                    <Button className='toggleSound' onClick = {startAudio} icon={<CloseOutlined style ={{ fontSize: '35px' }} /> } />
+                )}
             </div>
 
             {earthMenuVisible && <Earth earthMenuVisible={earthMenuVisible} />}

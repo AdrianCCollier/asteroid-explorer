@@ -2,3 +2,39 @@
     position: inherit;
     display: flex;
 }
+
+.asteroid-tooltipFirst,
+.asteroid-tooltipastSecond,
+.asteroid-tooltipThird {
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    height: 150px;
+    color: #ffff;
+    text-align: center;
+    border-radius: 2rem;
+    position: absolute;
+    transform: translateX( -50% );
+    background: rgba( 225, 255, 255, 0.09 );
+    backdrop-filter: blur( 25px );
+    align-items: center;
+    justify-content: center;
+}
+
+.asteroid-info-item {
+    margin-bottom: 10px;
+    font-family: var( --font-family );
+}
+
+.asteroid-info-label {
+    margin-bottom: 10px;
+    margin-top: 2px;
+    font-size: 20px;
+    font-family: var( --font-family );
+    font-weight: 600;
+}
+
+.startGame {
+    background-color: #00BE48;
+    border: none;
+}

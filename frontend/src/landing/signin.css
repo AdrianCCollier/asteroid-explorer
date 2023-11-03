@@ -1,19 +1,17 @@
-.signin{
+.login{
     width: 100vw;
     height: 100vh;
-    background-color: white;
+    background: url( '../images/space_bg.jpg' );
     background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
   }
   
   .body {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 100vh;
-      background: url( '../images/space_bg.jpg' );
-      background-size: cover;
-      background-repeat: no-repeat;
-      background-position: center;
+      min-height: 75vh;
   }
   
   .form {
@@ -103,8 +101,26 @@
       width: 100%;
   }
   
-  .submit:hover {
-      background: rgba( 0, 0, 0, 0.25 );
+  .tooltip-container {
+    position: relative;
+  }
+
+  .tooltip {
+    visibility: hidden;
+    width: 200px;
+    color: #ffff;
+    text-align: center;
+    border-radius: 2rem;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX( -50% );
+    margin-top: 5px;
+  }
+
+  .submit:hover + .tooltip {
+    background: rgba( 0, 0, 0, 0.25 );
+    visibility: visible;
   }
   
   .signin {

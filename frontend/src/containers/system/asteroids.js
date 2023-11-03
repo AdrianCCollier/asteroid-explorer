@@ -1,23 +1,4 @@
-import { useEffect } from 'react';
-
-function Asteroids({ canvasRef }) {
-
-    useEffect( () => {
-        const canvas = canvasRef.current;
-        const context = canvasRef.current.getContext('2d');
-
-        drawAsteroids( context, canvas.height, canvas.width, canvas );
-
-    }, [canvasRef]);
-
-    return null;
-}
-
-function drawAsteroids( context, canvasHeight, canvasWidth, canvas ) {
-
-    console.log( "Drawing steroids");
-
-    // code may be replaced if we decide to plot the asteroids in their actual positions
+function drawAsteroids( context, canvasHeight, canvasWidth ) {
     
     // first asteroid
     var centerX = canvasWidth * 0.75;
@@ -28,6 +9,7 @@ function drawAsteroids( context, canvasHeight, canvasWidth, canvas ) {
     context.fill();
     context.closePath();
 
+    // second asteroid
     centerX = canvasWidth * 0.25;
     centerY = canvasHeight * 0.1;
     context.beginPath();
@@ -37,6 +19,7 @@ function drawAsteroids( context, canvasHeight, canvasWidth, canvas ) {
     context.fill();
     context.closePath();
 
+    // third asteroid
     centerX = canvasWidth / 1.08;
     centerY = canvasHeight / 5;
     context.beginPath();
@@ -45,7 +28,7 @@ function drawAsteroids( context, canvasHeight, canvasWidth, canvas ) {
     context.fillStyle = '#71716D';
     context.fill();
     context.closePath();
-    
+
 }
 
-export default Asteroids;
+export default drawAsteroids

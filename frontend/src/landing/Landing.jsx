@@ -1,15 +1,32 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Form, Button } from 'antd'
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'
+import { Header } from '../containers'
+import sound from './chiphead64-11pm.mp3'
 
 import './landing.css'
 
 function Landing() {
 
+    const [audioStarted, setAudioStarted] = useState( false );
+
+    useEffect( () => {
+        if( audioStarted ) {
+            const audio = new Audio( sound );
+            audio.play();
+        } // end if
+    }, [audioStarted]);
+
+    const startAudio = () => {
+        setAudioStarted( true );
+    };
+
     console.log( 'Inside landing' );
     return (
       <div className='landing'>
+        <Header />
         <div className = 'body' >
+            
             <Form autoComplete='off' className='form'>
                 <p className='title'>Register</p>
                 <div className='form-group'>
@@ -28,20 +45,22 @@ function Landing() {
                 </div>
                 
                 <Link to='/solarSystem'>
-                    <Button className ="submit">Submit</Button>
+                    <Button className ="submit" onClick = {startAudio}>Submit</Button>
                 </Link>
+                
                 <p className = "signin">
                     Already have an account ?
                     <a href = "/signIn"> Sign in</a>
                 </p>
                 <p className = "signin">
-                    <a href = "/solarSystem"> Play Locally</a>
+                    <Link to = '/solarSystem' >
+                        <div className = 'tooltip-container'>
+                            <Button className = "submit">Quick Play</Button>
+                            <div className = 'tooltip'>? Progress will be stored locally</div>
+                        </div>
+                    </Link>
                 </p>
 
-                <audio autoPlay loop>
-                    <source src="chiphead64-11pm.mp3" type="audio/mpeg"/>
-                    Your browser does not support the audio element
-                </audio>
             </Form>
         </div>
 
