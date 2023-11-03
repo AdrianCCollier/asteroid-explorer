@@ -42,7 +42,7 @@ export function handleEnemyMovement(scene, bullets, enemy) {
     bullets.forEach(bullet => {
         if (bullet && bullet.sprite) {
             // Check if the bullet intersects with the enemy and destroy the enemy if true
-            if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.body.getBounds())) {
+            if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
                 enemy.sprite.destroy();
             }
         }
