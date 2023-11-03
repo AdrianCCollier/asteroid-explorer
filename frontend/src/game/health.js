@@ -13,7 +13,7 @@ export function updateBars(scene){
   scene.player.healthContainer.x = scene.cameras.main.scrollX + scene.player.barOffsets[0];
   scene.player.healthContainer.y = scene.cameras.main.scrollY + scene.player.barOffsets[1];
 
-  scene.player.healthBar.x = scene.cameras.main.scrollX + scene.player.barOffsets[2];
+  scene.player.healthBar.x = scene.cameras.main.scrollX + scene.player.barOffsets[2]-123;
   scene.player.healthBar.y = scene.cameras.main.scrollY + scene.player.barOffsets[3];
 
   scene.player.shieldContainer.x = scene.cameras.main.scrollX + scene.player.barOffsets[4];
@@ -21,4 +21,6 @@ export function updateBars(scene){
 
   scene.player.shieldBar.x = scene.cameras.main.scrollX + scene.player.barOffsets[6];
   scene.player.shieldBar.y = scene.cameras.main.scrollY + scene.player.barOffsets[7];
+
+  
 }

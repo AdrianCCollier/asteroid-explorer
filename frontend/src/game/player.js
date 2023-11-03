@@ -134,7 +134,7 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
 export function loadPlayerImage(scene){
     scene.load.image('player', './assets/Skeleton.png');
 }
-
+///
 export function createPlayerInside(scene, x, y) {
     // Create the player sprite with physics body
     var playerSprite = scene.physics.add.sprite(x, y, 'player');
@@ -147,19 +147,17 @@ export function createPlayerInside(scene, x, y) {
         y: y,
         width: playerSprite.width,
         height: playerSprite.height,
-        health: 100,
         angle: 0, 
-        health: 100, 
+        health: 3, 
         gravity: 0.4 ,
         hasWeapon: false,
         canShoot: false,
         sprite: playerSprite,
-        angle: 0,
         rotation: null,
         collider: null,
         facing: 'right', // Default facing direction 
         healthContainer: scene.add.sprite(160, 43, 'health_container'),
-        healthBar: scene.add.sprite(191, 43, 'health_bar'),
+        healthBar: scene.add.sprite(170, 43, 'health_bar'),
         shieldContainer: scene.add.sprite(160, 110, 'shield_container'),
         shieldBar: scene.add.sprite(191, 111, 'shield_bar'),
         barOffsets: [160, 43, 191, 43, 160, 110, 191, 111],
@@ -185,6 +183,7 @@ export function createPlayerInside(scene, x, y) {
     player.healthContainer.setScale(2);
     player.shieldBar.setScale(2);
     player.shieldContainer.setScale(2);
+    player.healthBar.setOrigin(0, 0.5 );
 
     // Add a gun sprite if the player picks one up
     player.gunSprite = scene.add.sprite(player.x, player.y, 'weapon1');
@@ -333,6 +332,35 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     }
 }
 
+export function handlePlayerDamage(player, amount, scene) {
+    player.health -= amount; // Deduct the amount of damage taken
+    
+    // Calculate the health bar scale based on the current health
+    const maxHealth = 3; // max is 3 for now
+    const healthPercentage = player.health / maxHealth;
+
+    // Update the health bar scale
+    player.healthBar.setScale(2 * healthPercentage, 2); // scaleX is now based on health
+    
+    // Align the left side of the health bar with the left side of the container after scaling
+    // This assumes the container's origin is (0, 0.5) and it does not change
+    const containerLeftEdge = player.healthContainer.x - (player.healthContainer.width * player.healthContainer.scaleX * 0.5);
+    player.healthBar.x = containerLeftEdge + (player.healthBar.width * player.healthBar.scaleX * 0.5);
+
+    if (player.health <= 0) {
+        player.health = 0; 
+        console.log("Game Over! Player has died.");
+        // Call functions to handle the game over scenario
+        scene.scene.pause();
+        scene.scene.stop();
+        scene.scene.launch('GameOverScene');
+    }
+}
+
+
+
+
+
 export function animationCreator(scene, w, a, s, d, space){
     // Check for D key
     scene.input.keyboard.on("keydown-D", () => {
@@ -377,13 +405,4 @@ export function animationCreator(scene, w, a, s, d, space){
           } else {
             scene.walk.anims.stop();
           }
-}
-
-export function handlePlayerDamage(player, amount) {
-    player.health -= amount;
-    if (player.health <= 0) {
-        // Trigger game over, respawn, etc.
-        player.health = 0; // Ensure health doesn't go negative
-        console.log("Player is dead!"); // Replace with your game over logic
-    }
 }

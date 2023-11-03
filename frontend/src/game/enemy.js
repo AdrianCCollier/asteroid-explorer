@@ -77,7 +77,7 @@ export function createEnemyInside(scene, group, x, y) {
     enemy.body.setOffset(offsetX, offsetY);
 
     // Attach properties to the sprite directly
-    enemy.speed = 20;
+    enemy.speed = 50;
     enemy.direction = 1; // Enemy initial direction (1 for right, -1 for left)
     enemy.animator = null;
     createEnemyAnimator(scene, enemy);
