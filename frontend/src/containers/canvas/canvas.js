@@ -55,10 +55,6 @@ function CanvasContainer({ asteroids }) {
       var mouseX = e.clientX - rect.left
       var mouseY = e.clientY - rect.top
 
-      // var plan1X = canvas.width * 0.33 // for Mercury
-      // var plan1Y = canvas.height / 2   // for Mercury
-      // var plan2X = canvas.width * 0.66 // for Venus
-      // var plan2Y = canvas.height / 2   // for Venus
       var plan3X = canvas.width * 0.25 // for Earth
       var plan3Y = canvas.height * 0.5 // for Earth
 
@@ -78,9 +74,6 @@ function CanvasContainer({ asteroids }) {
       var ast7X = canvas.width * 0.9 // for asteroid 4
       var ast7Y = canvas.height * 0.45 // for asteroid 4
 
-      var rad1 = 28.195 // radius of Mercury
-      var rad2 = 70.75 // radius of Venus
-
       var rad3 = 75 // radius of Earth
       var rad4 = 15 // radius of first asteroid
       var rad5 = 12 // radius of second asteroid
@@ -90,7 +83,7 @@ function CanvasContainer({ asteroids }) {
       // calculate the distance from the mouse to each asteroids center
       // var distance1 = Math.sqrt((mouseX - plan1X) ** 2 + (mouseY - plan1Y) ** 2)
       // var distance2 = Math.sqrt((mouseX - plan2X) ** 2 + (mouseY - plan2Y) ** 2)
-      var distance3 = Math.sqrt((mouseX - plan3X) ** 2 + (mouseY - plan3Y) ** 2)
+      //var distance3 = Math.sqrt((mouseX - plan3X) ** 2 + (mouseY - plan3Y) ** 2)
       var distance4 = Math.sqrt((mouseX - ast4X) ** 2 + (mouseY - ast4Y) ** 2)
       var distance5 = Math.sqrt((mouseX - ast5X) ** 2 + (mouseY - ast5Y) ** 2)
       var distance6 = Math.sqrt((mouseX - ast6X) ** 2 + (mouseY - ast6Y) ** 2)
@@ -100,7 +93,7 @@ function CanvasContainer({ asteroids }) {
       if (
         // distance1 < rad1 ||
         // distance2 < rad2 ||
-        distance3 < rad3 ||
+        // distance3 < rad3 ||
         distance4 < rad4 ||
         distance5 < rad5 ||
         distance6 < rad6 ||

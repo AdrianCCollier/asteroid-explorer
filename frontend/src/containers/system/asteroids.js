@@ -1,9 +1,45 @@
 function drawAsteroids( context, canvasHeight, canvasWidth ) {
   // first asteroid - Ryugu
+  
+
+  const ryuguImage = new Image()
+  const vestaImage = new Image()
+  const psyche16Image = new Image()
+  const ceresImage = new Image()
+
+  ryuguImage.src = './assets/Ryugu.png'
+  vestaImage.src = './assets/Vesta.png'
+  psyche16Image.src = './assets/16Psyche.png'
+  ceresImage.src = './assets/Ceres.png'
+
+  // wait for the image to load before drawing it
+  ryuguImage.onload = function() {
+    // draw the Ryugu image on the canvas
+    context.drawImage( ryuguImage, canvasWidth * 0.344 , canvasHeight * 0.59, 256/11.5, 256/11.5);
+  };
+
+  vestaImage.onload = function() {
+    // draw the Ryugu image on the canvas
+    context.drawImage( vestaImage, canvasWidth * 0.494 , canvasHeight * 0.19, 256/11, 256/11);
+  };
+
+  psyche16Image.onload = function() {
+    // draw the Ryugu image on the canvas
+    context.drawImage( psyche16Image, canvasWidth * 0.686 , canvasHeight * 0.373, 256/4.5, 256/4.5);
+  };
+
+  ceresImage.onload = function() {
+    // draw the Ryugu image on the canvas
+    context.drawImage( ceresImage, canvasWidth * 0.875 , canvasHeight * 0.403, 256/2.6, 256/2.6);
+  };
+
+  // keeping commented out for debuging
+  /*
   var centerX = canvasWidth * 0.35
   var centerY = canvasHeight * 0.6
   context.beginPath()
-  context.arc(centerX, centerY, 15, 0, Math.PI * 2)
+  context.moveTo(centerX, centerY)
+  context.arc(centerX, centerY, 12, 0, Math.PI * 2)
   context.fillStyle = '#71716D'
   context.fill()
   context.closePath()
@@ -37,6 +73,7 @@ function drawAsteroids( context, canvasHeight, canvasWidth ) {
   context.fillStyle = '#71716D'
   context.fill()
   context.closePath()
+  */
 }
 
 export default drawAsteroids

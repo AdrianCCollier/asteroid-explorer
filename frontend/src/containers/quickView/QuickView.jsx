@@ -54,7 +54,7 @@ const QuickView = () => {
     // method to dynamically resize the buttons
     const resizeButtons = () => {
     const screenWidth = window.innerWidth;
-    const newWidth = screenWidth * 0.06;
+    const newWidth = screenWidth * 0.05;
     setButtonWidth( `${newWidth}px` );
     };
 
@@ -102,16 +102,16 @@ const QuickView = () => {
 
             <div className="quickView__button-column left-column" style={{ width: buttonWidth }}>
                 <h1>Quick View</h1>
-                <Button style={{ width: buttonWidth, height: buttonWidth }} onClick={handleSolarClick}>Solar System</Button>
-                <Button style={{ width: buttonWidth, height: buttonWidth }} onClick={handleEarthClick}>Earth</Button>
-                <Button style={{ width: buttonWidth, height: buttonWidth }} onClick={handleVenusClick}>Venus</Button>
-                <Button style={{ width: buttonWidth, height: buttonWidth }} onClick={handleMercuryClick}>Mercury</Button>
+                <Button style={{ width: buttonWidth, height: buttonWidth }} onClick={handleSolarClick}>System View</Button>
+                <Button style={{ width: buttonWidth, height: buttonWidth }} onClick={handleEarthClick}>Ryugu</Button>
+                <Button style={{ width: buttonWidth, height: buttonWidth }} onClick={handleVenusClick}>Vesta</Button>
+                <Button style={{ width: buttonWidth, height: buttonWidth }} onClick={handleMercuryClick}>Psyche 16</Button>
+                <Button style={{ width: buttonWidth, height: buttonWidth }} onClick={handleMercuryClick}>Ceres</Button>
             </div>
 
             <div className="quickView__button-column right-column" style={{ width: buttonWidth }}>
                 <h1>Menus</h1>
                 <Button style={{ width: buttonWidth, height: buttonWidth }}>Inventory</Button>
-                <Button style={{ width: buttonWidth, height: buttonWidth }}>Equipment</Button>
             </div>
 
             <div className="quickView__soundControl" style={{ width: buttonWidth }}>
