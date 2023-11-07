@@ -116,11 +116,14 @@ function CanvasContainer({ asteroids }) {
       canvas.height = window.innerHeight * 0.785
 
       setCanvasDimensions({ width: canvas.width, height: canvas.height })
-      console.log('Canvas Dimensions width: ' + canvasDimensions.width)
-      console.log('Canvas Dimensions height: ' + canvasDimensions.height)
 
-      context.fillStyle = 'black'
-      context.fillRect(0, 0, canvas.width, canvas.height)
+      const backgroundImage = new Image()
+      backgroundImage.src = './assets/Background.jpg'
+
+      backgroundImage.onload = function() {
+        console.log( 'Inside on load of background image' )
+        context.drawImage( backgroundImage, 0, 0, canvas.width, canvas.height )
+      }
 
       drawSun(context, canvas.height)
       drawEarth(context, canvas.height, canvas.width)
