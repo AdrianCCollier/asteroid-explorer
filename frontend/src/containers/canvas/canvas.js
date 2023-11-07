@@ -1,18 +1,16 @@
-import React, {useRef, useLayoutEffect, useState, useEffect } from 'react';
-import drawSun from '../system/sun';
-import drawEarth from '../system/earth';
-import drawMercury from '../system/mercury';
-import drawVenus from '../system/venus';
-import { Link } from 'react-router-dom';
-import { Button } from 'antd';
-import drawAsteroids from '../system/asteroids.js';
-import './canvas.css';
-
-
+import React, { useRef, useLayoutEffect, useState, useEffect } from 'react'
+import drawSun from '../system/sun'
+import drawEarth from '../system/earth'
+import drawMercury from '../system/mercury'
+import drawVenus from '../system/venus'
+import { Link } from 'react-router-dom'
+import { Button } from 'antd'
+import drawAsteroids from '../system/asteroids.js'
+import './canvas.css'
 
 // Adrian, 9/22. added asteroids as a prop here, being passed down from Solar.js, its coming all the way from localhost:3000/asteroids, it was sent to Solar.js, and now here. The goal is to display actual asteroid data when an asteroid is clicked, so its going to asteroids.js next
 // Malyk, 9/25. "click" event listening for asteroids has been moved into here. asteroid information should be passed to Menu inside return
-function CanvasContainer({asteroids}) {
+function CanvasContainer({ asteroids }) {
   const canvasRef = useRef(null)
   const [canvasDimensions, setCanvasDimensions] = useState({
     width: 0,
@@ -24,27 +22,28 @@ function CanvasContainer({asteroids}) {
     diameter: 10,
     distanceFromEarth: 100,
   })
-  const [tooltipVisible, setTooltipVisible] = useState (
-    [false, 
-    false, 
-    false]
-  )
+  const [tooltipVisible, setTooltipVisible] = useState([
+    false,
+    false,
+    false,
+    false,
+  ])
 
   // state to keep track of which asteroid was clicked, to load different phaser levels
   const [clickedAsteroidIndex, setClickedAsteroidIndex] = useState(null)
 
-  const handleAsteroidClick = ( index ) => {
-    setTooltipVisible( ( prevTooltipVisible ) => {
-      const updatedTooltipVisible = [...prevTooltipVisible];
+  const handleAsteroidClick = (index) => {
+    setTooltipVisible((prevTooltipVisible) => {
+      const updatedTooltipVisible = [...prevTooltipVisible]
 
       // loop to close all other tooltips before opening current tooltip
-      for( let i = 0; i < updatedTooltipVisible.length; i++ ) {
-        updatedTooltipVisible[i] = false;
+      for (let i = 0; i < updatedTooltipVisible.length; i++) {
+        updatedTooltipVisible[i] = false
       } // end for
 
-      updatedTooltipVisible[index] = !updatedTooltipVisible[index];
-      console.log( 'Inside handleAsteroidCLick const ' + index);
-      return updatedTooltipVisible;
+      updatedTooltipVisible[index] = !updatedTooltipVisible[index]
+      console.log('Inside handleAsteroidCLick const ' + index)
+      return updatedTooltipVisible
     })
   }
 
@@ -56,41 +55,56 @@ function CanvasContainer({asteroids}) {
       var mouseX = e.clientX - rect.left
       var mouseY = e.clientY - rect.top
 
-      var plan1X = canvas.width * 0.33 // for Mercury
-      var plan1Y = canvas.height / 2   // for Mercury
-      var plan2X = canvas.width * 0.66 // for Venus
-      var plan2Y = canvas.height / 2   // for Venus
-      var plan3X = canvas.width * 0.95 // for Earth
-      var plan3Y = canvas.height / 2   // for Earth
-      var ast4X = canvas.width * 0.75  // for asteroid 1
-      var ast4Y = canvas.height / 1.25 // for asteroid 1
-      var ast5X = canvas.width * 0.25  // for asteroid 2
-      var ast5Y = canvas.height * 0.1  // for asteroid 2
-      var ast6X = canvas.width / 1.08  // for asteroid 3
-      var ast6Y = canvas.height / 5    // for astesroid 3
+      // var plan1X = canvas.width * 0.33 // for Mercury
+      // var plan1Y = canvas.height / 2   // for Mercury
+      // var plan2X = canvas.width * 0.66 // for Venus
+      // var plan2Y = canvas.height / 2   // for Venus
+      var plan3X = canvas.width * 0.25 // for Earth
+      var plan3Y = canvas.height * 0.5 // for Earth
+
+      // Ryugu
+      var ast4X = canvas.width * 0.35 // for asteroid 1
+      var ast4Y = canvas.height * 0.6 // for asteroid 1
+
+      // Vesta
+      var ast5X = canvas.width * 0.5 // for asteroid 2
+      var ast5Y = canvas.height * 0.2 // for asteroid 2
+
+      // Psyche
+      var ast6X = canvas.width * 0.7 // for asteroid 3
+      var ast6Y = canvas.height * 0.4 // for astesroid 3
+
+      // Ceres
+      var ast7X = canvas.width * 0.9 // for asteroid 4
+      var ast7Y = canvas.height * 0.45 // for asteroid 4
+
       var rad1 = 28.195 // radius of Mercury
       var rad2 = 70.75 // radius of Venus
+
       var rad3 = 75 // radius of Earth
       var rad4 = 15 // radius of first asteroid
       var rad5 = 12 // radius of second asteroid
       var rad6 = 25 // radius of third asteroid
+      var rad7 = 45 // Ceres Radius
 
       // calculate the distance from the mouse to each asteroids center
-      var distance1 = Math.sqrt((mouseX - plan1X) ** 2 + (mouseY - plan1Y) ** 2)
-      var distance2 = Math.sqrt((mouseX - plan2X) ** 2 + (mouseY - plan2Y) ** 2)
+      // var distance1 = Math.sqrt((mouseX - plan1X) ** 2 + (mouseY - plan1Y) ** 2)
+      // var distance2 = Math.sqrt((mouseX - plan2X) ** 2 + (mouseY - plan2Y) ** 2)
       var distance3 = Math.sqrt((mouseX - plan3X) ** 2 + (mouseY - plan3Y) ** 2)
       var distance4 = Math.sqrt((mouseX - ast4X) ** 2 + (mouseY - ast4Y) ** 2)
       var distance5 = Math.sqrt((mouseX - ast5X) ** 2 + (mouseY - ast5Y) ** 2)
       var distance6 = Math.sqrt((mouseX - ast6X) ** 2 + (mouseY - ast6Y) ** 2)
+      var distance7 = Math.sqrt((mouseX - ast7X) ** 2 + (mouseY - ast7Y) ** 2)
 
       // check if mouse is inside any of the circles
       if (
-        distance1 < rad1 ||
-        distance2 < rad2 ||
+        // distance1 < rad1 ||
+        // distance2 < rad2 ||
         distance3 < rad3 ||
         distance4 < rad4 ||
         distance5 < rad5 ||
-        distance6 < rad6
+        distance6 < rad6 ||
+        distance7 < rad7
       ) {
         canvas.style.cursor = 'pointer'
       } else {
@@ -105,22 +119,21 @@ function CanvasContainer({asteroids}) {
     const context = canvas.getContext('2d')
 
     const resizeCanvas = () => {
-      
-      canvas.width = window.innerWidth * 0.77;
-      canvas.height = window.innerHeight * 0.785;
+      canvas.width = window.innerWidth * 0.77
+      canvas.height = window.innerHeight * 0.785
 
-      setCanvasDimensions( {width: canvas.width, height: canvas.height })
-      console.log( 'Canvas Dimensions width: ' + canvasDimensions.width )
-      console.log( 'Canvas Dimensions height: ' + canvasDimensions.height )
+      setCanvasDimensions({ width: canvas.width, height: canvas.height })
+      console.log('Canvas Dimensions width: ' + canvasDimensions.width)
+      console.log('Canvas Dimensions height: ' + canvasDimensions.height)
 
-      context.fillStyle = 'black';
-      context.fillRect( 0, 0, canvas.width, canvas.height )
-      
-      drawSun( context, canvas.height )
-      drawEarth( context, canvas.height, canvas.width )
-      drawMercury( context, canvas.height, canvas.width )
-      drawVenus( context, canvas.height, canvas.width )
-      drawAsteroids( context, canvas.height, canvas.width )
+      context.fillStyle = 'black'
+      context.fillRect(0, 0, canvas.width, canvas.height)
+
+      drawSun(context, canvas.height)
+      drawEarth(context, canvas.height, canvas.width)
+      // drawMercury( context, canvas.height, canvas.width )
+      // drawVenus( context, canvas.height, canvas.width )
+      drawAsteroids(context, canvas.height, canvas.width)
     }
 
     resizeCanvas()
@@ -138,61 +151,87 @@ function CanvasContainer({asteroids}) {
       var mouseX = e.clientX - rect.left
       var mouseY = e.clientY - rect.top
 
-      var ast1X = canvas.width * 0.75
-      var ast1Y = canvas.height / 1.25
-      var ast2X = canvas.width * 0.25
-      var ast2Y = canvas.height * 0.1
-      var ast3X = canvas.width / 1.08
-      var ast3Y = canvas.height / 5
+      // HERE
+      var ryuguX = canvas.width * 0.35
+      var ryuguY = canvas.height * 0.6
+
+      var vestaX = canvas.width * 0.5
+      var vestaY = canvas.height * 0.2
+
+      var ast3X = canvas.width * 0.7
+      var ast3Y = canvas.height * 0.4
+
+      var ast4X = canvas.width * 0.9
+      var ast4Y = canvas.height * 0.45
+
       var rad1 = 15
       var rad2 = 12
       var rad3 = 25
+      var rad4 = 45
 
       // calculate the distance from the mouse to each asteroids center
-      var distance1 = Math.sqrt((mouseX - ast1X) ** 2 + (mouseY - ast1Y) ** 2)
-      var distance2 = Math.sqrt((mouseX - ast2X) ** 2 + (mouseY - ast2Y) ** 2)
+      var distance1 = Math.sqrt((mouseX - ryuguX) ** 2 + (mouseY - ryuguY) ** 2)
+      var distance2 = Math.sqrt((mouseX - vestaX) ** 2 + (mouseY - vestaY) ** 2)
       var distance3 = Math.sqrt((mouseX - ast3X) ** 2 + (mouseY - ast3Y) ** 2)
+      var distance4 = Math.sqrt((mouseX - ast4X) ** 2 + (mouseY - ast4Y) ** 2)
 
       // check if mouse is inside any of the circles
       // from here we will set setMenuOpen to true and pass asteroid information to Menu
-      if( distance1 < rad1 ) {
-        console.log( 'Asteroid 0 clicked');
+      if (distance1 < rad1) {
+        console.log('Asteroid 0 clicked')
         setCanvasDimensions({
-          width: ast1X - 50,
-          height: ast1Y - 50})
+          width: ryuguX - 50,
+          height: ryuguY - 50,
+        })
         setAsteroidInformation({
           name: asteroids[0].name,
-          diameter:
-            asteroids[0].estimated_diameter.kilometers.estimated_diameter_max,
-          distanceFromEarth: asteroids[0].orbital_data.perihelion_distance })
-        handleAsteroidClick( 0 )
+          diameter: asteroids[0].diameter,
+          distanceFromEarth: asteroids[0].distanceFromEarth,
+        })
+        handleAsteroidClick(0)
         setClickedAsteroidIndex(0)
       } // end if
-      else if( distance2 < rad2 ) {
-        console.log( 'Asteroid 1 clicked')
+      else if (distance2 < rad2) {
+        console.log('Asteroid 1 clicked')
         setCanvasDimensions({
-          width: ast2X + 425,
-          height: ast2Y - 50})
+          width: vestaX + 425,
+          height: vestaY - 50,
+        })
         setAsteroidInformation({
           name: asteroids[1].name,
-          diameter:
-            asteroids[1].estimated_diameter.kilometers.estimated_diameter_max,
-          distanceFromEarth: asteroids[1].orbital_data.perihelion_distance })
-        handleAsteroidClick( 1 )
+          diameter: asteroids[1].diameter,
+          distanceFromEarth: asteroids[1].distanceFromEarth,
+        })
+        handleAsteroidClick(1)
         setClickedAsteroidIndex(1)
       } // end else if
-      else if( distance3 < rad3 ) {
-        console.log( 'Asteroid 2 clicked')
+      else if (distance3 < rad3) {
+        console.log('Asteroid 2 clicked')
         setCanvasDimensions({
           width: ast3X - 50,
-          height: ast3Y - 50})
+          height: ast3Y - 50,
+        })
         setAsteroidInformation({
           name: asteroids[2].name,
-          diameter:
-            asteroids[2].estimated_diameter.kilometers.estimated_diameter_max,
-          distanceFromEarth: asteroids[2].orbital_data.perihelion_distance })
-        handleAsteroidClick( 2 )
+          diameter: asteroids[2].diameter,
+          distanceFromEarth: asteroids[2].distanceFromEarth,
+        })
+        handleAsteroidClick(2)
         setClickedAsteroidIndex(2)
+      } // end else if
+      else if (distance4 < rad4) {
+        console.log('Asteroid 3 clicked')
+        setCanvasDimensions({
+          width: ast4X - 50,
+          height: ast4Y - 50,
+        })
+        setAsteroidInformation({
+          name: asteroids[3].name,
+          diameter: asteroids[3].diameter,
+          distanceFromEarth: asteroids[3].distanceFromEarth,
+        })
+        handleAsteroidClick(3)
+        setClickedAsteroidIndex(3)
       } // end else if
     })
 
@@ -205,40 +244,90 @@ function CanvasContainer({asteroids}) {
   }, [asteroids])
 
   return (
-    <div className='frontend__containers__canvas'>
-      <canvas id = "frontend__containers__canvas__init" ref = {canvasRef}></canvas>
+    <div className="frontend__containers__canvas">
+      <canvas id="frontend__containers__canvas__init" ref={canvasRef}></canvas>
 
       {tooltipVisible[0] && (
-        <div className='asteroid-tooltipFirst' style = {{ left: canvasDimensions.width, top: canvasDimensions.height}}>
+        <div
+          className="asteroid-tooltipFirst"
+          style={{ left: canvasDimensions.width, top: canvasDimensions.height }}
+        >
           <div className='asteroid-info-label'>Name: {asteroidInformation.name} </div>
-          <div className='asteroid-info-item'> Diameter: {asteroidInformation.diameter} km </div>
+          <div className='asteroid-info-item'> Diameter: {asteroidInformation.diameter} Meters </div>
           <div className='asteroid-info-item'> Distance from Earth: {asteroidInformation.distanceFromEarth} AU </div>
+
           <Link to="/level0">
-            <Button className='startGame' >EXPLORE</Button>
+            <Button className="startGame">EXPLORE</Button>
           </Link>
         </div>
       )}
       {tooltipVisible[1] && (
-        <div className='asteroid-tooltipastSecond' style = {{ left: canvasDimensions.width, top: canvasDimensions.height}}>
-          <div className='asteroid-info-label'>Name: {asteroidInformation.name} </div>
-          <div className='asteroid-info-item'> Diameter: {asteroidInformation.diameter} km </div>
-          <div className='asteroid-info-item'> Distance from Earth: {asteroidInformation.distanceFromEarth} AU </div>
+        <div
+          className="asteroid-tooltipastSecond"
+          style={{ left: canvasDimensions.width, top: canvasDimensions.height }}
+        >
+          <div className="asteroid-info-label">
+            Name: {asteroidInformation.name}{' '}
+          </div>
+          <div className="asteroid-info-item">
+            {' '}
+            Diameter: {asteroidInformation.diameter} Meters{' '}
+          </div>
+          <div className="asteroid-info-item">
+            {' '}
+            Distance from Earth: {asteroidInformation.distanceFromEarth} AU{' '}
+          </div>
+          
           <Link to="/level1">
-            <Button className='startGame' >EXPLORE</Button>
+            <Button className="startGame">EXPLORE</Button>
           </Link>
         </div>
       )}
       {tooltipVisible[2] && (
-        <div className='asteroid-tooltipThird' style = {{ left: canvasDimensions.width, top: canvasDimensions.height}}>
-          <div className='asteroid-info-label'>Name: {asteroidInformation.name} </div>
-          <div className='asteroid-info-item'> Diameter: {asteroidInformation.diameter} km </div>
-          <div className='asteroid-info-item'> Distance from Earth: {asteroidInformation.distanceFromEarth} AU </div>
+        <div
+          className="asteroid-tooltipThird"
+          style={{ left: canvasDimensions.width, top: canvasDimensions.height }}
+        >
+          <div className="asteroid-info-label">
+            Name: {asteroidInformation.name}{' '}
+          </div>
+          <div className="asteroid-info-item">
+            {' '}
+            Diameter: {asteroidInformation.diameter} Meters{' '}
+          </div>
+          <div className="asteroid-info-item">
+            {' '}
+            Distance from Earth: {asteroidInformation.distanceFromEarth} AU{' '}
+          </div>
+          
           <Link to="/level2">
-            <Button className='startGame' >EXPLORE</Button>
+            <Button className="startGame">EXPLORE</Button>
+          </Link>
+        </div>
+      )}
+      {tooltipVisible[3] && (
+        <div
+          className="asteroid-tooltipFourth"
+          style={{ left: canvasDimensions.width, top: canvasDimensions.height }}
+        >
+          <div className="asteroid-info-label">
+            Name: {asteroidInformation.name}{' '}
+          </div>
+          <div className="asteroid-info-item">
+            {' '}
+            Diameter: {asteroidInformation.diameter} Meters{' '}
+          </div>
+          <div className="asteroid-info-item">
+            {' '}
+            Distance from Earth: {asteroidInformation.distanceFromEarth} AU{' '}
+          </div>
+          
+          <Link to="/level3">
+            <Button className="startGame">EXPLORE</Button>
           </Link>
         </div>
       )}
     </div>
   )
 }
-export default CanvasContainer;
+export default CanvasContainer

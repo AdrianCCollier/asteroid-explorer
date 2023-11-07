@@ -5,7 +5,8 @@
 
 .asteroid-tooltipFirst,
 .asteroid-tooltipastSecond,
-.asteroid-tooltipThird {
+.asteroid-tooltipThird,
+.asteroid-tooltipFourth {
     display: flex;
     flex-direction: column;
     width: 350px;
@@ -20,6 +21,22 @@
     align-items: center;
     justify-content: center;
 }
+
+.asteroid-tooltipFirst {
+    transform: translateX(calc(40%)) translateY(60%);
+}
+.asteroid-tooltipastSecond {
+    transform: translateX(calc(-130% - 10px)) translateY(60%);
+}
+
+.asteroid-tooltipThird {
+    transform: translateX(calc(0% - 40px)) translateY(80%);
+}
+.asteroid-tooltipFourth {
+    transform: translateX(calc(0% - 40px)) translateY(80%);
+}
+
+/* Ceres tooltip needs to be float left to avoid going off screen */
 
 .asteroid-info-item {
     margin-bottom: 10px;

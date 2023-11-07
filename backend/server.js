@@ -10,6 +10,7 @@ app.use(express.static('public'))
 app.use(express.static(path.join(__dirname, '../frontend/build')))
 app.use(express.json())
 
+const asteroidRouter = require('./routes/customAsteroids')
 const fs = require('fs')
 
 const API_KEY = process.env.API_KEY
@@ -38,6 +39,8 @@ app.post('/addPlayer', async (req, res) => {
   }
 })
 
+app.use('/api', asteroidRouter);
+
 app.get('/asteroids', (req, res) => {
   // Check if cache file exists
   if (fs.existsSync(CACHE_FILE)) {
@@ -56,7 +59,7 @@ app.get('/asteroids', (req, res) => {
   axios
     .get(`https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=${API_KEY}`)
     .then((response) => {
-      const asteroids = response.data.near_earth_objects.slice(0, 3)
+      const asteroids = response.data.near_earth_objects.slice(0, 4)
 
       // Write to cache file
       const dataToCache = {
