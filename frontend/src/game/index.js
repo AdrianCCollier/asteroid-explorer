@@ -1,4 +1,9 @@
 // Import different scenes
+import Ryugu from './ryugu.js'
+import Vesta from './vesta.js'
+import Psyche from './psyche.js'
+import Ceres from './ceres.js'
+
 import Level1Scene from './level1.js'
 import SidescrollerScene from './sidescrollerScene.js'
 import SidescrollerScene2 from './sidescrollerScene2.js'
@@ -31,6 +36,18 @@ class Game extends Component {
       case 'SidescrollerScene3':
         scenes = [SidescrollerScene3, ConfirmationScene, GameOverScene, WinScene]
         break
+      case 'Ryugu':
+        scenes = [Ryugu, ConfirmationScene, GameOverScene, WinScene]
+        break;
+      case 'Vesta':
+        scenes = [Vesta, ConfirmationScene, GameOverScene, WinScene]
+        break;
+      case 'Psyche':
+        scenes = [Psyche, ConfirmationScene, GameOverScene, WinScene]
+        break;
+      case 'Ceres':
+        scenes = [Ceres, ConfirmationScene, GameOverScene, WinScene]
+        break;
       default:
         scenes = [GameOverScene] // default case
         break

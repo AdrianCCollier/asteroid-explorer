@@ -22,7 +22,7 @@ export function createBullet(scene, player, w, h) {
 }
 
 export function createBulletInside(scene, player, w, h, a) {
-  let speed = 5; // Speed of the bullet
+  let speed = 8; // Speed of the bullet
 
   // Determine the bullet's velocity based on the player's facing angle
   let velocity = {
@@ -47,6 +47,8 @@ export function createBulletInside(scene, player, w, h, a) {
   // Set the bullet's velocity
   bullet.sprite.setVelocity(velocity.x, velocity.y);
 
+  bullet.sprite.setRotation(a);
+
   // Stops gravity from affecting bullet
   bullet.sprite.body.setAllowGravity(false);
 
@@ -70,8 +72,16 @@ export function createBulletInside(scene, player, w, h, a) {
     }
   });
 
-  // Add collision with scene.layer
-  scene.physics.add.collider(bullet.sprite, scene.layer, function() {
+  // Add collision with asteroid layer
+  scene.physics.add.collider(bullet.sprite, scene.asteroidLayer, function() {
+    bullet.distanceTraveled = 800;
+  });
+  // Add collision with alien layer
+  scene.physics.add.collider(bullet.sprite, scene.alienLayer, function() {
+    bullet.distanceTraveled = 800;
+  });
+  // Add collision with platform layer
+  scene.physics.add.collider(bullet.sprite, scene.platformLayer, function() {
     bullet.distanceTraveled = 800;
   });
 

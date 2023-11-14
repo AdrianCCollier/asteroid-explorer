@@ -219,8 +219,8 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
 
     player.angle = Phaser.Math.Angle.Between(player.sprite.x, player.sprite.y, crosshairX, crosshairY);
 
-    if (leftMouseButton){
-        
+    if (player.sprite.body.velocity.y >= 640){
+        player.sprite.body.velocity.y = 640;
     }
 
     // Handles shooting
@@ -275,8 +275,14 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
 
     // Checks if player's velocity = 0 (stopped falling or not)
     if (player.sprite.body.velocity.y == 0){
-        stopped = true;
+        jumping = false;
+        doubleJumping = false;
+        player.doubleJumping = false;
+        falling = false;
+
         player.jumping = false;
+
+        stopped = true;
     }
     else{
         stopped = false;
@@ -322,12 +328,7 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
         // Checks for when player hits the ground after falling from a jump
         if (falling){
             if (player.sprite.body.velocity.y == 0){ // hit ground
-                jumping = false;
-                doubleJumping = false;
-                player.doubleJumping = false;
-                falling = false;
-
-                player.jumping = false;
+                
             }
         }
     }

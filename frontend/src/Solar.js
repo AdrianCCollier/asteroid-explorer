@@ -21,7 +21,7 @@ import './index.css'
 function ExplorerGame0() {
   return (
     <div>
-      <Game startingScene="SidescrollerScene" />
+      <Game startingScene="Ryugu" />
     </div>
   )
 }
@@ -29,7 +29,7 @@ function ExplorerGame0() {
 function ExplorerGame1() {
   return (
     <div>
-      <Game startingScene="SidescrollerScene2" />
+      <Game startingScene="Vesta" />
     </div>
   )
 }
@@ -37,7 +37,7 @@ function ExplorerGame1() {
 function ExplorerGame2() {
   return (
     <div>
-      <Game startingScene="SidescrollerScene3" />
+      <Game startingScene="Psyche" />
     </div>
   )
 }
