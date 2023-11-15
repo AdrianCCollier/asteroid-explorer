@@ -1018,6 +1018,11 @@
                  "id":198,
                  "properties":[
                         {
+                         "name":"animate",
+                         "type":"bool",
+                         "value":true
+                        }, 
+                        {
                          "name":"collides",
                          "type":"bool",
                          "value":true

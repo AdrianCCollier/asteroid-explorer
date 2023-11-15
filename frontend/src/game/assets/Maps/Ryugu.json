@@ -1018,12 +1018,12 @@
                  "id":198,
                  "properties":[
                         {
-                         "name":"collides",
+                         "name":"animate",
                          "type":"bool",
                          "value":true
                         }, 
                         {
-                         "name":"platformCollision",
+                         "name":"collides",
                          "type":"bool",
                          "value":true
                         }]
@@ -1035,11 +1035,6 @@
                          "name":"collides",
                          "type":"bool",
                          "value":true
-                        }, 
-                        {
-                         "name":"platformCollision",
-                         "type":"bool",
-                         "value":true
                         }]
                 }, 
                 {
@@ -1047,11 +1042,6 @@
                  "properties":[
                         {
                          "name":"collides",
-                         "type":"bool",
-                         "value":true
-                        }, 
-                        {
-                         "name":"platformCollision",
                          "type":"bool",
                          "value":true
                         }]

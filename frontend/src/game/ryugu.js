@@ -7,8 +7,10 @@ import {
   handlePlayerMovementInside,
   animationCreator,
   loadWeaponSounds,
-  handlePlayerDamage
-
+  handlePlayerDamage,
+  asteroidFloor,
+  alienFloor,
+  platformFloor
 } from './player.js'
 
 
@@ -98,10 +100,10 @@ export default class Ryugu extends Phaser.Scene {
     this.load.image('galaxy', galaxyBackground)
     this.load.image('M16', M16)
     loadHealthBar(this);
-    loadShieldBar(this);
+    //loadShieldBar(this);
+
   }
 
-  
 
   create() {
     // Handle canvas resizing on window resize
@@ -164,22 +166,22 @@ export default class Ryugu extends Phaser.Scene {
     // Applies Map layer collisions to player
     this.physics.add.collider(
       this.player.sprite,
-      this.asteroidLayer,
-      this.handleTileCollision,
-      null,
-      this
-    )
-    this.physics.add.collider(
-      this.player.sprite,
       this.alienLayer,
-      this.handleTileCollision,
+      alienFloor,
       null,
       this
     )
     this.physics.add.collider(
       this.player.sprite,
       this.platformLayer,
-      this.handleTileCollision,
+      alienFloor,
+      null,
+      this
+    )
+    this.physics.add.collider(
+      this.player.sprite,
+      this.asteroidLayer,
+      platformFloor,
       null,
       this
     )
@@ -191,6 +193,17 @@ export default class Ryugu extends Phaser.Scene {
 
     // Add collider between the player and the enemies
     this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
+
+    
+
+    /*this.platformPositions.forEach(function (position) {
+      // Access individual x and y values
+      var x = position.x;
+      var y = position.y;
+  
+      // Your logic here, for example, log the positions
+      console.log("Tile at position - X: " + x + ", Y: " + y);
+      }, this);*/
 
 
     // expand world bounds to entire map not just the camera view

@@ -2,10 +2,6 @@ import Phaser from 'phaser'
 
 
 
-var pistol = null;
-
-
-
 export function loadPlayerAnimations(scene){
   // NORMAL ANIMS
   scene.load.spritesheet("walk", "./assets/sprites/player_walk.png",{
@@ -121,12 +117,19 @@ export function loadPlayerAnimations(scene){
   scene.load.image('pistol_holstered', './assets/sprites/weapons/pistol_holstered.png');
   scene.load.image('ar', './assets/sprites/weapons/ar.png');
   scene.load.image('ar_holstered', './assets/sprites/weapons/ar_holstered.png');
+
+
+
+  // WORLD ANIMS
+  scene.load.spritesheet("platform", "./assets/sprites/platform.png",{
+    frameWidth: 96,
+    frameHeight: 32}
+  );
 }
 
 
 export function createPlayerAnimations(scene){
   // CREATES ANIMATIONS
-
   scene.anims.create({
     key: 'player_walk',
     frames: scene.anims.generateFrameNumbers('walk'),
@@ -235,8 +238,27 @@ export function createPlayerAnimations(scene){
 
 
 
-  // CREATES ANIMATOR OBJECTS
+  /**/
 
+  // Create an array to store platform positions
+  scene.platformAnimators = [];
+
+  // Iterate through each tile in the platformLayer
+  scene.platformLayer.forEachTile(function (tile) {
+    if (tile.properties.animate == true) {
+      scene.platformAnimators.push(scene.add.sprite(tile.pixelX + 96 / 2, tile.pixelY + 32 / 2, 'platform'));
+    }
+  }, scene);
+
+  scene.anims.create({
+    key: 'platform',
+    frames: scene.anims.generateFrameNumbers('platform'),
+    frameRate: 10,
+    repeat: -1,
+  })
+
+
+  // CREATES ANIMATOR OBJECTS
   scene.player.boostAnimator = scene.playerAnimation = scene.add.sprite(
     scene.player.sprite.x,
     scene.player.sprite.y,
@@ -278,13 +300,17 @@ export function createPlayerAnimations(scene){
   scene.player.boostAnimator.alpha = 0;
 }
 
+
 var holsterMax = 250
 var holsterCounter = 0;
 var reversing = false;
 
-
-
 export function updatePlayerAnimations(scene){
+  scene.platformAnimators.forEach(function (animator){
+    animator.anims.play("platform", true);
+  });
+
+
   scene.player.animator.x = scene.player.sprite.x
   scene.player.animator.y = scene.player.sprite.y
 
@@ -306,7 +332,6 @@ export function updatePlayerAnimations(scene){
 
   scene.player.weaponHolsteredSprite.x = scene.player.sprite.x;
   scene.player.weaponHolsteredSprite.y = scene.player.sprite.y;
-
 
 
   // Plays unholstering animation
@@ -472,6 +497,7 @@ export function updatePlayerAnimations(scene){
       scene.player.weaponSprite.alpha = 0;
       scene.player.weaponHolsteredSprite.alpha = 100;
     }
+    reversing = false;
   }
 
 
