@@ -21,7 +21,7 @@ import {
 } from './enemy.js'
 
 
-import { createWeaponInside, loadWeaponImage } from './weapons.js'
+import { createWeaponInside, loadWeaponImage, unlockWeapon } from './weapons.js'
 
 
 import {
@@ -119,17 +119,9 @@ export default class Ryugu extends Phaser.Scene {
 
     // Inventory Logic Feature Testing
     this.input.keyboard.on('keydown-U', () => {
-      Inventory.unlockItem('rocketLauncher')
-      console.log('Rocket launcher unlocked')
+      unlockWeapon('rocketLauncher');
+      console.log('unlockWeapon function called, from weapons.js')
     })
-
-    if (Inventory.isItemUnlocked('rocketLauncher')) {
-      console.log('Rocket Launcher is available in this level')
-    }
-
-
-
-
 
 
     // add background
@@ -407,7 +399,6 @@ export default class Ryugu extends Phaser.Scene {
     }
   }
 
-  // helpers
 
   // Equip M16 weapon
   equipWeapon() {

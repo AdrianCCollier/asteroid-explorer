@@ -115,15 +115,13 @@ export default class Psyche extends Phaser.Scene {
     resizeCanvas() // Initial resizing
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
 
+    // Output current itemsUnlocked array from other levels
+    const allUnlockedItems = Inventory.getAllUnlockedItems()
+    console.log('All unlocked items:', allUnlockedItems)
 
-    if (Inventory.isItemUnlocked('rocketLauncher')) {
-      console.log('Rocket Launcher is available in this level')
-    }
-
-    
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
-    
+
     this.enemies = createEnemiesGroup(this)
 
     this.spawnPoints.forEach((spawn) => {
@@ -142,24 +140,23 @@ export default class Psyche extends Phaser.Scene {
       this
     )
 
-
     // Create wallMap
     this.wallMap = this.make.tilemap({ key: 'wallMap' })
-    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles');
+    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles')
     this.wallLayer = this.wallMap.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.wallMap.createLayer('Lights', wallTileSet, 0, 0)
 
     // Create map
     this.map = this.make.tilemap({ key: 'map' })
     const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles')
-    
-    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
-    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
-    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
 
-    this.asteroidLayer.setCollisionByProperty({ collides: true });
-    this.alienLayer.setCollisionByProperty({ collides: true });
-    this.platformLayer.setCollisionByProperty({ collides: true });
+    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
+    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0)
+    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0)
+
+    this.asteroidLayer.setCollisionByProperty({ collides: true })
+    this.alienLayer.setCollisionByProperty({ collides: true })
+    this.platformLayer.setCollisionByProperty({ collides: true })
 
     // Player creation and setup
     this.player = createPlayerInside(this, 100, 1828)
@@ -196,8 +193,13 @@ export default class Psyche extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.platformLayer)
 
     // Add collider between the player and the enemies
-    this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
-
+    this.physics.add.collider(
+      this.player.sprite,
+      this.enemies,
+      handlePlayerEnemyCollision,
+      null,
+      this
+    )
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -285,7 +287,6 @@ export default class Psyche extends Phaser.Scene {
 
     // Creates enemy animations for given scene
     createEnemyAnimations(this, this.player)
-
   } // end create function
 
   update() {

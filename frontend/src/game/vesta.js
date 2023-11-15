@@ -115,6 +115,10 @@ export default class Vesta extends Phaser.Scene {
     resizeCanvas() // Initial resizing
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
 
+    // Output current itemsUnlocked array from other levels
+    const allUnlockedItems = Inventory.getAllUnlockedItems()
+    console.log('All unlocked items:', allUnlockedItems)
+
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
     
@@ -135,14 +139,6 @@ export default class Vesta extends Phaser.Scene {
       [],
       this
     )
-
-
-    // Inventory feature Testing
-
-    if (Inventory.isItemUnlocked('rocketLauncher')) {
-    console.log('Rocket Launcher is available in this level')
-    }
-
 
     // Create wallMap
     this.wallMap = this.make.tilemap({ key: 'wallMap' })
