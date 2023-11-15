@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-
+import Inventory from '../Inventory.js'
 
 import {
   createPlayerInside,
@@ -135,6 +135,13 @@ export default class Vesta extends Phaser.Scene {
       [],
       this
     )
+
+
+    // Inventory feature Testing
+
+    if (Inventory.isItemUnlocked('rocketLauncher')) {
+    console.log('Rocket Launcher is available in this level')
+    }
 
 
     // Create wallMap

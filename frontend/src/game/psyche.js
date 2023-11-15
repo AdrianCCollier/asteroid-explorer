@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-
+import Inventory from '../Inventory.js'
 
 import {
   createPlayerInside,
@@ -115,6 +115,12 @@ export default class Psyche extends Phaser.Scene {
     resizeCanvas() // Initial resizing
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
 
+
+    if (Inventory.isItemUnlocked('rocketLauncher')) {
+      console.log('Rocket Launcher is available in this level')
+    }
+
+    
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
     
