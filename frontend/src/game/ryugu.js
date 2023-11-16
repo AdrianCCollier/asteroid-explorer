@@ -254,6 +254,8 @@ export default class Ryugu extends Phaser.Scene {
     
     // Add collider between the player and the enemies
     this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
+    this.physics.add.collider(this.player.sprite, this.flyingEnemies, handlePlayerEnemyCollision, null, this);
+    this.physics.add.collider(this.player.sprite, this.boss, handlePlayerEnemyCollision, null, this);
 
 
     // expand world bounds to entire map not just the camera view
