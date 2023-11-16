@@ -55,6 +55,7 @@ export function createBulletInside(scene, player, w, h, a) {
   // Adjust hitbox size
   bullet.sprite.setSize(8, 8);
 
+  /*
   // Add collision with enemies
   scene.physics.add.collider(bullet.sprite, scene.enemies, function(bulletSprite, alien) {
     // Remove the bullet
@@ -67,7 +68,7 @@ export function createBulletInside(scene, player, w, h, a) {
     // Check if the enemy is dead
     if (alien.health <= 0) {
         // Remove the enemy if health is 0 or less
-        alien.destroy();  
+        alien.destroy();
         if (alien.animator) {
             alien.animator.destroy();
         }
@@ -102,7 +103,7 @@ export function createBulletInside(scene, player, w, h, a) {
             scene.enemies.remove(alien, true, true);
         }
     }
-});
+});*/
   // Add collision with enemies
   scene.physics.add.collider(bullet.sprite, scene.boss, function(bulletSprite, alien) {
     // Remove the bullet
@@ -144,7 +145,7 @@ export function createBulletInside(scene, player, w, h, a) {
 }
 
 
-export function handleBulletMovements(bullets, enemies, flyingEnemies, boss) {
+export function handleBulletMovements(bullets, enemies, flyingEnemies, boss, scene) {
   const hitRadius = 20; // Define a hit radius for rough collision detection
 
   bullets.forEach((bullet, index) => {
@@ -163,7 +164,7 @@ export function handleBulletMovements(bullets, enemies, flyingEnemies, boss) {
     let allEnemies = enemies.getChildren().concat(flyingEnemies.getChildren(), [boss]);
     for (let alien of allEnemies) {
       if (Phaser.Math.Distance.Between(bullet.x, bullet.y, alien.x, alien.y) < hitRadius) {
-        handleEnemyHit(bullet, alien);
+        handleEnemyHit(bullet, alien, scene);
         bullets.splice(index, 1); // Remove the bullet from the array
         return; // Exit the loop early since the bullet is destroyed
       }
@@ -182,7 +183,7 @@ export function loadBulletImage(scene) {
   scene.load.image('bullet', './assets/bullet.png');
 }
 
-function handleEnemyHit(bullet, alien) {
+function handleEnemyHit(bullet, alien, scene) {
   // Decrease the enemy's health or handle as necessary
   alien.health -= 1;
   // Destroy the bullet sprite
@@ -191,9 +192,31 @@ function handleEnemyHit(bullet, alien) {
   bullet.distanceTraveled = maxDistance;
 
   if (alien.health <= 0) {
-    alien.destroy();
-    if (alien.animator) {
-      alien.animator.destroy();
+    // Saves alien's animator for sleep animation
+    var sleepAnimator;
+
+    // Sets up sleep animator object and adds collisions and gravity
+    sleepAnimator = {animator: alien.animator, type: ""};
+    scene.physics.world.enable(sleepAnimator.animator);
+    scene.physics.add.collider(sleepAnimator.animator, scene.asteroidLayer)
+    scene.physics.add.collider(sleepAnimator.animator, scene.alienLayer)
+    scene.physics.add.collider(sleepAnimator.animator, scene.platformLayer)
+
+    // Determines the type of alien
+    if (alien.tall){
+      sleepAnimator.animator.anims.play("tall_alien_knockout", true);
+      sleepAnimator.type = "tall";
+      scene.enemySleepAnimators.push(sleepAnimator);
     }
+    else if(alien.flying){
+      alien.animator.anims.play("flying_alien_knockout", true);
+      sleepAnimator.type = "flying";
+      scene.enemySleepAnimators.push(sleepAnimator);
+    }
+    else{
+      alien.animator.anims.play("boss_alien_death", true); // simply plays boss death
+    }
+
+    alien.destroy();
   }
 }

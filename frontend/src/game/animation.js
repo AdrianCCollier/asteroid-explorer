@@ -558,46 +558,208 @@ export function updatePlayerAnimations(scene){
 
 
 
-
-
-
-
-
-
 export function loadEnemyAnimations(scene){
-  scene.load.spritesheet("tall_walk_agro", "./assets/sprites/tall_alien_walking_agro.png",{
+  // Animations loading for tall alies
+  scene.load.spritesheet("tall_walk", "./assets/sprites/tall_alien_walking.png", {
     frameWidth: 32,
     frameHeight: 64}
+  );
+  scene.load.spritesheet("tall_agro", "./assets/sprites/tall_alien_agro.png", {
+    frameWidth: 32,
+    frameHeight: 64}
+  );
+  scene.load.spritesheet("tall_knockout", "./assets/sprites/tall_alien_knockout.png", {
+    frameWidth: 32,
+    frameHeight: 64}
+  );
+  scene.load.spritesheet("tall_sleep", "./assets/sprites/tall_alien_sleep.png", {
+    frameWidth: 32,
+    frameHeight: 64}
+  );
+
+
+  // Animation loading for flying aliens
+  scene.load.spritesheet("flying_walk", "./assets/sprites/flying_alien_walking.png", {
+    frameWidth: 32,
+    frameHeight: 32}
+  );
+  scene.load.spritesheet("flying_agro", "./assets/sprites/flying_alien_agro.png", {
+    frameWidth: 32,
+    frameHeight: 32}
+  );
+  scene.load.spritesheet("flying_knockout", "./assets/sprites/flying_alien_knockout.png", {
+    frameWidth: 32,
+    frameHeight: 32}
+  );
+  scene.load.spritesheet("flying_sleep", "./assets/sprites/flying_alien_sleep.png", {
+    frameWidth: 32,
+    frameHeight: 32}
+  );
+
+
+  // Animation loading for boss alien
+  scene.load.spritesheet("boss_walk", "./assets/sprites/boss_alien_walking.png", {
+    frameWidth: 128,
+    frameHeight: 128}
+  );
+  scene.load.spritesheet("boss_death", "./assets/sprites/boss_alien_death.png", {
+    frameWidth: 128,
+    frameHeight: 128}
+  );
+  scene.load.spritesheet("boss_good", "./assets/sprites/boss_alien_good.png", {
+    frameWidth: 128,
+    frameHeight: 128}
   );
 }
 
 export function createEnemyAnimations(scene){
+  // Animation creation for tall aliens
   scene.anims.create({
-    key: 'tall_walk_alien_agro',
-    frames: scene.anims.generateFrameNumbers('tall_walk_agro'),
+    key: 'tall_alien_walk',
+    frames: scene.anims.generateFrameNumbers('tall_walk'),
+    frameRate: 8,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'tall_alien_agro',
+    frames: scene.anims.generateFrameNumbers('tall_agro'),
     frameRate: 16,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'tall_alien_knockout',
+    frames: scene.anims.generateFrameNumbers('tall_knockout'),
+    frameRate: 8,
+    repeat: 0,
+  })
+  scene.anims.create({
+    key: 'tall_alien_sleep',
+    frames: scene.anims.generateFrameNumbers('tall_sleep'),
+    frameRate: 8,
+    repeat: -1,
+  })
+
+
+  // Animation creation for flying aliens
+  scene.anims.create({
+    key: 'flying_alien_walking',
+    frames: scene.anims.generateFrameNumbers('flying_walk'),
+    frameRate: 8,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'flying_alien_agro',
+    frames: scene.anims.generateFrameNumbers('flying_agro'),
+    frameRate: 8,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'flying_alien_knockout',
+    frames: scene.anims.generateFrameNumbers('flying_knockout'),
+    frameRate: 16,
+    repeat: 0,
+  })
+  scene.anims.create({
+    key: 'flying_alien_sleep',
+    frames: scene.anims.generateFrameNumbers('flying_sleep'),
+    frameRate: 8,
+    repeat: -1,
+  })
+
+
+  scene.anims.create({
+    key: 'boss_alien_walk',
+    frames: scene.anims.generateFrameNumbers('boss_walk'),
+    frameRate: 8,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'boss_alien_death',
+    frames: scene.anims.generateFrameNumbers('boss_death'),
+    frameRate: 8,
+    repeat: 0,
+  })
+  scene.anims.create({
+    key: 'boss_alien_good',
+    frames: scene.anims.generateFrameNumbers('boss_good'),
+    frameRate: 8,
     repeat: -1,
   })
 }
 
-export function createEnemyAnimator(scene, enemy){
+
+
+
+export function createTallEnemyAnimator(scene, enemy){
   enemy.animator = scene.playerAnimation = scene.add.sprite(
     enemy.x,
     enemy.y,
-    'tall_walk_agro'
+    'tall_alien_walk'
   ).setDepth(1);
 }
 
-export function updateEnemyAnimations(scene, enemy){
+export function updateTallEnemyAnimations(scene, enemy){
   // Making sprite invisible so animation can play
   enemy.alpha = 0;
 
   // Determine flip based on enemy's direction
   enemy.animator.setFlipX(enemy.direction < 0); // Flip when direction is negative (moving left)
   enemy.animator.setDepth(1);
-  enemy.animator.anims.play("tall_walk_alien_agro", true); // plays animation
+
+  enemy.animator.x = enemy.x; // updates animation position
+  enemy.animator.y = enemy.y; // updates animation position
+
+  // Decides what enemy animation to play
+  if (!enemy.shouldChasePlayer)
+    enemy.animator.anims.play("tall_alien_walk", true); // plays animation
+  else
+    enemy.animator.anims.play("tall_alien_agro", true); // plays animation
+
+}
+
+
+
+
+export function createFlyingEnemyAnimator(scene, enemy){
+  enemy.animator = scene.playerAnimation = scene.add.sprite(
+    enemy.x,
+    enemy.y,
+    'flying_alien_walking'
+  ).setDepth(1);
+}
+
+export function updateFlyingEnemyAnimations(scene, enemy){
+  // Making sprite invisible so animation can play
+  enemy.alpha = 0;
+
+  // Determine flip based on enemy's direction
+  enemy.animator.setDepth(1);
+  enemy.animator.anims.play("flying_alien_walking", true); // plays animation
 
   enemy.animator.x = enemy.x; // updates animation position
   enemy.animator.y = enemy.y; // updates animation position
 }
 
+
+
+
+export function createBossEnemyAnimator(scene, enemy){
+  enemy.animator = scene.playerAnimation = scene.add.sprite(
+    enemy.x,
+    enemy.y,
+    'boss_alien_walk'
+  ).setDepth(1);
+}
+
+export function updateBossEnemyAnimations(scene, enemy){
+  // Making sprite invisible so animation can play
+  enemy.alpha = 0;
+
+  // Determine flip based on enemy's direction
+  enemy.animator.setFlipX(!enemy.direction); // Flip when direction is negative (moving left)
+  enemy.animator.setDepth(1);
+  enemy.animator.anims.play("boss_alien_walk", true); // plays animation
+
+  enemy.animator.x = enemy.x; // updates animation position
+  enemy.animator.y = enemy.y; // updates animation position
+}

@@ -222,6 +222,7 @@ var timer = 0;
 var doubleJumpTimer = 10;
 var spaceUp = true;
 var falling = false;
+var frameCount = 0;
 
 
 export function handlePlayerMovementInside(scene, player, shootControl, shootCooldown) {
@@ -364,6 +365,17 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
 
     if (player.sprite.body.velocity.y == 0 && falling && spaceUp){
         jumping = false;
+    }
+
+    if (player.sprite.body.velocity.y == 0){
+        frameCount += 1;
+        if (frameCount > 4){
+            falling = true;
+            player.jumping = false;
+        }
+    }
+    else{
+        frameCount = 0;
     }
 }
 

@@ -2,7 +2,9 @@ import Phaser from 'phaser';
 
 import {createAsteroid, applyRotation} from './asteroid.js';
 
-import {createEnemyAnimator, updateEnemyAnimations} from './animation'
+import {createTallEnemyAnimator, updateTallEnemyAnimations, 
+        createFlyingEnemyAnimator, updateFlyingEnemyAnimations,
+        createBossEnemyAnimator, updateBossEnemyAnimations} from './animation'
 
 export function createEnemy(scene, asteroid, w, h) {
     // Initialize an enemy object with given properties
@@ -81,7 +83,11 @@ export function createEnemyInside(scene, group, x, y) {
     enemy.health = 2; // Add a health property with a value of 2
     enemy.direction = 1; // Enemy initial direction (1 for right, -1 for left)
     enemy.animator = null;
-    createEnemyAnimator(scene, enemy);
+
+    // Used to tell what kind of enemy
+    enemy.tall = true;
+
+    createTallEnemyAnimator(scene, enemy);
 
     return enemy;
 }
@@ -96,18 +102,29 @@ export function handleEnemyMovementInside(scene, enemy) {
     let distance = Math.sqrt(dx * dx + dy * dy);
 
     const isSolidGroundAhead = checkForSolidGroundAhead(scene, enemy);
-    const shouldChasePlayer = distance < 200; // distance threshold to start chasing
+    enemy.shouldChasePlayer = distance < 300; // distance threshold to start chasing
     const isAtEdge = !isSolidGroundAhead;
     
-    if (shouldChasePlayer && !isAtEdge) {
-        // Normalize the direction vector 
-        let directionX = dx / distance; // Normalized direction for X
-        enemy.direction = Math.sign(directionX);
-        enemy.setVelocityX(directionX * enemy.speed);
-    } else if (isAtEdge && shouldChasePlayer) {
+    if (enemy.shouldChasePlayer && !isAtEdge) {
+        if (isAtCorner(scene, enemy)){
+            enemy.setVelocityY(-300);
+        }
+        else{
+            // Normalize the direction vector 
+            let directionX = dx / distance; // Normalized direction for X
+            enemy.direction = Math.sign(directionX);
+            if (directionX > 0)
+                directionX = 1;
+            else
+                directionX = -1;
+            enemy.setVelocityX(directionX * enemy.speed);
+        }
+    } else if (isAtEdge && enemy.shouldChasePlayer) {
         // Stop at the edge if there's no ground
-        enemy.setVelocityX(0);
-        enemy.setVelocityY(0);
+        if (!enemy.shouldChasePlayer){
+            enemy.setVelocityX(0);
+            enemy.setVelocityY(0);
+        }
         // Optional: Enemy looks at the player
         enemy.direction = dx > 0 ? 1 : -1;
     } else {
@@ -116,7 +133,7 @@ export function handleEnemyMovementInside(scene, enemy) {
     }
 
     // Update enemy animations.
-    updateEnemyAnimations(scene, enemy);
+    updateTallEnemyAnimations(scene, enemy);
 }
 
 function patrolBehavior(scene, enemy) {
@@ -150,8 +167,9 @@ function checkForSolidGroundAhead(scene, enemy) {
     const point = { x: enemy.x + offsetX, y: enemy.y + enemy.height * 1.9 }; // Half height to check ahead
     const AsteroidTile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Floors');
     const AlienTile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Alien Floors');
+    const PlatformTile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Platforms');
 
-    return (AsteroidTile && AsteroidTile.collides) || (AlienTile && AlienTile.collides);
+    return (AsteroidTile && AsteroidTile.collides) || (AlienTile && AlienTile.collides || (PlatformTile && PlatformTile.collides));
 }
 
 export function createFlyingEnemiesGroup(scene) {
@@ -182,6 +200,13 @@ export function createFlyingEnemy(scene, group, x, y) {
     enemy.health = 5;
     enemy.isChasing = false;
 
+
+    // Used to tell what kind of enemy
+    enemy.flying = true;
+
+    // Creates flying enemy animator
+    createFlyingEnemyAnimator(scene, enemy);
+
     return enemy;
 }
 
@@ -209,7 +234,7 @@ export function handleFlyingEnemyMovement(scene, enemy) {
     }
 
     // Update flying enemy animations 
-    // updateFlyingEnemyAnimations(scene, enemy);
+    updateFlyingEnemyAnimations(scene, enemy);
 }
 
 export function createBossGroup(scene) {
@@ -238,6 +263,14 @@ export function createBoss(scene, group, x, y) {
     // Attach properties to the boss
     boss.chaseSpeed = 125;
     boss.health = 20; 
+
+
+    // Used to tell what kind of enemy
+    boss.boss = true;
+
+    // Creates the boss's animator
+    createBossEnemyAnimator(scene, boss);
+
     return boss;
 }
 
@@ -264,7 +297,9 @@ export function handleBossMovement(scene, enemy) {
         enemy.isChasing = false;
     }
 
-    // Update boss
-    // updateFlyingEnemyAnimations(scene, enemy);
+    enemy.direction = ((player.x - enemy.x) / distance) > 0;
+
+    // Update boss animations
+    updateBossEnemyAnimations(scene, enemy);
 }
 
