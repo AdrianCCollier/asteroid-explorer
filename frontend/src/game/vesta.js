@@ -75,7 +75,8 @@ export default class Vesta extends Phaser.Scene {
     this.map = null;
 
     this.spawnPoints = [
-      { x: 1000, y: 100000 },
+      { x: 200, y: 500 },
+      { x: 300, y: 500 },
     ]
   }
 

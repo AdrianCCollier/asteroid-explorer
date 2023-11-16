@@ -11,6 +11,8 @@ import {
   createEnemiesGroup,
   createEnemyInside,
   handleEnemyMovementInside,
+  createFlyingEnemy, 
+  handleFlyingEnemyMovement 
 } from './enemy.js'
 import { createWeaponInside, loadWeaponImage } from './weapons.js'
 import {
@@ -102,6 +104,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
     
     this.enemies = createEnemiesGroup(this)
+    this.flyingEnemies = createEnemiesGroup(this);
+    this.flyingEnemy = createFlyingEnemy(this, this.flyingEnemies, 100, 100); // Add a flying enemy at a specific location
+
 
     this.spawnPoints.forEach((spawn) => {
       createEnemyInside(this, this.enemies, spawn.x, spawn.y)
@@ -148,9 +153,11 @@ export default class SidescrollerScene extends Phaser.Scene {
       this
     )
     this.physics.add.collider(this.enemies, this.layer)
+    this.physics.add.collider(this.flyingEnemies, this.layer)
 
     // Add collider between the player and the enemies
     this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
+    this.physics.add.collider(this.player.sprite, this.flyingEnemies, handlePlayerEnemyCollision, null, this);
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -259,7 +266,9 @@ export default class SidescrollerScene extends Phaser.Scene {
     this.enemies.getChildren().forEach(enemy => {
       handleEnemyMovementInside(this, this.bullets, enemy);
     });
-
+    this.flyingEnemies.getChildren().forEach(flyingEnemy => {
+      handleFlyingEnemyMovement(this, flyingEnemy);
+    });
 
     if (this.enemies.getLength() <= 0){
       //this.showCongratulationScreen()
@@ -282,6 +291,7 @@ export default class SidescrollerScene extends Phaser.Scene {
       this.shootCooldown
     )
     
+    handleFlyingEnemyMovement(this, this.flyingEnemy);
 
     handleBulletMovements(this.bullets)
 

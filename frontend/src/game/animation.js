@@ -585,7 +585,7 @@ export function createEnemyAnimator(scene, enemy){
     enemy.x,
     enemy.y,
     'tall_walk_agro'
-  )
+  ).setDepth(1);
 }
 
 export function updateEnemyAnimations(scene, enemy){
@@ -594,7 +594,7 @@ export function updateEnemyAnimations(scene, enemy){
 
   // Determine flip based on enemy's direction
   enemy.animator.setFlipX(enemy.direction < 0); // Flip when direction is negative (moving left)
-  
+  enemy.animator.setDepth(1);
   enemy.animator.anims.play("tall_walk_alien_agro", true); // plays animation
 
   enemy.animator.x = enemy.x; // updates animation position

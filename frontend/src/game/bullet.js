@@ -56,21 +56,77 @@ export function createBulletInside(scene, player, w, h, a) {
   bullet.sprite.setSize(8, 8);
 
   // Add collision with enemies
-  scene.physics.add.collider(bullet.sprite, scene.enemies, function(bullet, alien) {
-    // Removes the bullet
-    bullet.destroy(); 
+  scene.physics.add.collider(bullet.sprite, scene.enemies, function(bulletSprite, alien) {
+    // Remove the bullet
+    bulletSprite.destroy();
     bullet.distanceTraveled = 800;
 
-    // Removes the alien
-    alien.destroy();  
-    alien.animator.destroy();
-
-    // Check if the alien belongs to the enemies group
-    if (scene.enemies.contains(alien)) {
-      // Remove the alien from the group
-      scene.enemies.remove(alien, true, true);
+    // Decrease the enemy's health
+    alien.health -= 1;
+    alien.setVelocityY(-150)
+    // Check if the enemy is dead
+    if (alien.health <= 0) {
+        // Remove the enemy if health is 0 or less
+        alien.destroy();  
+        if (alien.animator) {
+            alien.animator.destroy();
+        }
+        
+        // Check if the enemy belongs to the enemies group
+        if (scene.enemies.contains(alien)) {
+            // Remove the enemy from the group
+            scene.enemies.remove(alien, true, true);
+        }
     }
-  });
+});
+  // Add collision with enemies
+  scene.physics.add.collider(bullet.sprite, scene.flyingEnemies, function(bulletSprite, alien) {
+    // Remove the bullet
+    bulletSprite.destroy();
+    bullet.distanceTraveled = 800;
+
+    // Decrease the enemy's health
+    alien.health -= 1;
+
+    // Check if the enemy is dead
+    if (alien.health <= 0) {
+        // Remove the enemy if health is 0 or less
+        alien.destroy();  
+        if (alien.animator) {
+            alien.animator.destroy();
+        }
+        
+        // Check if the enemy belongs to the enemies group
+        if (scene.enemies.contains(alien)) {
+            // Remove the enemy from the group
+            scene.enemies.remove(alien, true, true);
+        }
+    }
+});
+  // Add collision with enemies
+  scene.physics.add.collider(bullet.sprite, scene.boss, function(bulletSprite, alien) {
+    // Remove the bullet
+    bulletSprite.destroy();
+    bullet.distanceTraveled = 800;
+
+    // Decrease the enemy's health
+    alien.health -= .2 ;
+
+    // Check if the enemy is dead
+    if (alien.health <= 0) {
+        // Remove the enemy if health is 0 or less
+        alien.destroy();  
+        if (alien.animator) {
+            alien.animator.destroy();
+        }
+        
+        // Check if the enemy belongs to the enemies group
+        if (scene.enemies.contains(alien)) {
+            // Remove the enemy from the group
+            scene.enemies.remove(alien, true, true);
+        }
+    }
+});
 
   // Add collision with asteroid layer
   scene.physics.add.collider(bullet.sprite, scene.asteroidLayer, function() {
@@ -84,10 +140,6 @@ export function createBulletInside(scene, player, w, h, a) {
   scene.physics.add.collider(bullet.sprite, scene.platformLayer, function() {
     bullet.distanceTraveled = 800;
   });
-
-
-
-
   return bullet; // Return the created bullet object
 }
 
