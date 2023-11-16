@@ -1,6 +1,5 @@
 import Phaser from 'phaser'
 
-
 import {
   createPlayerInside,
   loadPlayerImage,
@@ -27,7 +26,7 @@ import {
 } from './enemy.js'
 
 
-import { createWeaponInside, loadWeaponImage } from './weapons.js'
+import { createWeaponInside, loadWeaponImage, unlockWeapon } from './weapons.js'
 
 
 import {
@@ -67,6 +66,8 @@ import wallMapJSON from './assets/Maps/Ryugu_Walls.json'
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
 
+// Import Ryugu dialogue
+import ryuguDialogue from './assets/sounds/Ryugu.mp3'
 
 // import new weapon
 import M16 from './assets/weapons/M16.png'
@@ -115,6 +116,7 @@ export default class Ryugu extends Phaser.Scene {
 
 
     this.load.image('galaxy', galaxyBackground)
+    this.load.audio('ryuguDialogue', ryuguDialogue);
     this.load.image('M16', M16)
     loadHealthBar(this);
     //loadShieldBar(this);
@@ -134,10 +136,29 @@ export default class Ryugu extends Phaser.Scene {
     }
     resizeCanvas() // Initial resizing
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
+
+    // Play dialogue when level starts
+    // this.ryuguDialogue = this.sound.add('ryuguDialogue')
+    // this.ryuguDialogue.play()
+
+     this.ryuguDialogue = this.sound.add('ryuguDialogue')
+
+     // Check if the player has visited the Ryugu level before
+     // Play the dialogue only the first time
+     if (localStorage.getItem('RyuguVisited') !== 'true') {
+       this.ryuguDialogue.play()
+       localStorage.setItem('RyuguVisited', 'true')
+     }
+
+    // Inventory Logic Feature Testing
+    this.input.keyboard.on('keydown-U', () => {
+      unlockWeapon('rocketLauncher')
+      console.log('unlockWeapon function called, from weapons.js')
+    })
     
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
-    
+
     this.enemies = createEnemiesGroup(this)
     this.flyingEnemies = createFlyingEnemiesGroup(this);
     this.boss = createBossGroup(this);
@@ -179,9 +200,9 @@ export default class Ryugu extends Phaser.Scene {
     this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
     this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
 
-    this.asteroidLayer.setCollisionByProperty({ collides: true });
-    this.alienLayer.setCollisionByProperty({ collides: true });
-    this.platformLayer.setCollisionByProperty({ collides: true });
+    this.asteroidLayer.setCollisionByProperty({ collides: true })
+    this.alienLayer.setCollisionByProperty({ collides: true })
+    this.platformLayer.setCollisionByProperty({ collides: true })
 
     // Player creation and setup
 
@@ -223,9 +244,17 @@ export default class Ryugu extends Phaser.Scene {
     
     // Add collider between the player and the enemies
     this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
-    this.physics.add.collider(this.player.sprite, this.flyingEnemies, handlePlayerEnemyCollision, null, this);
-    this.physics.add.collider(this.player.sprite, this.boss, handlePlayerEnemyCollision, null, this);
 
+    
+
+    /*this.platformPositions.forEach(function (position) {
+      // Access individual x and y values
+      var x = position.x;
+      var y = position.y;
+  
+      // Your logic here, for example, log the positions
+      console.log("Tile at position - X: " + x + ", Y: " + y);
+      }, this);*/
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -313,7 +342,6 @@ export default class Ryugu extends Phaser.Scene {
 
     // Creates enemy animations for given scene
     createEnemyAnimations(this, this.player)
-
   } // end create function
 
   update() {
@@ -423,7 +451,6 @@ export default class Ryugu extends Phaser.Scene {
     }
   }
 
-  // helpers
 
   // Equip M16 weapon
   equipWeapon() {

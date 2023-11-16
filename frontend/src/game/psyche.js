@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-
+import Inventory from '../Inventory.js'
 
 import {
   createPlayerInside,
@@ -59,6 +59,8 @@ import wallMapJSON from './assets/Maps/Psyche_Walls.json'
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
 
+// Import Dialogue
+import psycheDialogue from './assets/sounds/Psyche.mp3'
 
 // import new weapon
 import M16 from './assets/weapons/M16.png'
@@ -96,6 +98,7 @@ export default class Psyche extends Phaser.Scene {
 
 
     this.load.image('galaxy', galaxyBackground)
+    this.load.audio('psycheDialogue', psycheDialogue);
     this.load.image('M16', M16)
     loadHealthBar(this);
     loadShieldBar(this);
@@ -115,9 +118,23 @@ export default class Psyche extends Phaser.Scene {
     resizeCanvas() // Initial resizing
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
 
+    // Play dialogue when level starts
+    this.psycheDialogue = this.sound.add('psycheDialogue')
+
+    // Check if the player has visited the Psyche level before
+    // Play the dialogue only the first time
+    if (localStorage.getItem('psycheVisited') !== 'true') {
+    this.psycheDialogue.play()
+      localStorage.setItem('psycheVisited', 'true')
+    }
+
+    // Output current itemsUnlocked array from other levels
+    const allUnlockedItems = Inventory.getAllUnlockedItems()
+    console.log('All unlocked items:', allUnlockedItems)
+
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
-    
+
     this.enemies = createEnemiesGroup(this)
 
     this.spawnPoints.forEach((spawn) => {
@@ -136,24 +153,23 @@ export default class Psyche extends Phaser.Scene {
       this
     )
 
-
     // Create wallMap
     this.wallMap = this.make.tilemap({ key: 'wallMap' })
-    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles');
+    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles')
     this.wallLayer = this.wallMap.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.wallMap.createLayer('Lights', wallTileSet, 0, 0)
 
     // Create map
     this.map = this.make.tilemap({ key: 'map' })
     const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles')
-    
-    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
-    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
-    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
 
-    this.asteroidLayer.setCollisionByProperty({ collides: true });
-    this.alienLayer.setCollisionByProperty({ collides: true });
-    this.platformLayer.setCollisionByProperty({ collides: true });
+    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
+    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0)
+    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0)
+
+    this.asteroidLayer.setCollisionByProperty({ collides: true })
+    this.alienLayer.setCollisionByProperty({ collides: true })
+    this.platformLayer.setCollisionByProperty({ collides: true })
 
     // Player creation and setup
     this.player = createPlayerInside(this, 100, 1828)
@@ -190,8 +206,13 @@ export default class Psyche extends Phaser.Scene {
     this.physics.add.collider(this.enemies, this.platformLayer)
 
     // Add collider between the player and the enemies
-    this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
-
+    this.physics.add.collider(
+      this.player.sprite,
+      this.enemies,
+      handlePlayerEnemyCollision,
+      null,
+      this
+    )
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -279,7 +300,6 @@ export default class Psyche extends Phaser.Scene {
 
     // Creates enemy animations for given scene
     createEnemyAnimations(this, this.player)
-
   } // end create function
 
   update() {
