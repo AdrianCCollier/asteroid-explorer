@@ -59,6 +59,8 @@ import wallMapJSON from './assets/Maps/Psyche_Walls.json'
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
 
+// Import Dialogue
+import psycheDialogue from './assets/sounds/Psyche.mp3'
 
 // import new weapon
 import M16 from './assets/weapons/M16.png'
@@ -96,6 +98,7 @@ export default class Psyche extends Phaser.Scene {
 
 
     this.load.image('galaxy', galaxyBackground)
+    this.load.audio('psycheDialogue', psycheDialogue);
     this.load.image('M16', M16)
     loadHealthBar(this);
     loadShieldBar(this);
@@ -114,6 +117,16 @@ export default class Psyche extends Phaser.Scene {
     }
     resizeCanvas() // Initial resizing
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
+
+    // Play dialogue when level starts
+    this.psycheDialogue = this.sound.add('psycheDialogue')
+
+    // Check if the player has visited the Psyche level before
+    // Play the dialogue only the first time
+    if (localStorage.getItem('psycheVisited') !== 'true') {
+    this.psycheDialogue.play()
+      localStorage.setItem('psycheVisited', 'true')
+    }
 
     // Output current itemsUnlocked array from other levels
     const allUnlockedItems = Inventory.getAllUnlockedItems()
