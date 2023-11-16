@@ -398,7 +398,7 @@ export function handlePlayerDamage(player, amount, scene) {
         // Call functions to handle the game over scenario
         scene.scene.pause();
         scene.scene.stop();
-        scene.scene.launch('GameOverScene');
+        scene.scene.launch('GameOverScene', { gameScene: scene.scene.key });
     }
 }
 

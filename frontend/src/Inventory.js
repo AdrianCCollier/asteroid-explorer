@@ -25,6 +25,9 @@ class Inventory {
   // save unlockedItems array into local storage with key 'weapon', to view this open console developer tools -> application -> Local Storage -> localhost:3001
   saveProgress() {
     localStorage.setItem('weapon', JSON.stringify(this.unlockedItems))
+    localStorage.setItem('pistol', JSON.stringify(true))
+    localStorage.setItem('ar', JSON.stringify(false))
+    localStorage.setItem('shotgun', JSON.stringify(false))
   }
 
   // fetch unlockedItems array from local storage

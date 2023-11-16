@@ -136,18 +136,21 @@ function isAtCorner(scene, enemy) {
     // Check the tile directly in front of the enemy at the same level
     const frontX = enemy.x + (enemy.width * 0.5 * enemy.direction);
     const frontY = enemy.y; // Check at the enemy's level, not below
-    const frontTile = scene.map.getTileAtWorldXY(frontX, frontY, true, scene.cameras.main, 'Floors');
+    const frontAsteroidTile = scene.map.getTileAtWorldXY(frontX, frontY, true, scene.cameras.main, 'Floors');
+    const frontAlienTile = scene.map.getTileAtWorldXY(frontX, frontY, true, scene.cameras.main, 'Alien Floors');
 
     // If there is a colliding tile directly in front, we're at a corner
-    return frontTile && frontTile.collides;
+    return  (frontAsteroidTile && frontAsteroidTile.collides) || (frontAlienTile && frontAlienTile.collides);
 }
 
 // Check for solid ground ahead of the enemy with more leniency
 function checkForSolidGroundAhead(scene, enemy) {
     const offsetX = enemy.width * 0.5 * enemy.direction; // Half width ahead of the enemy
     const point = { x: enemy.x + offsetX, y: enemy.y + enemy.height * 1.9 }; // Half height to check ahead
-    const tile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Floors');
-    return tile && tile.collides;
+    const AsteroidTile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Floors');
+    const AlienTile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Alien Floors');
+
+    return (AsteroidTile && AsteroidTile.collides) || (AlienTile && AlienTile.collides);
 }
 
 export function createFlyingEnemiesGroup(scene) {

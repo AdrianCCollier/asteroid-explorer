@@ -82,21 +82,6 @@ export default class Ryugu extends Phaser.Scene {
     this.player = null // Initialize player
     this.bullets = [] // Initialize bullets array
     this.map = null;
-
-    this.spawnWalkingEnemies = [
-      { x: 301, y: 3488 },
-      { x: 711, y: 3390 },
-      { x: 1111, y: 3328 },
-      { x: 1790, y: 3680 },
-      { x: 2100, y: 3680 },
-
-    ]
-    this.spawnFlyingEnemies = [
-      { x: 455, y: 3232 },
-      { x: 844, y: 3232 },
-      { x: 1334, y: 3200 },
-      { x: 1784, y: 3420},
-    ]
   }
 
   preload() {
@@ -162,12 +147,8 @@ export default class Ryugu extends Phaser.Scene {
     this.enemies = createEnemiesGroup(this)
     this.flyingEnemies = createFlyingEnemiesGroup(this);
     this.boss = createBossGroup(this);
-    this.spawnWalkingEnemies.forEach((spawn) => {
-      createEnemyInside(this, this.enemies, spawn.x, spawn.y)
-    })
-    this.spawnFlyingEnemies.forEach((spawn) => {
-      createFlyingEnemy(this, this.flyingEnemies, spawn.x, spawn.y)
-    })
+
+
     
     createBoss(this, this.boss, 1315, 2200)
     this.checkCollision = false // Initialize collision check
@@ -241,20 +222,39 @@ export default class Ryugu extends Phaser.Scene {
     this.physics.add.collider(this.boss, this.asteroidLayer)
     this.physics.add.collider(this.boss, this.alienLayer)
     // this.physics.add.collider(this.flyingEnemies, this.platformLayer)
+
+    this.spawnLayer = this.map.createLayer('Spawns', tileset, 0, 0)
+    
+    this.spawnWalkingEnemies = []
+    this.spawnFlyingEnemies = []
+    
+    this.spawnLayer.forEachTile(function (tile) {
+      if (tile.properties.spawn == true){
+        var spawnRandom = Math.random();
+
+        var x = tile.pixelX + 32 / 2;
+        var y = tile.pixelY + 32;
+
+        if (spawnRandom < 0.5)
+          this.spawnWalkingEnemies.push({x, y});
+        else 
+          this.spawnFlyingEnemies.push({x, y});
+      }
+    }, this);
+
+    this.spawnWalkingEnemies.forEach((spawn) => {
+      createEnemyInside(this, this.enemies, spawn.x, spawn.y)
+    })
+    this.spawnFlyingEnemies.forEach((spawn) => {
+      createFlyingEnemy(this, this.flyingEnemies, spawn.x, spawn.y)
+    })
+
+
+
     
     // Add collider between the player and the enemies
     this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
 
-    
-
-    /*this.platformPositions.forEach(function (position) {
-      // Access individual x and y values
-      var x = position.x;
-      var y = position.y;
-  
-      // Your logic here, for example, log the positions
-      console.log("Tile at position - X: " + x + ", Y: " + y);
-      }, this);*/
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -514,7 +514,7 @@ export default class Ryugu extends Phaser.Scene {
 function handlePlayerEnemyCollision(playerSprite, enemySprite) {
   if (!this.player.isInvulnerable) {
       // Handle player damage and invulnerability
-      handlePlayerDamage(this.player, 1, this); 
+      handlePlayerDamage(this.player, 1, this);
       this.player.isInvulnerable = true;
       this.time.delayedCall(1000, () => {
           this.player.isInvulnerable = false;
