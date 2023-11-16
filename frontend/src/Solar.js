@@ -42,6 +42,14 @@ function ExplorerGame2() {
   )
 }
 
+function ExplorerGame3() {
+  return (
+    <div>
+      <Game startingScene="Ceres" />
+    </div>
+  )
+}
+
 function SolarSystem(){
 
   const [asteroidData, setAsteroidData] = useState(null);
@@ -118,6 +126,8 @@ function Solar() {
           <Route path="/level1" element={<ExplorerGame1 />} />
 
           <Route path="/level2" element={<ExplorerGame2 />} />
+
+          <Route path="/level3" element={<ExplorerGame3 />} />
 
           <Route path="/landing" element={<Landing />} />
           <Route path="/solarSystem" element={<SolarSystem />} />
