@@ -166,7 +166,7 @@ export default class Ryugu extends Phaser.Scene {
       
       
       this.player = createPlayerInside(this, 109, 3520)
-      this.playerCoordsText = this.add.text(16, 100, '', { fontSize: '18px', fill: '#FF0000' }).setScrollFactor(0);
+      //this.playerCoordsText = this.add.text(16, 100, '', { fontSize: '18px', fill: '#FF0000' }).setScrollFactor(0);
       // Create wallMap
       this.wallMap = this.make.tilemap({ key: 'wallMap' })
       const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles');
@@ -357,7 +357,7 @@ export default class Ryugu extends Phaser.Scene {
       this.scene.launch('GameOverScene')
     }
     this.enemies.getChildren().forEach(enemy => {
-      handleEnemyMovementInside(this, this.bullets, enemy);
+      handleEnemyMovementInside(this, enemy);
       enemy.setDepth(2); // Ensure enemies are above walls
 
     });
@@ -369,7 +369,7 @@ export default class Ryugu extends Phaser.Scene {
       handleBossMovement(this, enemy);
         enemy.setDepth(2); // Ensure enemies are above walls
     });
-    this.playerCoordsText.setText(`Player X: ${this.player.sprite.x.toFixed(2)}, Y: ${this.player.sprite.y.toFixed(2)}`);
+    //this.playerCoordsText.setText(`Player X: ${this.player.sprite.x.toFixed(2)}, Y: ${this.player.sprite.y.toFixed(2)}`);
 
     if (this.enemies.getLength() <= -1){
       //this.showCongratulationScreen()
@@ -393,7 +393,7 @@ export default class Ryugu extends Phaser.Scene {
     )
     
 
-    handleBulletMovements(this.bullets)
+    handleBulletMovements(this.bullets,this.enemies, this.flyingEnemies, this.boss)
 
     // weapon direction
     if (this.player.facing === 'left') {

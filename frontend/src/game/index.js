@@ -61,7 +61,7 @@ class Game extends Component {
         default: 'arcade',
         arcade: {
           gravity: { y: 400 },
-          debug: true,
+          //debug: true,
         },
       },
       scene: scenes

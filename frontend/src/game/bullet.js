@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-
+const maxDistance = 800
 export function createBullet(scene, player, w, h) {
   let speed = 6; // Speed of the bullet
   let bullet_x = player.x;
@@ -110,7 +110,7 @@ export function createBulletInside(scene, player, w, h, a) {
     bullet.distanceTraveled = 800;
 
     // Decrease the enemy's health
-    alien.health -= .2 ;
+    alien.health -= 1;
 
     // Check if the enemy is dead
     if (alien.health <= 0) {
@@ -144,26 +144,35 @@ export function createBulletInside(scene, player, w, h, a) {
 }
 
 
-export function handleBulletMovements(bullets) {
-  const maxDistance = 800; // Maximum distance a bullet can travel
+export function handleBulletMovements(bullets, enemies, flyingEnemies, boss) {
+  const hitRadius = 20; // Define a hit radius for rough collision detection
 
-  // Iterate over each bullet and update its position, check the distance traveled, 
-  // and remove it if it exceeds the maximum distance.
   bullets.forEach((bullet, index) => {
-    // Check if bullet has traveled the maximum distance, if so, destroy the sprite and remove the bullet
-    if (bullet.distanceTraveled >= maxDistance) {
-      bullet.sprite.destroy(); // Destroy the sprite associated with the bullet
-      bullets.splice(index, 1); // Remove the bullet from the bullets array
-    }
-    else{
-      bullet.x += bullet.velX; // Update bullet's x coordinate
-      bullet.y += bullet.velY; // Update bullet's y coordinate
+    // Move bullet
+    bullet.x += bullet.velX;
+    bullet.y += bullet.velY;
 
-      bullet.sprite.x = bullet.x; // Reflect the change in sprite's x coordinate
-      bullet.sprite.y = bullet.y; // Reflect the change in sprite's y coordinate
-      
-      // Calculate and update distance traveled by the bullet
-      bullet.distanceTraveled += Math.sqrt(bullet.velX ** 2 + bullet.velY ** 2);
+    // Update sprite position
+    bullet.sprite.x = bullet.x;
+    bullet.sprite.y = bullet.y;
+
+    // Calculate distance traveled
+    bullet.distanceTraveled += Math.sqrt(bullet.velX ** 2 + bullet.velY ** 2);
+
+    // Check for proximity-based collision with enemies
+    let allEnemies = enemies.getChildren().concat(flyingEnemies.getChildren(), [boss]);
+    for (let alien of allEnemies) {
+      if (Phaser.Math.Distance.Between(bullet.x, bullet.y, alien.x, alien.y) < hitRadius) {
+        handleEnemyHit(bullet, alien);
+        bullets.splice(index, 1); // Remove the bullet from the array
+        return; // Exit the loop early since the bullet is destroyed
+      }
+    }
+
+    // Remove bullet if it has traveled the maximum distance
+    if (bullet.distanceTraveled >= maxDistance) {
+      bullet.sprite.destroy();
+      bullets.splice(index, 1);
     }
   });
 }
@@ -171,4 +180,20 @@ export function handleBulletMovements(bullets) {
 // load bullet image
 export function loadBulletImage(scene) {
   scene.load.image('bullet', './assets/bullet.png');
+}
+
+function handleEnemyHit(bullet, alien) {
+  // Decrease the enemy's health or handle as necessary
+  alien.health -= 1;
+  // Destroy the bullet sprite
+  bullet.sprite.destroy();
+  // Set bullet distance traveled to max to ensure it's removed from the update loop
+  bullet.distanceTraveled = maxDistance;
+
+  if (alien.health <= 0) {
+    alien.destroy();
+    if (alien.animator) {
+      alien.animator.destroy();
+    }
+  }
 }

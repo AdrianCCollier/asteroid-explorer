@@ -37,17 +37,17 @@ export function createEnemy(scene, asteroid, w, h) {
     return enemy;
 }
 
-export function handleEnemyMovement(scene, bullets, enemy) {
-    // Iterate over each bullet
-    bullets.forEach(bullet => {
-        if (bullet && bullet.sprite) {
-            // Check if the bullet intersects with the enemy and destroy the enemy if true
-            if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
-                enemy.sprite.destroy();
-            }
-        }
-    });
-}
+// export function handleEnemyMovement(scene, bullets, enemy) {
+//     // Iterate over each bullet
+//     bullets.forEach(bullet => {
+//         if (bullet && bullet.sprite) {
+//             // Check if the bullet intersects with the enemy and destroy the enemy if true
+//             if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
+//                 enemy.sprite.destroy();
+//             }
+//         }
+//     });
+// }
 
 
 export function loadEnemyImage(scene) {
@@ -85,7 +85,7 @@ export function createEnemyInside(scene, group, x, y) {
 
     return enemy;
 }
-export function handleEnemyMovementInside(scene, bullets, enemy) {
+export function handleEnemyMovementInside(scene, enemy) {
     let player = scene.player;
 
     // Calculate the direction vector from the enemy to the player.
@@ -107,6 +107,7 @@ export function handleEnemyMovementInside(scene, bullets, enemy) {
     } else if (isAtEdge && shouldChasePlayer) {
         // Stop at the edge if there's no ground
         enemy.setVelocityX(0);
+        enemy.setVelocityY(0);
         // Optional: Enemy looks at the player
         enemy.direction = dx > 0 ? 1 : -1;
     } else {
@@ -124,7 +125,7 @@ function patrolBehavior(scene, enemy) {
         enemy.direction *= -1; // Reverse direction
     } else if (checkForSolidGroundAhead(scene, enemy)) {
         // If there's ground ahead, keep moving
-        enemy.setVelocityX(enemy.speed * enemy.direction);
+       enemy.setVelocityX(enemy.speed * enemy.direction);
     } else {
         // If there's no ground ahead, turn around
         enemy.direction *= -1; // Reverse direction
@@ -178,7 +179,7 @@ export function createFlyingEnemy(scene, group, x, y) {
 
     // Attach properties to the flying enemy
     enemy.chaseSpeed = 100;
-    enemy.health = 2;
+    enemy.health = 5;
     enemy.isChasing = false;
 
     return enemy;
@@ -236,7 +237,7 @@ export function createBoss(scene, group, x, y) {
 
     // Attach properties to the boss
     boss.chaseSpeed = 125;
-    boss.health = 2; 
+    boss.health = 20; 
     return boss;
 }
 
