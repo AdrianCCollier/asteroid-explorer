@@ -64,7 +64,7 @@ class Game extends Component {
           //debug: true,
         },
       },
-      scene: scenes,
+      scene: scenes
     }
     this.game = new Phaser.Game(config)
   }

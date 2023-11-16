@@ -3,6 +3,13 @@ import Phaser from 'phaser';
 class GameOverScene extends Phaser.Scene {
   constructor() {
       super({ key: 'GameOverScene' });
+      this.nextSceneKey = 'test';
+  }
+
+  init(data) {
+    if (data && data.gameScene) {
+      this.nextSceneKey = data.gameScene;
+    }
   }
 
   create() {
@@ -19,7 +26,7 @@ class GameOverScene extends Phaser.Scene {
           .setInteractive()
           .on('pointerdown', () => {
               this.scene.stop();
-              this.scene.start('Ryugu'); // needs adjusting so we get taken to our current world
+              this.scene.start(this.nextSceneKey);
           })
           .on('pointerover', () => yesButton.setBackgroundColor('#555555')) // Changing background color when hovered
           .on('pointerout', () => yesButton.setBackgroundColor('#000000')); // Changing background color back when not hovered
