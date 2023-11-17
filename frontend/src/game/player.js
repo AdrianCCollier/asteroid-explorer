@@ -5,8 +5,37 @@ import Phaser from 'phaser';
 
 import fireSound from './assets/sounds/fireSound.mp3'
 
-export function loadWeaponSounds(scene) {
+import jumpSound from './assets/sounds/jump.mp3'
+import boostSound from './assets/sounds/boost.mp3'
+import stunPistol from './assets/sounds/pistol_stun.mp3'
+import stunAR from './assets/sounds/AR_stun.mp3'
+import stunShotgun from './assets/sounds/shotgun_stun.mp3'
+import pistol from './assets/sounds/pistol.mp3'
+import ar from './assets/sounds/AR.mp3'
+import shotgun from './assets/sounds/Shotgun.mp3'
+
+import playerDamage from './assets/sounds/player_damage.mp3'
+import alienDamage from './assets/sounds/alien_damage.mp3'
+import bossDamage from './assets/sounds/boss_damage.mp3'
+
+
+export function loadWeaponSounds(scene){
   scene.load.audio('weaponFireSound', fireSound)
+
+  scene.load.audio('jump', jumpSound)
+  scene.load.audio('boost', boostSound)
+
+  scene.load.audio('stunPistol', stunPistol)
+  scene.load.audio('stunAR', stunAR)
+  scene.load.audio('stunShotgun', stunShotgun)
+
+  scene.load.audio('pistol', pistol)
+  scene.load.audio('ar', ar)
+  scene.load.audio('shotgun', shotgun)
+
+  scene.load.audio('playerDamage', playerDamage)
+  scene.load.audio('alienDamage', alienDamage)
+  scene.load.audio('bossDamage', bossDamage)
 }
 
 export function createPlayer(scene, asteroid, w, h) {
@@ -56,8 +85,6 @@ var falling = false;
 var spaceUp = false;
 var movingForward = false;
 var movingBackward = false;
-
-
 
 export function handlePlayerMovement(scene, player, asteroid, shootControl, shootCooldown) {
     // defines key inputs
@@ -202,6 +229,7 @@ var timer = 0;
 var doubleJumpTimer = 10;
 var spaceUp = true;
 var falling = false;
+var frameCount = 0;
 
 
 export function handlePlayerMovementInside(scene, player, shootControl, shootCooldown) {
@@ -219,16 +247,46 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
 
     player.angle = Phaser.Math.Angle.Between(player.sprite.x, player.sprite.y, crosshairX, crosshairY);
 
-    if (leftMouseButton){
-        
+    if (player.sprite.body.velocity.y >= 640){
+        player.sprite.body.velocity.y = 640;
     }
 
     // Handles shooting
     if (leftMouseButton && shootControl.canShoot) {
-        let bullet = createBulletInside(scene, player, 20, 20, player.angle);
-            scene.sound.play('weaponFireSound')
 
-        scene.bullets.push(bullet); // Create a bullet when K is pressed
+
+        
+        if (localStorage.getItem('equipped') == "\"pistol\""){
+            // Play weapon shooting sound
+            scene.sound.play('stunPistol', {volume: 0.1});
+        }
+        else if (localStorage.getItem('equipped') == "\"ar\""){
+            // Play weapon shooting sound
+            scene.sound.play('stunAR', {volume: 0.05});
+        }
+        else if (localStorage.getItem('equipped') == "\"shotgun\""){
+            // Play weapon shooting sound
+            scene.sound.play('stunShotgun', {volume: 0.1});
+        }
+
+        
+        if (localStorage.getItem('equipped') != "\"shotgun\""){
+            let bullet = createBulletInside(scene, player, 20, 20, player.angle);
+            scene.bullets.push(bullet);
+        }
+        else{
+            for (var i = 0; i < 6; i++){
+                // Generate a random number between 0 and 1
+                let randomNumber = Math.random() * 0.4;
+
+                // Determine if the number should be positive or negative (50% chance for each)
+                let signedNumber = (Math.random() < 0.5) ? randomNumber : -randomNumber;
+
+                console.log(signedNumber);
+                let bullet = createBulletInside(scene, player, 20, 20, player.angle + signedNumber);
+                scene.bullets.push(bullet);
+            }
+        }
         shootControl.canShoot = false;
         setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
         scene.player.shoot = true;
@@ -245,7 +303,7 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
         
         // Only updates the direction if the dKey hasn't been pressed
         if (!dKey.isDown)
-        player.facing = 'left'; // Update facing direction
+            player.facing = 'left'; // Update facing direction
     }
 
     // Move right
@@ -271,69 +329,103 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
     }
 
 
+    
     // JUMPING: 
 
-    // Checks if player's velocity = 0 (stopped falling or not)
-    if (player.sprite.body.velocity.y == 0){
-        stopped = true;
-        player.jumping = false;
-    }
-    else{
-        stopped = false;
-        player.jumping = true;
-    }
-
-    // Main Jump check only runs if the player's velocity is 0 and they aren't already jumping
-    if (spaceKey.isDown && stopped && !jumping){
-        player.sprite.setVelocityY(-jumpStrength);
-        jumping = true;
+    if (player.sprite.body.velocity.y < 0)
         falling = false;
-        timer = 0;
-        spaceUp = false;
+    else if (player.sprite.body.velocity.y > 0)
+        falling = true;
 
+    if (player.sprite.body.velocity.y > 0){
         player.jumping = true;
     }
 
-    // increments timer for the double jump
-    timer += 1;
+    if (spaceKey.isDown && !jumping){
+        if (player.sprite.body.velocity.y == 0){ //  Normal Jump
+            scene.sound.play('jump', {volume: 0.04});
 
-    // Checks if space has been let go before a double jump
+            player.sprite.setVelocityY(-jumpStrength);
+
+            jumping = true;
+            player.jumping = true;
+
+            doubleJumping = false;
+            player.doubleJumping = false;
+
+            spaceUp = false;
+
+            timer = 0;
+        }
+        else{ // Double Jump
+            scene.sound.play('boost', {volume: 0.024});
+
+            player.sprite.setVelocityY(-jumpStrength);
+
+            doubleJumping = true;
+            player.doubleJumping = true;
+
+            spaceUp = false;
+
+            falling = false;
+            jumping = true;
+        }
+    }
+
     if (!spaceKey.isDown){
         spaceUp = true;
     }
 
-    // Checks if already jumping
-    if (jumping){
-        if (timer > doubleJumpTimer){ // Allows double jump if timer is ready and space has been let go from inital jump
-            if (spaceUp && spaceKey.isDown && !doubleJumping){// Double Jump
-                player.sprite.setVelocityY(-jumpStrength);
-                doubleJumping = true;
-                player.doubleJumping = true;
+    if (player.sprite.body.velocity.y == 0 && falling){
+        player.jumping = false;
+        player.doubleJumping = false;
+    }
+    else{
+        timer +=1;
+        if (spaceKey.isDown && timer > doubleJumpTimer && !doubleJumping && spaceUp){
+            scene.sound.play('boost', {volume: 0.024});
 
-                falling = false;
-            }
+            player.sprite.setVelocityY(-jumpStrength);
+
+            doubleJumping = true;
+            player.doubleJumping = true;
+
+            spaceUp = false;
+
+            falling = false;
+            jumping = true;
         }
+    }
 
-        // Checks to see if player is falling from their jump
-        if (player.sprite.body.velocity.y > 0){ // falling
+    if (player.sprite.body.velocity.y == 0 && falling && spaceUp){
+        jumping = false;
+    }
+
+    if (player.sprite.body.velocity.y == 0){
+        frameCount += 1;
+        if (frameCount > 4){
             falling = true;
+            player.jumping = false;
         }
-
-        // Checks for when player hits the ground after falling from a jump
-        if (falling){
-            if (player.sprite.body.velocity.y == 0){ // hit ground
-                jumping = false;
-                doubleJumping = false;
-                player.doubleJumping = false;
-                falling = false;
-
-                player.jumping = false;
-            }
-        }
+    }
+    else{
+        frameCount = 0;
     }
 }
 
+export function asteroidFloor(){
+}
+
+export function alienFloor(){
+}
+
+export function platformFloor(){
+}
+
+
 export function handlePlayerDamage(player, amount, scene) {
+    player.sprite.setVelocityY(-200);
+
     player.health -= amount; // Deduct the amount of damage taken
     
     // Calculate the health bar scale based on the current health
@@ -354,7 +446,7 @@ export function handlePlayerDamage(player, amount, scene) {
         // Call functions to handle the game over scenario
         scene.scene.pause();
         scene.scene.stop();
-        scene.scene.launch('GameOverScene');
+        scene.scene.launch('GameOverScene', { gameScene: scene.scene.key });
     }
 }
 

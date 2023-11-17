@@ -2,7 +2,9 @@ import Phaser from 'phaser';
 
 import {createAsteroid, applyRotation} from './asteroid.js';
 
-import {createEnemyAnimator, updateEnemyAnimations} from './animation'
+import {createTallEnemyAnimator, updateTallEnemyAnimations, 
+        createFlyingEnemyAnimator, updateFlyingEnemyAnimations,
+        createBossEnemyAnimator, updateBossEnemyAnimations} from './animation'
 
 export function createEnemy(scene, asteroid, w, h) {
     // Initialize an enemy object with given properties
@@ -37,17 +39,17 @@ export function createEnemy(scene, asteroid, w, h) {
     return enemy;
 }
 
-export function handleEnemyMovement(scene, bullets, enemy) {
-    // Iterate over each bullet
-    bullets.forEach(bullet => {
-        if (bullet && bullet.sprite) {
-            // Check if the bullet intersects with the enemy and destroy the enemy if true
-            if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
-                enemy.sprite.destroy();
-            }
-        }
-    });
-}
+// export function handleEnemyMovement(scene, bullets, enemy) {
+//     // Iterate over each bullet
+//     bullets.forEach(bullet => {
+//         if (bullet && bullet.sprite) {
+//             // Check if the bullet intersects with the enemy and destroy the enemy if true
+//             if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
+//                 enemy.sprite.destroy();
+//             }
+//         }
+//     });
+// }
 
 
 export function loadEnemyImage(scene) {
@@ -78,13 +80,18 @@ export function createEnemyInside(scene, group, x, y) {
 
     // Attach properties to the sprite directly
     enemy.speed = 50;
+    enemy.health = 2; // Add a health property with a value of 2
     enemy.direction = 1; // Enemy initial direction (1 for right, -1 for left)
     enemy.animator = null;
-    createEnemyAnimator(scene, enemy);
+
+    // Used to tell what kind of enemy
+    enemy.tall = true;
+
+    createTallEnemyAnimator(scene, enemy);
 
     return enemy;
 }
-export function handleEnemyMovementInside(scene, bullets, enemy) {
+export function handleEnemyMovementInside(scene, enemy) {
     let player = scene.player;
 
     // Calculate the direction vector from the enemy to the player.
@@ -95,17 +102,29 @@ export function handleEnemyMovementInside(scene, bullets, enemy) {
     let distance = Math.sqrt(dx * dx + dy * dy);
 
     const isSolidGroundAhead = checkForSolidGroundAhead(scene, enemy);
-    const shouldChasePlayer = distance < 200; // distance threshold to start chasing
+    enemy.shouldChasePlayer = distance < 300; // distance threshold to start chasing
     const isAtEdge = !isSolidGroundAhead;
     
-    if (shouldChasePlayer && !isAtEdge) {
-        // Normalize the direction vector 
-        let directionX = dx / distance; // Normalized direction for X
-        enemy.direction = Math.sign(directionX);
-        enemy.setVelocityX(directionX * enemy.speed);
-    } else if (isAtEdge && shouldChasePlayer) {
+    if (enemy.shouldChasePlayer && !isAtEdge) {
+        if (isAtCorner(scene, enemy)){
+            enemy.setVelocityY(-300);
+        }
+        else{
+            // Normalize the direction vector 
+            let directionX = dx / distance; // Normalized direction for X
+            enemy.direction = Math.sign(directionX);
+            if (directionX > 0)
+                directionX = 1;
+            else
+                directionX = -1;
+            enemy.setVelocityX(directionX * enemy.speed);
+        }
+    } else if (isAtEdge && enemy.shouldChasePlayer) {
         // Stop at the edge if there's no ground
-        enemy.setVelocityX(0);
+        if (!enemy.shouldChasePlayer){
+            enemy.setVelocityX(0);
+            enemy.setVelocityY(0);
+        }
         // Optional: Enemy looks at the player
         enemy.direction = dx > 0 ? 1 : -1;
     } else {
@@ -114,24 +133,173 @@ export function handleEnemyMovementInside(scene, bullets, enemy) {
     }
 
     // Update enemy animations.
-    updateEnemyAnimations(scene, enemy);
+    updateTallEnemyAnimations(scene, enemy);
 }
 
 function patrolBehavior(scene, enemy) {
-    // If there's ground ahead, keep moving
-    if (checkForSolidGroundAhead(scene, enemy)) {
-        enemy.setVelocityX(enemy.speed * enemy.direction);
+    if (isAtCorner(scene, enemy)) {
+        // Handle corner case
+        enemy.direction *= -1; // Reverse direction
+    } else if (checkForSolidGroundAhead(scene, enemy)) {
+        // If there's ground ahead, keep moving
+       enemy.setVelocityX(enemy.speed * enemy.direction);
     } else {
         // If there's no ground ahead, turn around
         enemy.direction *= -1; // Reverse direction
-        enemy.setVelocityX(enemy.speed * enemy.direction); // Move in the new direction
     }
+    enemy.setVelocityX(enemy.speed * enemy.direction); // Move in the new direction
+}
+
+function isAtCorner(scene, enemy) {
+    // Check the tile directly in front of the enemy at the same level
+    const frontX = enemy.x + (enemy.width * 0.5 * enemy.direction);
+    const frontY = enemy.y; // Check at the enemy's level, not below
+    const frontAsteroidTile = scene.map.getTileAtWorldXY(frontX, frontY, true, scene.cameras.main, 'Floors');
+    const frontAlienTile = scene.map.getTileAtWorldXY(frontX, frontY, true, scene.cameras.main, 'Alien Floors');
+
+    // If there is a colliding tile directly in front, we're at a corner
+    return  (frontAsteroidTile && frontAsteroidTile.collides) || (frontAlienTile && frontAlienTile.collides);
 }
 
 // Check for solid ground ahead of the enemy with more leniency
 function checkForSolidGroundAhead(scene, enemy) {
     const offsetX = enemy.width * 0.5 * enemy.direction; // Half width ahead of the enemy
     const point = { x: enemy.x + offsetX, y: enemy.y + enemy.height * 1.9 }; // Half height to check ahead
-    const tile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Tile Layer 1');
-    return tile && tile.collides;
+    const AsteroidTile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Floors');
+    const AlienTile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Alien Floors');
+    const PlatformTile = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Platforms');
+
+    return (AsteroidTile && AsteroidTile.collides) || (AlienTile && AlienTile.collides || (PlatformTile && PlatformTile.collides));
 }
+
+export function createFlyingEnemiesGroup(scene) {
+    let flyingEnemies = scene.physics.add.group({
+        allowGravity: false, // Flying enemies are not affected by gravity
+        immovable: true, 
+    });
+    return flyingEnemies;
+}
+
+export function createFlyingEnemy(scene, group, x, y) {
+    let enemy = group.create(x, y, 'enemy'); // Make sure 'enemy' corresponds to the loaded sprite key
+    enemy.setCollideWorldBounds(true);
+
+    // Disable gravity for the flying enemy
+    enemy.body.setAllowGravity(false);
+
+    // The radius for the circular physics body should be half of the width
+    const collisionRadius = 16; // Half of the width or height for a 32x32 sprite
+
+    enemy.body.setCircle(collisionRadius);
+
+    // no offsets
+    enemy.body.setOffset(0, 0);
+
+    // Attach properties to the flying enemy
+    enemy.chaseSpeed = 100;
+    enemy.health = 5;
+    enemy.isChasing = false;
+
+
+    // Used to tell what kind of enemy
+    enemy.flying = true;
+
+    // Creates flying enemy animator
+    createFlyingEnemyAnimator(scene, enemy);
+
+    return enemy;
+}
+
+export function handleFlyingEnemyMovement(scene, enemy) {
+    let player = scene.player.sprite; 
+
+    // Calculate the distance to the player
+    let distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, player.x, player.y);
+
+    // Set a range for how close the player needs to be to trigger chasing
+    const chaseRange = 500;
+
+    if (distance < chaseRange) {
+        // If within range, chase the player
+        let directionX = (player.x - enemy.x) / distance;
+        let directionY = (player.y - enemy.y) / distance;
+        enemy.setVelocityX(directionX * enemy.chaseSpeed); // Chase horizontally
+        enemy.setVelocityY(directionY * enemy.chaseSpeed); // Chase vertically
+        enemy.isChasing = true;
+    } else {
+        // If the player is out of range, the enemy remains stationary
+        enemy.setVelocityX(0);
+        enemy.setVelocityY(0);
+        enemy.isChasing = false;
+    }
+
+    // Update flying enemy animations 
+    updateFlyingEnemyAnimations(scene, enemy);
+}
+
+export function createBossGroup(scene) {
+    let boss = scene.physics.add.group({
+        allowGravity: false, // Flying enemies are not affected by gravity
+        immovable: true, 
+    });
+    return boss;
+}
+
+export function createBoss(scene, group, x, y) {
+    let boss = group.create(x, y, 'enemy'); // empty sprite
+    boss.setCollideWorldBounds(true);
+
+    boss.body.setAllowGravity(false);
+
+    // Set up a circular physics body. The radius should be half the smallest dimension of the boss.
+    const collisionRadius = Math.min(128, 96) / 2;
+    boss.body.setCircle(collisionRadius);
+
+    // Calculate offsets if the sprite's center is not the center of the circle
+    const offsetX = (boss.width - collisionRadius * 2) / 2;
+    const offsetY = (boss.height - collisionRadius * 2) / 2;
+    boss.body.setOffset(offsetX, offsetY);
+
+    // Attach properties to the boss
+    boss.chaseSpeed = 125;
+    boss.health = 20; 
+
+
+    // Used to tell what kind of enemy
+    boss.boss = true;
+
+    // Creates the boss's animator
+    createBossEnemyAnimator(scene, boss);
+
+    return boss;
+}
+
+export function handleBossMovement(scene, enemy) {
+    let player = scene.player.sprite; 
+
+    // Calculate the distance to the player
+    let distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, player.x, player.y);
+
+    // Set a range for how close the player needs to be to trigger chasing
+    const chaseRange = 600;
+
+    if (distance < chaseRange) {
+        // If within range, chase the player
+        let directionX = (player.x - enemy.x) / distance;
+        let directionY = (player.y - enemy.y) / distance;
+        enemy.setVelocityX(directionX * enemy.chaseSpeed); // Chase horizontally
+        enemy.setVelocityY(directionY * enemy.chaseSpeed); // Chase vertically
+        enemy.isChasing = true;
+    } else {
+        // If the player is out of range, the enemy remains stationary
+        enemy.setVelocityX(0);
+        enemy.setVelocityY(0);
+        enemy.isChasing = false;
+    }
+
+    enemy.direction = ((player.x - enemy.x) / distance) > 0;
+
+    // Update boss animations
+    updateBossEnemyAnimations(scene, enemy);
+}
+

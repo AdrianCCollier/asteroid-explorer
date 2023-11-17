@@ -2,10 +2,6 @@ import Phaser from 'phaser'
 
 
 
-var pistol = null;
-
-
-
 export function loadPlayerAnimations(scene){
   // NORMAL ANIMS
   scene.load.spritesheet("walk", "./assets/sprites/player_walk.png",{
@@ -121,12 +117,19 @@ export function loadPlayerAnimations(scene){
   scene.load.image('pistol_holstered', './assets/sprites/weapons/pistol_holstered.png');
   scene.load.image('ar', './assets/sprites/weapons/ar.png');
   scene.load.image('ar_holstered', './assets/sprites/weapons/ar_holstered.png');
+
+
+
+  // WORLD ANIMS
+  scene.load.spritesheet("platform", "./assets/sprites/platform.png",{
+    frameWidth: 96,
+    frameHeight: 32}
+  );
 }
 
 
 export function createPlayerAnimations(scene){
   // CREATES ANIMATIONS
-
   scene.anims.create({
     key: 'player_walk',
     frames: scene.anims.generateFrameNumbers('walk'),
@@ -235,8 +238,27 @@ export function createPlayerAnimations(scene){
 
 
 
-  // CREATES ANIMATOR OBJECTS
+  /**/
 
+  // Create an array to store platform positions
+  scene.platformAnimators = [];
+
+  // Iterate through each tile in the platformLayer
+  scene.platformLayer.forEachTile(function (tile) {
+    if (tile.properties.animate == true) {
+      scene.platformAnimators.push(scene.add.sprite(tile.pixelX + 96 / 2, tile.pixelY + 32 / 2, 'platform'));
+    }
+  }, scene);
+
+  scene.anims.create({
+    key: 'platform',
+    frames: scene.anims.generateFrameNumbers('platform'),
+    frameRate: 10,
+    repeat: -1,
+  })
+
+
+  // CREATES ANIMATOR OBJECTS
   scene.player.boostAnimator = scene.playerAnimation = scene.add.sprite(
     scene.player.sprite.x,
     scene.player.sprite.y,
@@ -255,9 +277,27 @@ export function createPlayerAnimations(scene){
     'idle_shoot'
   )
 
-  scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'pistol');
-  scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'pistol_holstered');
+
+
+
+  // Draws gun sprite
+  if (localStorage.getItem('equipped') == "\"pistol\""){
+    scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spacePistol');
+    scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spacePistol');
+  }
+  else if (localStorage.getItem('equipped') == "\"ar\""){
+    scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceAR');
+    scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceAR');
+  }
+  else if (localStorage.getItem('equipped') == "\"shotgun\""){
+    scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceShotgun');
+    scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceShotgun');
+  }
   scene.player.weaponSprite.alpha = 0;
+
+
+
+
 
   scene.player.armAnimator = scene.playerAnimation = scene.add.sprite(
     scene.player.sprite.x,
@@ -278,13 +318,17 @@ export function createPlayerAnimations(scene){
   scene.player.boostAnimator.alpha = 0;
 }
 
+
 var holsterMax = 250
 var holsterCounter = 0;
 var reversing = false;
 
-
-
 export function updatePlayerAnimations(scene){
+  scene.platformAnimators.forEach(function (animator){
+    animator.anims.play("platform", true);
+  });
+
+
   scene.player.animator.x = scene.player.sprite.x
   scene.player.animator.y = scene.player.sprite.y
 
@@ -306,7 +350,6 @@ export function updatePlayerAnimations(scene){
 
   scene.player.weaponHolsteredSprite.x = scene.player.sprite.x;
   scene.player.weaponHolsteredSprite.y = scene.player.sprite.y;
-
 
 
   // Plays unholstering animation
@@ -365,8 +408,8 @@ export function updatePlayerAnimations(scene){
     scene.player.weaponSprite.rotation = scene.player.angle;
 
     let offset = {
-      x: Math.cos(scene.player.angle - 0.30) * 23,
-      y: Math.sin(scene.player.angle - 0.30) * 23
+      x: Math.cos(scene.player.angle - 0.30) * 26,
+      y: Math.sin(scene.player.angle - 0.30) * 26
     };
 
     scene.player.weaponSprite.x = scene.player.weaponSprite.x + offset.x;
@@ -458,6 +501,38 @@ export function updatePlayerAnimations(scene){
 
   }
   else{ // not shooting
+    scene.player.weaponHolsteredSprite.rotation = Phaser.Math.DegToRad(90);
+    var offsetX = 0;
+    var offsetY = 0;
+
+    
+    // Draws gun sprite
+    if (localStorage.getItem('equipped') == "\"pistol\""){
+      offsetX = 11;
+      offsetY = 0;
+    }
+    else if (localStorage.getItem('equipped') == "\"ar\""){
+      offsetX = 11;
+      offsetY = 2;
+    }
+    else if (localStorage.getItem('equipped') == "\"shotgun\""){
+      offsetX = 11;
+      offsetY = 0;
+    }
+
+    if (scene.player.facing == 'right'){
+      scene.player.weaponHolsteredSprite.x = scene.player.weaponHolsteredSprite.x - offsetX;
+      scene.player.weaponHolsteredSprite.y = scene.player.weaponHolsteredSprite.y + offsetY;
+    }
+    else{
+      scene.player.weaponHolsteredSprite.x = scene.player.weaponHolsteredSprite.x + offsetX;
+      scene.player.weaponHolsteredSprite.y = scene.player.weaponHolsteredSprite.y + offsetY;
+    }
+    scene.player.weaponHolsteredSprite.setScale(0.75);
+
+
+    
+
     if (scene.player.holstering){
       scene.player.animator.alpha = 100;
       scene.player.shootingAnimator.alpha = 100;
@@ -472,6 +547,7 @@ export function updatePlayerAnimations(scene){
       scene.player.weaponSprite.alpha = 0;
       scene.player.weaponHolsteredSprite.alpha = 100;
     }
+    reversing = false;
   }
 
 
@@ -484,7 +560,7 @@ export function updatePlayerAnimations(scene){
     scene.player.armAnimator.setFlipX(true)
     scene.player.armAnimator.x = scene.player.sprite.x - 8;
 
-    scene.player.weaponHolsteredSprite.setFlipX(true);
+    scene.player.weaponHolsteredSprite.setFlipY(true);
   }
   else { // look forward
     scene.player.animator.setFlipX(false) 
@@ -495,7 +571,7 @@ export function updatePlayerAnimations(scene){
     scene.player.armAnimator.setFlipX(false)
     scene.player.armAnimator.x = scene.player.sprite.x + 8;
 
-    scene.player.weaponHolsteredSprite.setFlipX(false);
+    scene.player.weaponHolsteredSprite.setFlipY(false);
   }
 
 
@@ -532,46 +608,212 @@ export function updatePlayerAnimations(scene){
 
 
 
-
-
-
-
-
-
 export function loadEnemyAnimations(scene){
-  scene.load.spritesheet("tall_walk_agro", "./assets/sprites/tall_alien_walking_agro.png",{
+  // Animations loading for tall alies
+  scene.load.spritesheet("tall_walk", "./assets/sprites/tall_alien_walking.png", {
     frameWidth: 32,
     frameHeight: 64}
+  );
+  scene.load.spritesheet("tall_agro", "./assets/sprites/tall_alien_agro.png", {
+    frameWidth: 32,
+    frameHeight: 64}
+  );
+  scene.load.spritesheet("tall_knockout", "./assets/sprites/tall_alien_knockout.png", {
+    frameWidth: 32,
+    frameHeight: 64}
+  );
+  scene.load.spritesheet("tall_sleep", "./assets/sprites/tall_alien_sleep.png", {
+    frameWidth: 32,
+    frameHeight: 64}
+  );
+
+
+  // Animation loading for flying aliens
+  scene.load.spritesheet("flying_walk", "./assets/sprites/flying_alien_walking.png", {
+    frameWidth: 32,
+    frameHeight: 32}
+  );
+  scene.load.spritesheet("flying_agro", "./assets/sprites/flying_alien_agro.png", {
+    frameWidth: 32,
+    frameHeight: 32}
+  );
+  scene.load.spritesheet("flying_knockout", "./assets/sprites/flying_alien_knockout.png", {
+    frameWidth: 32,
+    frameHeight: 32}
+  );
+  scene.load.spritesheet("flying_sleep", "./assets/sprites/flying_alien_sleep.png", {
+    frameWidth: 32,
+    frameHeight: 32}
+  );
+
+
+  // Animation loading for boss alien
+  scene.load.spritesheet("boss_walk", "./assets/sprites/boss_alien_walking.png", {
+    frameWidth: 128,
+    frameHeight: 128}
+  );
+  scene.load.spritesheet("boss_death", "./assets/sprites/boss_alien_death.png", {
+    frameWidth: 128,
+    frameHeight: 128}
+  );
+  scene.load.spritesheet("boss_good", "./assets/sprites/boss_alien_good.png", {
+    frameWidth: 128,
+    frameHeight: 128}
   );
 }
 
 export function createEnemyAnimations(scene){
+  // Animation creation for tall aliens
   scene.anims.create({
-    key: 'tall_walk_alien_agro',
-    frames: scene.anims.generateFrameNumbers('tall_walk_agro'),
+    key: 'tall_alien_walk',
+    frames: scene.anims.generateFrameNumbers('tall_walk'),
+    frameRate: 8,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'tall_alien_agro',
+    frames: scene.anims.generateFrameNumbers('tall_agro'),
     frameRate: 16,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'tall_alien_knockout',
+    frames: scene.anims.generateFrameNumbers('tall_knockout'),
+    frameRate: 8,
+    repeat: 0,
+  })
+  scene.anims.create({
+    key: 'tall_alien_sleep',
+    frames: scene.anims.generateFrameNumbers('tall_sleep'),
+    frameRate: 8,
+    repeat: -1,
+  })
+
+
+  // Animation creation for flying aliens
+  scene.anims.create({
+    key: 'flying_alien_walking',
+    frames: scene.anims.generateFrameNumbers('flying_walk'),
+    frameRate: 8,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'flying_alien_agro',
+    frames: scene.anims.generateFrameNumbers('flying_agro'),
+    frameRate: 8,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'flying_alien_knockout',
+    frames: scene.anims.generateFrameNumbers('flying_knockout'),
+    frameRate: 16,
+    repeat: 0,
+  })
+  scene.anims.create({
+    key: 'flying_alien_sleep',
+    frames: scene.anims.generateFrameNumbers('flying_sleep'),
+    frameRate: 8,
+    repeat: -1,
+  })
+
+
+  scene.anims.create({
+    key: 'boss_alien_walk',
+    frames: scene.anims.generateFrameNumbers('boss_walk'),
+    frameRate: 8,
+    repeat: -1,
+  })
+  scene.anims.create({
+    key: 'boss_alien_death',
+    frames: scene.anims.generateFrameNumbers('boss_death'),
+    frameRate: 8,
+    repeat: 0,
+  })
+  scene.anims.create({
+    key: 'boss_alien_good',
+    frames: scene.anims.generateFrameNumbers('boss_good'),
+    frameRate: 8,
     repeat: -1,
   })
 }
 
-export function createEnemyAnimator(scene, enemy){
+
+
+
+export function createTallEnemyAnimator(scene, enemy){
   enemy.animator = scene.playerAnimation = scene.add.sprite(
     enemy.x,
     enemy.y,
-    'tall_walk_agro'
-  )
+    'tall_alien_walk'
+  ).setDepth(1);
 }
 
-export function updateEnemyAnimations(scene, enemy){
+export function updateTallEnemyAnimations(scene, enemy){
   // Making sprite invisible so animation can play
   enemy.alpha = 0;
 
   // Determine flip based on enemy's direction
   enemy.animator.setFlipX(enemy.direction < 0); // Flip when direction is negative (moving left)
-  
-  enemy.animator.anims.play("tall_walk_alien_agro", true); // plays animation
+  enemy.animator.setDepth(1);
+
+  enemy.animator.x = enemy.x; // updates animation position
+  enemy.animator.y = enemy.y; // updates animation position
+
+  // Decides what enemy animation to play
+  if (!enemy.shouldChasePlayer)
+    enemy.animator.anims.play("tall_alien_walk", true); // plays animation
+  else
+    enemy.animator.anims.play("tall_alien_agro", true); // plays animation
+
+}
+
+
+
+
+export function createFlyingEnemyAnimator(scene, enemy){
+  enemy.animator = scene.playerAnimation = scene.add.sprite(
+    enemy.x,
+    enemy.y,
+    'flying_alien_walking'
+  ).setDepth(1);
+}
+
+export function updateFlyingEnemyAnimations(scene, enemy){
+  // Making sprite invisible so animation can play
+  enemy.alpha = 0;
+
+  // Determine flip based on enemy's direction
+  enemy.animator.setDepth(1);
+  enemy.animator.x = enemy.x; // updates animation position
+  enemy.animator.y = enemy.y; // updates animation position
+
+  // Decides what enemy animation to play
+  if (!enemy.isChasing)
+    enemy.animator.anims.play("flying_alien_walking", true); // plays animation
+  else
+    enemy.animator.anims.play("flying_alien_agro", true); // plays animation
+}
+
+
+
+
+export function createBossEnemyAnimator(scene, enemy){
+  enemy.animator = scene.playerAnimation = scene.add.sprite(
+    enemy.x,
+    enemy.y,
+    'boss_alien_walk'
+  ).setDepth(1);
+}
+
+export function updateBossEnemyAnimations(scene, enemy){
+  // Making sprite invisible so animation can play
+  enemy.alpha = 0;
+
+  // Determine flip based on enemy's direction
+  enemy.animator.setFlipX(!enemy.direction); // Flip when direction is negative (moving left)
+  enemy.animator.setDepth(1);
+  enemy.animator.anims.play("boss_alien_walk", true); // plays animation
 
   enemy.animator.x = enemy.x; // updates animation position
   enemy.animator.y = enemy.y; // updates animation position
 }
-

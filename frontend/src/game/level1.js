@@ -63,7 +63,7 @@ export default class Level1Scene extends Phaser.Scene {
   update() {
     // Handle movements and actions on every frame update
     handlePlayerMovement(this, this.player, this.asteroid, this.shootControl, this.shootCooldown);
-    handleEnemyMovement(this, this.bullets, this.enemy);
+    // handleEnemyMovement(this, this.bullets, this.enemy);
     handleBulletMovements(this.bullets);
 
     // Check for collision between player and weapon and allow the player to pick it up

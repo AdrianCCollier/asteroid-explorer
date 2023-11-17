@@ -21,7 +21,7 @@ import './index.css'
 function ExplorerGame0() {
   return (
     <div>
-      <Game startingScene="SidescrollerScene" />
+      <Game startingScene="Ryugu" />
     </div>
   )
 }
@@ -29,7 +29,7 @@ function ExplorerGame0() {
 function ExplorerGame1() {
   return (
     <div>
-      <Game startingScene="SidescrollerScene2" />
+      <Game startingScene="Vesta" />
     </div>
   )
 }
@@ -37,7 +37,15 @@ function ExplorerGame1() {
 function ExplorerGame2() {
   return (
     <div>
-      <Game startingScene="SidescrollerScene3" />
+      <Game startingScene="Psyche" />
+    </div>
+  )
+}
+
+function ExplorerGame3() {
+  return (
+    <div>
+      <Game startingScene="Ceres" />
     </div>
   )
 }
@@ -118,6 +126,8 @@ function Solar() {
           <Route path="/level1" element={<ExplorerGame1 />} />
 
           <Route path="/level2" element={<ExplorerGame2 />} />
+
+          <Route path="/level3" element={<ExplorerGame3 />} />
 
           <Route path="/landing" element={<Landing />} />
           <Route path="/solarSystem" element={<SolarSystem />} />

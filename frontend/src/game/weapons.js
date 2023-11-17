@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-
+import Inventory from '../Inventory.js'
 export function createWeapon(scene, asteroid, w, h) {
 
   // Calculate position for the weapon
@@ -37,4 +37,15 @@ export function createWeaponInside(scene, x, y, w, h) {
       collider: new Phaser.Geom.Circle(weaponSpawnX, weaponSpawnY, w / 2),
   };
   return weapon;
+}
+
+// Uses Inventory object and functions coming from Inventory.js
+export function unlockWeapon(weapon) {
+
+  Inventory.unlockItem(weapon);
+  console.log(`${weapon} unlocked`)
+
+  // Testing, just prints array
+  const allUnlockedItems = Inventory.getAllUnlockedItems()
+  console.log('All unlocked items:', allUnlockedItems)
 }
