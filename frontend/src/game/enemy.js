@@ -197,7 +197,7 @@ export function createFlyingEnemy(scene, group, x, y) {
 
     // Attach properties to the flying enemy
     enemy.chaseSpeed = 100;
-    enemy.health = 5;
+    enemy.health = 1;
     enemy.isChasing = false;
 
 

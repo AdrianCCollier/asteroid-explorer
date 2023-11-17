@@ -222,12 +222,20 @@ export default class Ceres extends Phaser.Scene {
     // fix shooting straight away
     this.shootControl = { canShoot: true } // Initialize shooting control
 
-    if (localStorage.getItem('equipped') == "\"pistol\"")
+    if (localStorage.getItem('equipped') == "\"pistol\""){
       this.shootCooldown = 800 // Time in ms between allowed shots
-    else if (localStorage.getItem('equipped') == "\"ar\"")
+    }
+    else if (localStorage.getItem('equipped') == "\"ar\""){
       this.shootCooldown = 200 // Time in ms between allowed shots
-    else if (localStorage.getItem('equipped') == "\"shotgun\"")
+    }
+    else if (localStorage.getItem('equipped') == "\"shotgun\""){
       this.shootCooldown = 600 // Time in ms between allowed shots
+    }
+    else{
+      localStorage.setItem('equipped', JSON.stringify("pistol"));
+      this.shootCooldown = 800 // Time in ms between allowed shots
+    }
+
 
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -371,6 +379,20 @@ export default class Ceres extends Phaser.Scene {
       }
       else if (enemy.type == "boss"){
         if (!enemy.animator.anims.isPlaying){
+
+          var s = parseInt(localStorage.getItem('bossKills'));
+          s += 1;
+          localStorage.setItem('bossKills', JSON.stringify(s));
+          console.log(s);
+
+          if (s == 1){
+            localStorage.setItem('shotgun', JSON.stringify(true));
+            localStorage.setItem('equipped', JSON.stringify("shotgun"));
+          }
+          else if (s == 2){
+            localStorage.setItem('ar', JSON.stringify(true));
+            localStorage.setItem('equipped', JSON.stringify("ar"));
+          }
 
           // Call functions to handle the game over scenario
           this.scene.pause();

@@ -293,10 +293,6 @@ export function createPlayerAnimations(scene){
     scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceShotgun');
     scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceShotgun');
   }
-  else {
-    scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spacePistol');
-    scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spacePistol');
-  }
   scene.player.weaponSprite.alpha = 0;
 
 
