@@ -6,7 +6,7 @@ function drawEarth( context, canvasHeight, canvasWidth ) {
     // Wait for the image to load before drawing it
     earthImage.onload = function() {
         // Draw the Earth sprite on the canvas
-        context.drawImage(earthImage, canvasWidth * 0.25 , (canvasHeight / 2) - (256 / 24 - 110), 256/4, 256/4); 
+        context.drawImage(earthImage, -236, ( canvasHeight / 2 ) - ( 256 * 0.75 ), 256 * 2, 256 * 2); 
     };
 
 }

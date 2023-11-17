@@ -1,6 +1,7 @@
 .frontend__containers__canvas{
-    position: inherit;
-    display: flex;
+    position: absolute;
+    top: 2%;
+    left: 10%;
 }
 
 .asteroid-tooltipFirst,
@@ -54,4 +55,9 @@
 .startGame {
     background-color: #00BE48;
     border: none;
+}
+
+#frontend__containers__canvas__init,
+#frontend__containers__canvas-ship {
+    position: absolute;
 }

@@ -1,9 +1,6 @@
 import React, { useRef, useLayoutEffect, useState, useEffect } from 'react'
-import drawSun from '../system/sun'
 import drawEarth from '../system/earth'
-import drawMercury from '../system/mercury'
-import drawVenus from '../system/venus'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { Button } from 'antd'
 import drawAsteroids from '../system/asteroids.js'
 import './canvas.css'
@@ -12,22 +9,33 @@ import './canvas.css'
 // Malyk, 9/25. "click" event listening for asteroids has been moved into here. asteroid information should be passed to Menu inside return
 function CanvasContainer({ asteroids }) {
   const canvasRef = useRef(null)
+  const shipCanvasRef = useRef(null)
   const [canvasDimensions, setCanvasDimensions] = useState({
     width: 0,
     height: 0,
   })
-  const [isMenuOpen, setMenuOpen] = useState(false)
+
   const [asteroidInformation, setAsteroidInformation] = useState({
     name: 'asteroid',
     diameter: 10,
     distanceFromEarth: 100,
   })
+
   const [tooltipVisible, setTooltipVisible] = useState([
     false,
     false,
     false,
     false,
   ])
+
+  const location = useLocation()
+
+  // function to bring to ship to Ceres
+  const handleCeresClick = () => {
+    console.log( 'Ceres Explore button clicked!' )
+    localStorage.clear()
+    console.log( localStorage )
+  }
 
   // state to keep track of which asteroid was clicked, to load different phaser levels
   const [clickedAsteroidIndex, setClickedAsteroidIndex] = useState(null)
@@ -47,37 +55,279 @@ function CanvasContainer({ asteroids }) {
     })
   }
 
-  useEffect(() => {
-    const canvas = canvasRef.current
+  const shipImage = new Image()
+  shipImage.src = './assets/Ship.png'
+  const flyingShipImage = new Image()
+  flyingShipImage.src = './assets/Ship_Flying1.png'
 
-    canvas.addEventListener('mousemove', function (e) {
-      var rect = canvas.getBoundingClientRect()
+  const [shipPosition, setShipPosition] = useState({
+    shipX: localStorage.getItem( 'shipX' ) || 320,
+    shipY: localStorage.getItem( 'shipY' ) || ( window.innerHeight * 0.785 ) * 0.55
+  })
+  
+
+  const earthToRyugu = (shipCanvas) => {
+    console.log( "inside earth to ryugu function" )
+    console.log( localStorage )
+    const shipContext = shipCanvas.getContext( '2d' )
+    let shipHeight = 32
+    let shipWidth = 32
+    let shipX = shipPosition.shipX
+    let shipY = shipPosition.shipY
+    let rotationAngle = Math.PI / 2 // rotates by 90 degrees radian
+
+    const animate = () => {
+
+      // draw the background without clearing the entire canvas
+      shipContext.clearRect( 0, 0, shipCanvas.width, shipCanvas.height )
+
+      // save the current context before applying transformation
+      shipContext.save();
+
+      // translate the context to the centger of the ship
+      shipContext.translate( shipX, shipY )
+
+      // rotate the context
+      shipContext.rotate( rotationAngle )
+
+      // draw the rotated ship
+      shipContext.drawImage( flyingShipImage, -shipWidth, -shipHeight, shipWidth, shipHeight )
+
+      // restore the context to its original state
+      shipContext.restore()
+
+      shipX += 2
+
+      // check to see if ship has reached the right edge of the canvas
+      if( shipX > shipCanvas.width * 0.33 ) {
+        shipContext.drawImage( shipImage, -shipWidth, -shipHeight, shipWidth, shipHeight )
+        if( location.pathname !== '/level0' )
+          window.location.href = '/level0'
+        setShipPosition({ shipX, shipY })
+        console.log( "shipX and shipY: ", shipX, shipY )
+        console.log( "Updated shipX and shipY: ", shipPosition.shipX, " ", shipPosition.shipY )
+        localStorage.setItem( 'shipX', shipX )
+        localStorage.setItem( 'shipY', shipY )
+        console.log( localStorage )
+        return
+      } // end if
+
+      // request the next animation frame
+      requestAnimationFrame( animate )
+    }; // end animate function
+
+    // start the animation
+    animate()
+
+  } // end earth to Ryugu function
+
+  const ryuguToVesta = (shipCanvas) => {
+    console.log( "inside Ryugu to Vesta function" )
+    console.log( localStorage )
+    const shipContext = shipCanvas.getContext( '2d' )
+    let shipHeight = 32
+    let shipWidth = 32
+    let shipX = shipPosition.shipX
+    let shipY = shipPosition.shipY
+    let rotationAngle = Math.PI / 4 // rotates by 45 degrees radian
+
+    const animate = () => {
+
+      // draw the background without clearing the entire canvas
+      shipContext.clearRect( 0, 0, shipCanvas.width, shipCanvas.height )
+
+      // save the current context before applying transformation
+      shipContext.save();
+
+      // translate the context to the centger of the ship
+      shipContext.translate( shipX, shipY )
+
+      // rotate the context
+      shipContext.rotate( rotationAngle )
+
+      // draw the rotated ship
+      shipContext.drawImage( flyingShipImage, -shipWidth, -shipHeight, shipWidth, shipHeight )
+
+      // restore the context to its original state
+      shipContext.restore()
+
+      shipX += 2
+      shipY -= 2
+
+      // check to see if ship has reached the right edge of the canvas
+      if( shipX > shipCanvas.width * 0.5 ) {
+        shipContext.drawImage( shipImage, -shipWidth, -shipHeight, shipWidth, shipHeight )
+        if( location.pathname !== '/level1' )
+          window.location.href = '/level1'
+        setShipPosition({ shipX, shipY })
+        console.log( "shipX and shipY: ", shipX, shipY )
+        console.log( "Updated shipX and shipY: ", shipPosition.shipX, " ", shipPosition.shipY )
+        localStorage.setItem( 'shipX', shipX )
+        localStorage.setItem( 'shipY', shipY )
+        console.log( localStorage )
+        return
+      } // end if
+
+      // request the next animation frame
+      requestAnimationFrame( animate )
+    }; // end animate function
+
+    // start the animation
+    animate()
+
+  } // end Ryugu to Vesta function
+
+  const vestaToPsyche = (shipCanvas) => {
+    console.log( "inside Vesta to Psyche function" )
+    console.log( localStorage )
+    const shipContext = shipCanvas.getContext( '2d' )
+    let shipHeight = 32
+    let shipWidth = 32
+    let shipX = shipPosition.shipX
+    let shipY = shipPosition.shipY
+
+    const animate = () => {
+
+      // draw the background without clearing the entire canvas
+      shipContext.clearRect( 0, 0, shipCanvas.width, shipCanvas.height )
+
+      // save the current context before applying transformation
+      shipContext.save();
+
+      // translate the context to the centger of the ship
+      shipContext.translate( shipX, shipY )
+
+      // rotate the context
+      shipContext.rotate( (120 * Math.PI ) / 180 )
+
+      // draw the rotated ship
+      shipContext.drawImage( flyingShipImage, -shipWidth, -shipHeight, shipWidth, shipHeight )
+
+      // restore the context to its original state
+      shipContext.restore()
+
+      shipX += 2
+      shipY += 1.25
+
+      // check to see if ship has reached the right edge of the canvas
+      if( shipX > shipCanvas.width * 0.67 ) {
+        shipContext.drawImage( shipImage, -shipWidth, -shipHeight, shipWidth, shipHeight )
+        if( location.pathname !== '/level2' )
+          window.location.href = '/level2'
+        setShipPosition({ shipX, shipY })
+        console.log( "shipX and shipY: ", shipX, shipY )
+        console.log( "Updated shipX and shipY: ", shipPosition.shipX, " ", shipPosition.shipY )
+        localStorage.setItem( 'shipX', shipX )
+        localStorage.setItem( 'shipY', shipY )
+        console.log( localStorage )
+        return
+      } // end if
+
+      // request the next animation frame
+      requestAnimationFrame( animate )
+    }; // end animate function
+
+    // start the animation
+    animate()
+
+  } // end Vesta to Psyche 16 function
+
+  const pycheToCeres = (shipCanvas) => {
+    console.log( "inside Psyche to Ceres function" )
+    console.log( localStorage )
+    const shipContext = shipCanvas.getContext( '2d' )
+    let shipHeight = 32
+    let shipWidth = 32
+    let shipX = shipPosition.shipX
+    let shipY = shipPosition.shipY
+
+    const animate = () => {
+
+      // draw the background without clearing the entire canvas
+      shipContext.clearRect( 0, 0, shipCanvas.width, shipCanvas.height )
+
+      // save the current context before applying transformation
+      shipContext.save();
+
+      // translate the context to the centger of the ship
+      shipContext.translate( shipX, shipY )
+
+      // rotate the context
+      shipContext.rotate( (90 * Math.PI ) / 180 )
+
+      // draw the rotated ship
+      shipContext.drawImage( flyingShipImage, -shipWidth, -shipHeight, shipWidth, shipHeight )
+
+      // restore the context to its original state
+      shipContext.restore()
+
+      shipX += 2
+
+      // check to see if ship has reached the right edge of the canvas
+      if( shipX > shipCanvas.width * 0.9 ) {
+        shipContext.drawImage( shipImage, -shipWidth, -shipHeight, shipWidth, shipHeight )
+        if( location.pathname !== '/level3' )
+          window.location.href = '/level3'
+        setShipPosition({ shipX, shipY })
+        console.log( "shipX and shipY: ", shipX, shipY )
+        console.log( "Updated shipX and shipY: ", shipPosition.shipX, " ", shipPosition.shipY )
+        localStorage.setItem( 'shipX', shipX )
+        localStorage.setItem( 'shipY', shipY )
+        console.log( localStorage )
+        return
+      } // end if
+
+      // request the next animation frame
+      requestAnimationFrame( animate )
+    }; // end animate function
+
+    // start the animation
+    animate()
+
+  } // end Psyche to Ceres function
+
+  useEffect( () => {
+    console.log( "Inside use effect to store shipX and shipY" )
+    const storedShipX = localStorage.getItem( 'shipX' )
+    const storedShipY = localStorage.getItem( 'shipY' )
+
+    setShipPosition({
+      shipX: storedShipX ? parseFloat( storedShipX ) : 320,
+      shipY: storedShipY ? parseFloat( storedShipY ) : ( window.innerHeight * 0.785 ) * 0.55
+    });
+  }, [])
+
+  useEffect(() => {
+    const shipCanvas = canvasRef.current
+
+    shipCanvas.addEventListener('mousemove', function (e) {
+      var rect = shipCanvas.getBoundingClientRect()
       var mouseX = e.clientX - rect.left
       var mouseY = e.clientY - rect.top
 
-      var plan3X = canvas.width * 0.25 // for Earth
-      var plan3Y = canvas.height * 0.5 // for Earth
+      //var plan3X = canvas.width * 0.25 // for Earth
+      //var plan3Y = canvas.height * 0.5 // for Earth
 
       // Ryugu
-      var ast4X = canvas.width * 0.35 // for asteroid 1
-      var ast4Y = canvas.height * 0.6 // for asteroid 1
+      var ast4X = shipCanvas.width * 0.35 // for asteroid 1
+      var ast4Y = shipCanvas.height * 0.6 // for asteroid 1
 
       // Vesta
-      var ast5X = canvas.width * 0.5 // for asteroid 2
-      var ast5Y = canvas.height * 0.2 // for asteroid 2
+      var ast5X = shipCanvas.width * 0.511 // for asteroid 2
+      var ast5Y = shipCanvas.height * 0.18 // for asteroid 2
 
       // Psyche
-      var ast6X = canvas.width * 0.7 // for asteroid 3
-      var ast6Y = canvas.height * 0.4 // for astesroid 3
+      var ast6X = shipCanvas.width * 0.7 // for asteroid 3
+      var ast6Y = shipCanvas.height * 0.4 // for astesroid 3
 
       // Ceres
-      var ast7X = canvas.width * 0.9 // for asteroid 4
-      var ast7Y = canvas.height * 0.45 // for asteroid 4
+      var ast7X = shipCanvas.width * 0.9 // for asteroid 4
+      var ast7Y = shipCanvas.height * 0.45 // for asteroid 4
 
-      var rad3 = 75 // radius of Earth
-      var rad4 = 15 // radius of first asteroid
-      var rad5 = 12 // radius of second asteroid
-      var rad6 = 25 // radius of third asteroid
+      //var rad3 = 75 // radius of Earth
+      var rad4 = 15 // Ryugu
+      var rad5 = 35 // Vesta
+      var rad6 = 25 // Psyche
       var rad7 = 45 // Ceres Radius
 
       // calculate the distance from the mouse to each asteroids center
@@ -99,21 +349,26 @@ function CanvasContainer({ asteroids }) {
         distance6 < rad6 ||
         distance7 < rad7
       ) {
-        canvas.style.cursor = 'pointer'
+        shipCanvas.style.cursor = 'pointer'
       } else {
-        canvas.style.cursor = 'default'
+        shipCanvas.style.cursor = 'default'
       }
     })
   }, [canvasRef])
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current
+    const shipCanvas = shipCanvasRef.current
 
     const context = canvas.getContext('2d')
+    const shipContext = shipCanvas.getContext('2d')
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth * 0.77
       canvas.height = window.innerHeight * 0.785
+
+      shipCanvas.width = window.innerWidth * 0.77
+      shipCanvas.height = window.innerHeight * 0.785
 
       setCanvasDimensions({ width: canvas.width, height: canvas.height })
 
@@ -121,21 +376,52 @@ function CanvasContainer({ asteroids }) {
       backgroundImage.src = './assets/Background.jpg'
 
       backgroundImage.onload = function() {
-        console.log( 'Inside on load of background image' )
         context.drawImage( backgroundImage, 0, 0, canvas.width, canvas.height )
       }
 
-      drawSun(context, canvas.height)
+      //drawSun(context, canvas.height)
       drawEarth(context, canvas.height, canvas.width)
       // drawMercury( context, canvas.height, canvas.width )
       // drawVenus( context, canvas.height, canvas.width )
       drawAsteroids(context, canvas.height, canvas.width)
-    }
+
+      let shipHeight = 32
+      let shipWidth = 32
+      let shipX = shipPosition.shipX
+      let shipY = shipCanvas.height * 0.55
+      let rotationAngle = Math.PI / 2// rotates by 45 degrees radian
+      shipImage.onload = function () {
+
+        console.log( "inside shipImage on load" )
+        console.log( "Initial shipX and shipY: ", shipX, " ", shipY )
+        console.log( "Inside function: ", shipPosition )
+          
+        // draw the background without clearing the entire canvas
+        shipContext.clearRect( 0, 0, shipCanvas.width, shipCanvas.height )
+
+        // save the current context before applying transformation
+        shipContext.save();
+
+        // translate the context to the centger of the ship
+        shipContext.translate( shipX, shipY )
+
+        // rotate the context
+        shipContext.rotate( rotationAngle )
+
+        // restore the context to its original state
+        shipContext.restore()
+
+        // draw the rotated ship
+        shipContext.drawImage( shipImage, shipPosition.shipX, shipPosition.shipY, shipWidth, shipHeight)
+
+      } // Ship PNG has been initially drawn on the canvas
+
+    } // end resize canvas function
 
     resizeCanvas()
 
     // eventListener to handle the clicking of an asteroid
-    canvas.addEventListener('click', function (e) {
+    shipCanvas.addEventListener('click', function (e) {
       // Malyk 10/5/23
       // you will get errors if you do not first check to ensure that asteroids is not empty even though asteroids should not be empty when we are at this point
       // no I do not know why
@@ -143,25 +429,25 @@ function CanvasContainer({ asteroids }) {
         return
       } // end if
 
-      var rect = canvas.getBoundingClientRect()
+      var rect = shipCanvas.getBoundingClientRect()
       var mouseX = e.clientX - rect.left
       var mouseY = e.clientY - rect.top
 
       // HERE
-      var ryuguX = canvas.width * 0.35
-      var ryuguY = canvas.height * 0.6
+      var ryuguX = shipCanvas.width * 0.35
+      var ryuguY = shipCanvas.height * 0.6
 
-      var vestaX = canvas.width * 0.5
-      var vestaY = canvas.height * 0.2
+      var vestaX = shipCanvas.width * 0.511
+      var vestaY = shipCanvas.height * 0.18
 
-      var ast3X = canvas.width * 0.7
-      var ast3Y = canvas.height * 0.4
+      var ast3X = shipCanvas.width * 0.7
+      var ast3Y = shipCanvas.height * 0.4
 
-      var ast4X = canvas.width * 0.9
-      var ast4Y = canvas.height * 0.45
+      var ast4X = shipCanvas.width * 0.9
+      var ast4Y = shipCanvas.height * 0.45
 
       var rad1 = 15
-      var rad2 = 12
+      var rad2 = 35
       var rad3 = 25
       var rad4 = 45
 
@@ -242,6 +528,7 @@ function CanvasContainer({ asteroids }) {
   return (
     <div className="frontend__containers__canvas">
       <canvas id="frontend__containers__canvas__init" ref={canvasRef}></canvas>
+      <canvas id="frontend__containers__canvas-ship" ref={shipCanvasRef}></canvas>
 
       {tooltipVisible[0] && (
         <div
@@ -252,9 +539,7 @@ function CanvasContainer({ asteroids }) {
           <div className='asteroid-info-item'> Diameter: {asteroidInformation.diameter} Meters </div>
           <div className='asteroid-info-item'> Distance from Earth: {asteroidInformation.distanceFromEarth} AU </div>
 
-          <Link to="/level0">
-            <Button className="startGame">EXPLORE</Button>
-          </Link>
+          <Button className="startGame" onClick={ () => earthToRyugu( shipCanvasRef.current ) }>EXPLORE</Button>
         </div>
       )}
       {tooltipVisible[1] && (
@@ -273,10 +558,7 @@ function CanvasContainer({ asteroids }) {
             {' '}
             Distance from Earth: {asteroidInformation.distanceFromEarth} AU{' '}
           </div>
-          
-          <Link to="/level1">
-            <Button className="startGame">EXPLORE</Button>
-          </Link>
+            <Button className="startGame" onClick={ () => ryuguToVesta( shipCanvasRef.current ) }>EXPLORE</Button>
         </div>
       )}
       {tooltipVisible[2] && (
@@ -295,10 +577,8 @@ function CanvasContainer({ asteroids }) {
             {' '}
             Distance from Earth: {asteroidInformation.distanceFromEarth} AU{' '}
           </div>
-          
-          <Link to="/level2">
-            <Button className="startGame">EXPLORE</Button>
-          </Link>
+        
+            <Button className="startGame" onClick={() => vestaToPsyche( shipCanvasRef.current ) }>EXPLORE</Button>
         </div>
       )}
       {tooltipVisible[3] && (
@@ -318,9 +598,7 @@ function CanvasContainer({ asteroids }) {
             Distance from Earth: {asteroidInformation.distanceFromEarth} AU{' '}
           </div>
           
-          <Link to="/level3">
-            <Button className="startGame">EXPLORE</Button>
-          </Link>
+            <Button className="startGame" onClick={() => pycheToCeres( shipCanvasRef.current ) }>EXPLORE</Button>
         </div>
       )}
     </div>

@@ -8,3 +8,4 @@ export { default as drawMercury } from './system/mercury';
 export { default as drawVenus } from './system/venus';
 export { default as Earth } from './canvas/Earth.jsx';
 export { default as drawAsteroids } from './system/asteroids';
+export { default as Inventory } from './menu/Inventory.jsx';
