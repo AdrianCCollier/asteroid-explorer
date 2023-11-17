@@ -34,6 +34,8 @@ const Inventory = () => {
     parseInt( localStorage.getItem( 'pistolLevelCost' ) ) || 1500
   )
 
+  console.log( JSON.parse( localStorage.getItem( 'pistol' ) ) )
+
   var upgradeCost = 0
 
   const updatePistolLevel = () => {
@@ -79,13 +81,13 @@ const Inventory = () => {
   } // end updatePlayerPoints function
 
   const handlePistolUpgrade = () => {
-    //if( playerPoints > pistolLevelCost ) {
+    if( playerPoints > pistolLevelCost ) {
       upgradeCost = pistolLevelCost
       updatePlayerPoints( upgradeCost )
       updatePistolLevel()
       updatePistolLevelCost()
-    //} // end if
-    //else return;
+    } // end if
+    else return;
   } // end handlePistolUpgrade function
 
   const handleItemClick = ( buttonName ) => {
@@ -100,7 +102,7 @@ const Inventory = () => {
       updateArLevelCost()
     } // end if
     else return;
-  } // end handlePistolUpgrade function
+  } // end handleArUpgrade function
 
   const handleShotgunUpgrade = () => {
     if( playerPoints > shotgunLevelCost ) {
@@ -110,7 +112,7 @@ const Inventory = () => {
       updateShotgunLevelCost()
     } // end if
     else return;
-  } // end handlePistolUpgrade function
+  } // end handleShotgunUpgrade function
 
   return (
     <div className = 'inventory-menu'>
