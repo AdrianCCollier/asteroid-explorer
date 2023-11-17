@@ -281,7 +281,7 @@ export function handleBossMovement(scene, enemy) {
     let distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, player.x, player.y);
 
     // Set a range for how close the player needs to be to trigger chasing
-    const chaseRange = 400;
+    const chaseRange = 600;
 
     if (distance < chaseRange) {
         // If within range, chase the player

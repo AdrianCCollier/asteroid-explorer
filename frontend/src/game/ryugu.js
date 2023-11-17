@@ -231,7 +231,13 @@ export default class Ryugu extends Phaser.Scene {
     this.weapon = createWeaponInside(this, 200, 470, 32, 32)
     // fix shooting straight away
     this.shootControl = { canShoot: true } // Initialize shooting control
-    this.shootCooldown = 400 // Time in ms between allowed shots
+
+    if (localStorage.getItem('equipped') == "\"pistol\"")
+      this.shootCooldown = 800 // Time in ms between allowed shots
+    else if (localStorage.getItem('equipped') == "\"ar\"")
+      this.shootCooldown = 200 // Time in ms between allowed shots
+    else if (localStorage.getItem('equipped') == "\"shotgun\"")
+      this.shootCooldown = 600 // Time in ms between allowed shots
 
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -373,6 +379,15 @@ export default class Ryugu extends Phaser.Scene {
         if (!enemy.animator.anims.isPlaying && enemy.animator.body.velocity.y == 0)
           enemy.animator.anims.play("flying_alien_sleep", true);
       }
+      else if (enemy.type == "boss"){
+        if (!enemy.animator.anims.isPlaying){
+
+          // Call functions to handle the game over scenario
+          this.scene.pause();
+          this.scene.stop();
+          this.scene.launch('WinScene');
+        }
+      }
     })
 
 
@@ -501,20 +516,6 @@ export default class Ryugu extends Phaser.Scene {
       window.location.href = '/solarSystem' // Change the URL to '/'
     })
   }
-
-  handleTileCollision(player, tile) {
-    /*if (tile.index === 3) {
-      // 
-      this.bullets = []; 
-      this.scene.pause();
-      this.scene.stop();
-      this.scene.launch('GameOverScene');
-    }
-    if (tile.index === 1) { // 
-      this.map.putTileAt(-1, tile.x, tile.y);
-      
-    }*/
-  }
 }
 
 
@@ -524,9 +525,10 @@ function handlePlayerEnemyCollision(playerSprite, enemySprite) {
       // Handle player damage and invulnerability
       handlePlayerDamage(this.player, 1, this);
       this.player.isInvulnerable = true;
-      this.time.delayedCall(1000, () => {
+      this.time.delayedCall(1500, () => {
           this.player.isInvulnerable = false;
       }, [], this);
+
 
       // const knockbackForce = 200;
       // let knockbackDirection;
@@ -541,8 +543,6 @@ function handlePlayerEnemyCollision(playerSprite, enemySprite) {
       // // Apply a knockback force to the player using knockbackDirection
       // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
 
-      // slight vertical knockback
-      playerSprite.setVelocityY(-150);
 
       // Debugging line to check the calculated direction
       // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);

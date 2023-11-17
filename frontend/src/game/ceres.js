@@ -1,25 +1,32 @@
 import Phaser from 'phaser'
 
-
 import {
   createPlayerInside,
   loadPlayerImage,
   handlePlayerMovementInside,
   animationCreator,
   loadWeaponSounds,
-  handlePlayerDamage
-
+  handlePlayerDamage,
+  asteroidFloor,
+  alienFloor,
+  platformFloor
 } from './player.js'
 
 
 import {
   createEnemiesGroup,
+  createFlyingEnemiesGroup,
+  createBossGroup,
   createEnemyInside,
   handleEnemyMovementInside,
+  createFlyingEnemy, 
+  handleFlyingEnemyMovement,
+  createBoss,
+  handleBossMovement
 } from './enemy.js'
 
 
-import { createWeaponInside, loadWeaponImage } from './weapons.js'
+import { createWeaponInside, loadWeaponImage, unlockWeapon } from './weapons.js'
 
 
 import {
@@ -59,6 +66,7 @@ import wallMapJSON from './assets/Maps/Ceres_Walls.json'
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
 
+// Import Ceres dialogue
 
 // import new weapon
 import M16 from './assets/weapons/M16.png'
@@ -73,10 +81,6 @@ export default class Ceres extends Phaser.Scene {
     this.player = null // Initialize player
     this.bullets = [] // Initialize bullets array
     this.map = null;
-
-    this.spawnPoints = [
-      { x: 1000, y: 100000 },
-    ]
   }
 
   preload() {
@@ -98,10 +102,8 @@ export default class Ceres extends Phaser.Scene {
     this.load.image('galaxy', galaxyBackground)
     this.load.image('M16', M16)
     loadHealthBar(this);
-    loadShieldBar(this);
   }
 
-  
 
   create() {
     // Handle canvas resizing on window resize
@@ -115,82 +117,94 @@ export default class Ceres extends Phaser.Scene {
     resizeCanvas() // Initial resizing
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
 
+    // Play dialogue when level starts
+
+     // Check if the player has visited the Ceres level before
+     // Play the dialogue only the first time
+
+    // Inventory Logic Feature Testing
+    this.input.keyboard.on('keydown-U', () => {
+      unlockWeapon('rocketLauncher')
+      console.log('unlockWeapon function called, from weapons.js')
+    })
+    
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
-    
+
     this.enemies = createEnemiesGroup(this)
+    this.flyingEnemies = createFlyingEnemiesGroup(this);
+    this.boss = createBossGroup(this);
 
-    this.spawnPoints.forEach((spawn) => {
-      createEnemyInside(this, this.enemies, spawn.x, spawn.y)
-    })
-
+    this.enemySleepAnimators = []
+    
+    createBoss(this, this.boss, 1900, 6500)
     this.checkCollision = false // Initialize collision check
-
+    
     // Setting a delayed timer to enable collision check
     this.time.delayedCall(
-      500,
-      () => {
-        this.checkCollision = true
-      },
-      [],
-      this
-    )
-
+        500,
+        () => {
+          this.checkCollision = true
+        },
+        [],
+        this
+      )
+      
 
     // Create wallMap
     this.wallMap = this.make.tilemap({ key: 'wallMap' })
     const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles');
     this.wallLayer = this.wallMap.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.wallMap.createLayer('Lights', wallTileSet, 0, 0)
-
+    
     // Create map
     this.map = this.make.tilemap({ key: 'map' })
     const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles')
-    
+      
     this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
     this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
     this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
 
-    this.asteroidLayer.setCollisionByProperty({ collides: true });
-    this.alienLayer.setCollisionByProperty({ collides: true });
-    this.platformLayer.setCollisionByProperty({ collides: true });
-
-    // Player creation and setup
-    this.player = createPlayerInside(this, 100, 2150)
-
-    // Customize dimensions of player hitbox, seen with debug mode enabled
-    this.player.sprite.body.setSize(25, 63)
-
-    // Applies Map layer collisions to player
-    this.physics.add.collider(
-      this.player.sprite,
-      this.asteroidLayer,
-      this.handleTileCollision,
-      null,
-      this
-    )
-    this.physics.add.collider(
-      this.player.sprite,
-      this.alienLayer,
-      this.handleTileCollision,
-      null,
-      this
-    )
-    this.physics.add.collider(
-      this.player.sprite,
-      this.platformLayer,
-      this.handleTileCollision,
-      null,
-      this
-    )
+    this.asteroidLayer.setCollisionByProperty({ collides: true })
+    this.alienLayer.setCollisionByProperty({ collides: true })
+    this.platformLayer.setCollisionByProperty({ collides: true })
 
     // Adds colliders between enemies and layers
     this.physics.add.collider(this.enemies, this.asteroidLayer)
     this.physics.add.collider(this.enemies, this.alienLayer)
     this.physics.add.collider(this.enemies, this.platformLayer)
+    this.physics.add.collider(this.flyingEnemies, this.asteroidLayer)
+    this.physics.add.collider(this.flyingEnemies, this.alienLayer)
+    this.physics.add.collider(this.boss, this.asteroidLayer)
+    this.physics.add.collider(this.boss, this.alienLayer)
+    // this.physics.add.collider(this.flyingEnemies, this.platformLayer)
 
-    // Add collider between the player and the enemies
-    this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
+    this.spawnLayer = this.map.createLayer('Spawns', tileset, 0, 0)
+    
+    this.spawnWalkingEnemies = []
+    this.spawnFlyingEnemies = []
+
+    this.spawnLayer.forEachTile(function (tile) {
+      if (tile.properties.spawn == true){
+        var spawnRandom = Math.random();
+
+        var x = tile.pixelX + 32 / 2;
+        var y = tile.pixelY + 32;
+
+        if (spawnRandom < 0.5)
+          this.spawnWalkingEnemies.push({x, y});
+        else 
+          this.spawnFlyingEnemies.push({x, y});
+      }
+    }, this);
+
+    this.spawnWalkingEnemies.forEach((spawn) => {
+      createEnemyInside(this, this.enemies, spawn.x, spawn.y)
+    })
+    this.spawnFlyingEnemies.forEach((spawn) => {
+      createFlyingEnemy(this, this.flyingEnemies, spawn.x, spawn.y)
+    })
+
 
 
     // expand world bounds to entire map not just the camera view
@@ -201,29 +215,19 @@ export default class Ceres extends Phaser.Scene {
       this.map.heightInPixels
     )
 
-    // Set up camera to follow player
-    this.cameras.main.startFollow(this.player.sprite)
-
-    // Set the bounds of the camera to stay within our Tiled map
-    this.cameras.main.setBounds(
-      0,
-      0,
-      this.map.widthInPixels,
-      this.map.heightInPixels
-    )
-
-    // allow player to fall off the map
-    this.player.sprite.setCollideWorldBounds(true)
-
-    // this.physics.world.createDebugGraphic()
-
     // Weapon creation and setup
     loadWeaponSounds(this)
 
     this.weapon = createWeaponInside(this, 200, 470, 32, 32)
     // fix shooting straight away
     this.shootControl = { canShoot: true } // Initialize shooting control
-    this.shootCooldown = 400 // Time in ms between allowed shots
+
+    if (localStorage.getItem('equipped') == "\"pistol\"")
+      this.shootCooldown = 800 // Time in ms between allowed shots
+    else if (localStorage.getItem('equipped') == "\"ar\"")
+      this.shootCooldown = 200 // Time in ms between allowed shots
+    else if (localStorage.getItem('equipped') == "\"shotgun\"")
+      this.shootCooldown = 600 // Time in ms between allowed shots
 
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -231,15 +235,6 @@ export default class Ceres extends Phaser.Scene {
     // Add "E" key, add to its own function later
     this.cursors.pickup = this.input.keyboard.addKey(
       Phaser.Input.Keyboard.KeyCodes.E
-    )
-
-    // Set up collider for weapon pickup
-    this.physics.add.collider(
-      this.player.sprite,
-      //this.m16,
-      this.pickUpWeapon,
-      null,
-      this
     )
 
     this.time.addEvent({
@@ -271,6 +266,64 @@ export default class Ceres extends Phaser.Scene {
     })
     this.pickupText.setVisible(false)
 
+
+    this.player = createPlayerInside(this, 109, 2150)
+    this.playerCoordsText = this.add.text(16, 100, '', { fontSize: '18px', fill: '#FF0000' }).setScrollFactor(0);
+
+    // Customize dimensions of player hitbox, seen with debug mode enabled
+    this.player.sprite.body.setSize(25, 63)
+
+    // Applies Map layer collisions to player
+    this.physics.add.collider(
+      this.player.sprite,
+      this.alienLayer,
+      alienFloor,
+      null,
+      this
+    )
+    this.physics.add.collider(
+      this.player.sprite,
+      this.platformLayer,
+      alienFloor,
+      null,
+      this
+    )
+    this.physics.add.collider(
+      this.player.sprite,
+      this.asteroidLayer,
+      platformFloor,
+      null,
+      this
+    )
+    
+    // Add collider between the player and the enemies
+    this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
+    this.physics.add.collider(this.player.sprite, this.flyingEnemies, handlePlayerEnemyCollision, null, this);
+    this.physics.add.collider(this.player.sprite, this.boss, handlePlayerEnemyCollision, null, this);
+
+    // Set up camera to follow player
+    this.cameras.main.startFollow(this.player.sprite)
+
+    // Set the bounds of the camera to stay within our Tiled map
+    this.cameras.main.setBounds(
+      0,
+      0,
+      this.map.widthInPixels,
+      this.map.heightInPixels
+    )
+
+    // allow player to fall off the map
+    this.player.sprite.setCollideWorldBounds(true)
+
+    // Set up collider for weapon pickup
+    this.physics.add.collider(
+      this.player.sprite,
+      //this.m16,
+      this.pickUpWeapon,
+      null,
+      this
+    )
+
     // Making sprite invisible so animation can play
     this.player.sprite.alpha = 0
 
@@ -279,7 +332,6 @@ export default class Ceres extends Phaser.Scene {
 
     // Creates enemy animations for given scene
     createEnemyAnimations(this, this.player)
-
   } // end create function
 
   update() {
@@ -293,11 +345,44 @@ export default class Ceres extends Phaser.Scene {
       this.scene.launch('GameOverScene')
     }
     this.enemies.getChildren().forEach(enemy => {
-      handleEnemyMovementInside(this, this.bullets, enemy);
+      handleEnemyMovementInside(this, enemy);
+      enemy.setDepth(2); // Ensure enemies are above walls
+
+    });
+    this.flyingEnemies.getChildren().forEach(enemy => {
+      handleFlyingEnemyMovement(this, enemy);
+        enemy.setDepth(2); // Ensure enemies are above walls
+    });
+    this.boss.getChildren().forEach(enemy => {
+      handleBossMovement(this, enemy);
+        enemy.setDepth(2); // Ensure enemies are above walls
     });
 
 
-    if (this.enemies.getLength() <= 0){
+
+    this.enemySleepAnimators.forEach((enemy) =>{
+      if (enemy.type == "tall"){ // sleep animation for tall alien
+        if (!enemy.animator.anims.isPlaying && enemy.animator.body.velocity.y == 0)
+          enemy.animator.anims.play("tall_alien_sleep", true);
+      }
+      else if (enemy.type == "flying"){ // sleep animation for flying alien
+        if (!enemy.animator.anims.isPlaying && enemy.animator.body.velocity.y == 0)
+          enemy.animator.anims.play("flying_alien_sleep", true);
+      }
+      else if (enemy.type == "boss"){
+        if (!enemy.animator.anims.isPlaying){
+
+          // Call functions to handle the game over scenario
+          this.scene.pause();
+          this.scene.stop();
+          this.scene.launch('WinScene');
+        }
+      }
+    })
+
+
+
+    if (this.enemies.getLength() <= -1){
       //this.showCongratulationScreen()
       this.scene.pause();
       this.scene.stop();
@@ -319,7 +404,7 @@ export default class Ceres extends Phaser.Scene {
     )
     
 
-    handleBulletMovements(this.bullets)
+    handleBulletMovements(this.bullets,this.enemies, this.flyingEnemies, this.boss, this)
 
     // weapon direction
     if (this.player.facing === 'left') {
@@ -379,7 +464,6 @@ export default class Ceres extends Phaser.Scene {
     }
   }
 
-  // helpers
 
   // Equip M16 weapon
   equipWeapon() {
@@ -422,20 +506,6 @@ export default class Ceres extends Phaser.Scene {
       window.location.href = '/solarSystem' // Change the URL to '/'
     })
   }
-
-  handleTileCollision(player, tile) {
-    /*if (tile.index === 3) {
-      // 
-      this.bullets = []; 
-      this.scene.pause();
-      this.scene.stop();
-      this.scene.launch('GameOverScene');
-    }
-    if (tile.index === 1) { // 
-      this.map.putTileAt(-1, tile.x, tile.y);
-      
-    }*/
-  }
 }
 
 
@@ -443,11 +513,12 @@ export default class Ceres extends Phaser.Scene {
 function handlePlayerEnemyCollision(playerSprite, enemySprite) {
   if (!this.player.isInvulnerable) {
       // Handle player damage and invulnerability
-      handlePlayerDamage(this.player, 1, this); 
+      handlePlayerDamage(this.player, 1, this);
       this.player.isInvulnerable = true;
-      this.time.delayedCall(1000, () => {
+      this.time.delayedCall(1500, () => {
           this.player.isInvulnerable = false;
       }, [], this);
+
 
       // const knockbackForce = 200;
       // let knockbackDirection;
@@ -462,8 +533,6 @@ function handlePlayerEnemyCollision(playerSprite, enemySprite) {
       // // Apply a knockback force to the player using knockbackDirection
       // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
 
-      // slight vertical knockback
-      playerSprite.setVelocityY(-150);
 
       // Debugging line to check the calculated direction
       // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);

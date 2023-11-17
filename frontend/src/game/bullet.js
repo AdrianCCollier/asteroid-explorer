@@ -22,13 +22,42 @@ export function createBullet(scene, player, w, h) {
 }
 
 export function createBulletInside(scene, player, w, h, a) {
-  let speed = 8; // Speed of the bullet
+  var bulletType = "bullet";
+  var speed = 8;
+
+  var newBulletWidth = 8;
+  var newBulletHeight = 8;
+  
+
+  if (localStorage.getItem('equipped') == "\"pistol\""){
+    bulletType = "pistolBullet"
+    speed = 14
+    newBulletWidth = 16;
+    newBulletHeight = 16;
+
+  }
+  else if(localStorage.getItem('equipped') == "\"ar\""){
+    bulletType = "ARBullet"
+    speed = 18
+    newBulletWidth = 12;
+    newBulletHeight = 16;
+  }
+  else if(localStorage.getItem('equipped') == "\"shotgun\"") {
+    bulletType = "shotgunBullet"
+    speed = 16
+    newBulletWidth = 8;
+    newBulletHeight = 16;
+  }
+  else{
+    console.log("ERROR: " + localStorage.getItem('equipped'));
+  }
 
   // Determine the bullet's velocity based on the player's facing angle
   let velocity = {
     x: Math.cos(a) * speed,
     y: Math.sin(a) * speed
   };
+
 
   // Creating a bullet object with properties like position, 
   // velocity in x and y direction, dimensions, and sprite
@@ -41,7 +70,7 @@ export function createBulletInside(scene, player, w, h, a) {
     angle: a,
     velX: velocity.x, // The bullet should move horizontally at a constant speed.
     velY: velocity.y, // The bullet should not move vertically.
-    sprite: scene.physics.add.sprite(player.sprite.x, player.sprite.y, 'bullet'), // Add bullet sprite to the scene at (bullet_x, bullet_y)
+    sprite: scene.physics.add.sprite(player.sprite.x, player.sprite.y, bulletType), // Add bullet sprite to the scene at (bullet_x, bullet_y)
   };
 
   // Set the bullet's velocity
@@ -52,8 +81,13 @@ export function createBulletInside(scene, player, w, h, a) {
   // Stops gravity from affecting bullet
   bullet.sprite.body.setAllowGravity(false);
 
+  bullet.sprite.setTint(0xfba012);
+
   // Adjust hitbox size
-  bullet.sprite.setSize(8, 8);
+  bullet.sprite.setSize(newBulletWidth, newBulletHeight);
+  
+  // Update the scale property to change the width and height
+  bullet.sprite.setScale(newBulletWidth / bullet.sprite.width, newBulletHeight / bullet.sprite.height);
 
   /*
   // Add collision with enemies
@@ -106,6 +140,13 @@ export function createBulletInside(scene, player, w, h, a) {
 });*/
   // Add collision with enemies
   scene.physics.add.collider(bullet.sprite, scene.boss, function(bulletSprite, alien) {
+    alien.animator.setTint(0xff7e87); // Tints the alien red for a frame showing damage
+
+    // Set a timeout to revert the color after a short duration
+    setTimeout(() => {
+      alien.animator.clearTint(); // Clear the tint to revert to the original color
+    }, 100); // Adjust the duration as needed (100 milliseconds in this example)
+
     // Remove the bullet
     bulletSprite.destroy();
     bullet.distanceTraveled = 800;
@@ -118,7 +159,11 @@ export function createBulletInside(scene, player, w, h, a) {
         // Remove the enemy if health is 0 or less
         alien.destroy();  
         if (alien.animator) {
-            alien.animator.destroy();
+          scene.physics.world.enable(alien.animator);
+          scene.physics.add.collider(alien.animator, scene.asteroidLayer)
+          scene.physics.add.collider(alien.animator, scene.alienLayer)
+          scene.physics.add.collider(alien.animator, scene.platformLayer)
+          alien.animator.anims.play("boss_alien_death", true); // simply plays boss death
         }
         
         // Check if the enemy belongs to the enemies group
@@ -126,6 +171,8 @@ export function createBulletInside(scene, player, w, h, a) {
             // Remove the enemy from the group
             scene.enemies.remove(alien, true, true);
         }
+
+        scene.enemySleepAnimators.push({animator: alien.animator, type: "boss"});
     }
 });
 
@@ -181,6 +228,14 @@ export function handleBulletMovements(bullets, enemies, flyingEnemies, boss, sce
 // load bullet image
 export function loadBulletImage(scene) {
   scene.load.image('bullet', './assets/bullet.png');
+
+  scene.load.image('spacePistol', './assets/sprites/weapons/spacePistol.png')
+  scene.load.image('spaceAR', './assets/sprites/weapons/spaceAR.png')
+  scene.load.image('spaceShotgun', './assets/sprites/weapons/spaceShotgun.png')
+
+  scene.load.image('pistolBullet', './assets/sprites/weapons/spacePistolBullets.png')
+  scene.load.image('ARBullet', './assets/sprites/weapons/spaceARBullets.png')
+  scene.load.image('shotgunBullet', './assets/sprites/weapons/spaceShotgunBullets.png')
 }
 
 function handleEnemyHit(bullet, alien, scene) {
@@ -190,6 +245,16 @@ function handleEnemyHit(bullet, alien, scene) {
   bullet.sprite.destroy();
   // Set bullet distance traveled to max to ensure it's removed from the update loop
   bullet.distanceTraveled = maxDistance;
+
+  
+  alien.animator.setTint(0xff7e87); // Tints the alien red for a frame showing damage
+
+  // Set a timeout to revert the color after a short duration
+  setTimeout(() => {
+    alien.animator.clearTint(); // Clear the tint to revert to the original color
+  }, 100); // Adjust the duration as needed (100 milliseconds in this example)
+
+
 
   if (alien.health <= 0) {
     // Saves alien's animator for sleep animation
@@ -212,9 +277,6 @@ function handleEnemyHit(bullet, alien, scene) {
       alien.animator.anims.play("flying_alien_knockout", true);
       sleepAnimator.type = "flying";
       scene.enemySleepAnimators.push(sleepAnimator);
-    }
-    else{
-      alien.animator.anims.play("boss_alien_death", true); // simply plays boss death
     }
 
     alien.destroy();

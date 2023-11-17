@@ -125,7 +125,7 @@ function CanvasContainer({ asteroids }) {
         context.drawImage( backgroundImage, 0, 0, canvas.width, canvas.height )
       }
 
-      drawSun(context, canvas.height)
+      //drawSun(context, canvas.height)
       drawEarth(context, canvas.height, canvas.width)
       // drawMercury( context, canvas.height, canvas.width )
       // drawVenus( context, canvas.height, canvas.width )

@@ -277,9 +277,27 @@ export function createPlayerAnimations(scene){
     'idle_shoot'
   )
 
-  scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'pistol');
-  scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'pistol_holstered');
+
+
+
+  // Draws gun sprite
+  if (localStorage.getItem('equipped') == "\"pistol\""){
+    scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spacePistol');
+    scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spacePistol');
+  }
+  else if (localStorage.getItem('equipped') == "\"ar\""){
+    scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceAR');
+    scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceAR');
+  }
+  else if (localStorage.getItem('equipped') == "\"shotgun\""){
+    scene.player.weaponSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceShotgun');
+    scene.player.weaponHolsteredSprite = scene.add.sprite(scene.player.x, scene.player.y, 'spaceShotgun');
+  }
   scene.player.weaponSprite.alpha = 0;
+
+
+
+
 
   scene.player.armAnimator = scene.playerAnimation = scene.add.sprite(
     scene.player.sprite.x,
@@ -390,8 +408,8 @@ export function updatePlayerAnimations(scene){
     scene.player.weaponSprite.rotation = scene.player.angle;
 
     let offset = {
-      x: Math.cos(scene.player.angle - 0.30) * 23,
-      y: Math.sin(scene.player.angle - 0.30) * 23
+      x: Math.cos(scene.player.angle - 0.30) * 26,
+      y: Math.sin(scene.player.angle - 0.30) * 26
     };
 
     scene.player.weaponSprite.x = scene.player.weaponSprite.x + offset.x;
@@ -483,6 +501,38 @@ export function updatePlayerAnimations(scene){
 
   }
   else{ // not shooting
+    scene.player.weaponHolsteredSprite.rotation = Phaser.Math.DegToRad(90);
+    var offsetX = 0;
+    var offsetY = 0;
+
+    
+    // Draws gun sprite
+    if (localStorage.getItem('equipped') == "\"pistol\""){
+      offsetX = 11;
+      offsetY = 0;
+    }
+    else if (localStorage.getItem('equipped') == "\"ar\""){
+      offsetX = 11;
+      offsetY = 2;
+    }
+    else if (localStorage.getItem('equipped') == "\"shotgun\""){
+      offsetX = 11;
+      offsetY = 0;
+    }
+
+    if (scene.player.facing == 'right'){
+      scene.player.weaponHolsteredSprite.x = scene.player.weaponHolsteredSprite.x - offsetX;
+      scene.player.weaponHolsteredSprite.y = scene.player.weaponHolsteredSprite.y + offsetY;
+    }
+    else{
+      scene.player.weaponHolsteredSprite.x = scene.player.weaponHolsteredSprite.x + offsetX;
+      scene.player.weaponHolsteredSprite.y = scene.player.weaponHolsteredSprite.y + offsetY;
+    }
+    scene.player.weaponHolsteredSprite.setScale(0.75);
+
+
+    
+
     if (scene.player.holstering){
       scene.player.animator.alpha = 100;
       scene.player.shootingAnimator.alpha = 100;
@@ -510,7 +560,7 @@ export function updatePlayerAnimations(scene){
     scene.player.armAnimator.setFlipX(true)
     scene.player.armAnimator.x = scene.player.sprite.x - 8;
 
-    scene.player.weaponHolsteredSprite.setFlipX(true);
+    scene.player.weaponHolsteredSprite.setFlipY(true);
   }
   else { // look forward
     scene.player.animator.setFlipX(false) 
@@ -521,7 +571,7 @@ export function updatePlayerAnimations(scene){
     scene.player.armAnimator.setFlipX(false)
     scene.player.armAnimator.x = scene.player.sprite.x + 8;
 
-    scene.player.weaponHolsteredSprite.setFlipX(false);
+    scene.player.weaponHolsteredSprite.setFlipY(false);
   }
 
 
@@ -734,10 +784,14 @@ export function updateFlyingEnemyAnimations(scene, enemy){
 
   // Determine flip based on enemy's direction
   enemy.animator.setDepth(1);
-  enemy.animator.anims.play("flying_alien_walking", true); // plays animation
-
   enemy.animator.x = enemy.x; // updates animation position
   enemy.animator.y = enemy.y; // updates animation position
+
+  // Decides what enemy animation to play
+  if (!enemy.isChasing)
+    enemy.animator.anims.play("flying_alien_walking", true); // plays animation
+  else
+    enemy.animator.anims.play("flying_alien_agro", true); // plays animation
 }
 
 

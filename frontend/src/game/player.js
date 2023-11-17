@@ -14,6 +14,9 @@ import pistol from './assets/sounds/pistol.mp3'
 import ar from './assets/sounds/AR.mp3'
 import shotgun from './assets/sounds/Shotgun.mp3'
 
+import playerDamage from './assets/sounds/player_damage.mp3'
+import alienDamage from './assets/sounds/alien_damage.mp3'
+import bossDamage from './assets/sounds/boss_damage.mp3'
 
 
 export function loadWeaponSounds(scene){
@@ -29,6 +32,10 @@ export function loadWeaponSounds(scene){
   scene.load.audio('pistol', pistol)
   scene.load.audio('ar', ar)
   scene.load.audio('shotgun', shotgun)
+
+  scene.load.audio('playerDamage', playerDamage)
+  scene.load.audio('alienDamage', alienDamage)
+  scene.load.audio('bossDamage', bossDamage)
 }
 
 export function createPlayer(scene, asteroid, w, h) {
@@ -246,13 +253,40 @@ export function handlePlayerMovementInside(scene, player, shootControl, shootCoo
 
     // Handles shooting
     if (leftMouseButton && shootControl.canShoot) {
-        // Play weapon shooting sound
-        scene.sound.play('stunPistol', {volume: 0.16});
 
-        let bullet = createBulletInside(scene, player, 20, 20, player.angle);
-        //scene.sound.play('weaponFireSound');
 
-        scene.bullets.push(bullet); // Create a bullet when K is pressed
+        
+        if (localStorage.getItem('equipped') == "\"pistol\""){
+            // Play weapon shooting sound
+            scene.sound.play('stunPistol', {volume: 0.1});
+        }
+        else if (localStorage.getItem('equipped') == "\"ar\""){
+            // Play weapon shooting sound
+            scene.sound.play('stunAR', {volume: 0.05});
+        }
+        else if (localStorage.getItem('equipped') == "\"shotgun\""){
+            // Play weapon shooting sound
+            scene.sound.play('stunShotgun', {volume: 0.1});
+        }
+
+        
+        if (localStorage.getItem('equipped') != "\"shotgun\""){
+            let bullet = createBulletInside(scene, player, 20, 20, player.angle);
+            scene.bullets.push(bullet);
+        }
+        else{
+            for (var i = 0; i < 6; i++){
+                // Generate a random number between 0 and 1
+                let randomNumber = Math.random() * 0.4;
+
+                // Determine if the number should be positive or negative (50% chance for each)
+                let signedNumber = (Math.random() < 0.5) ? randomNumber : -randomNumber;
+
+                console.log(signedNumber);
+                let bullet = createBulletInside(scene, player, 20, 20, player.angle + signedNumber);
+                scene.bullets.push(bullet);
+            }
+        }
         shootControl.canShoot = false;
         setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
         scene.player.shoot = true;
@@ -390,6 +424,8 @@ export function platformFloor(){
 
 
 export function handlePlayerDamage(player, amount, scene) {
+    player.sprite.setVelocityY(-200);
+
     player.health -= amount; // Deduct the amount of damage taken
     
     // Calculate the health bar scale based on the current health

@@ -28,6 +28,8 @@ class Inventory {
     localStorage.setItem('pistol', JSON.stringify(true))
     localStorage.setItem('ar', JSON.stringify(false))
     localStorage.setItem('shotgun', JSON.stringify(false))
+
+    localStorage.setItem('equipped', JSON.stringify("ar"));
   }
 
   // fetch unlockedItems array from local storage
