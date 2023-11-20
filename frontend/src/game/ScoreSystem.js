@@ -2,7 +2,7 @@ class ScoreSystem {
   constructor(scene) {
     this.scene = scene;
     // Try to read the score from local storage, default to 0 if not found
-    const savedScore = localStorage.getItem('gameScore');
+    const savedScore = localStorage.getItem('playerPoints');
     this.points = savedScore ? parseInt(savedScore, 10) : 0;
 
     // Set up the points display text

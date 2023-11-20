@@ -7,7 +7,7 @@ const Inventory = () => {
   const [selectedButton, setSelectedButton] = useState( null )
     
   const [playerPoints, setPlayerPoints] = useState(
-    parseInt( localStorage.getItem( 'playerPoints')) || 10000
+    parseInt( localStorage.getItem( 'playerPoints')) || 0
   )
 
   const[pistolLevel, setPistolLevel] = useState(

@@ -146,7 +146,7 @@ export function createBulletInside(scene, player, w, h, a) {
     scene.scoreManager.increasePoints(20)
 
     // for now, store all points into local storage
-    localStorage.setItem('gameScore', scene.scoreManager.getCurrentPoints())
+    localStorage.setItem('playerPoints', scene.scoreManager.getCurrentPoints())
 
 
     // Set a timeout to revert the color after a short duration
@@ -252,7 +252,7 @@ function handleEnemyHit(bullet, alien, scene) {
   console.log('alien got shot lol, increase score by 10')
   scene.scoreManager.increasePoints(10)
   // local storage
-  localStorage.setItem('gameScore', scene.scoreManager.getCurrentPoints())
+  localStorage.setItem('playerPoints', scene.scoreManager.getCurrentPoints())
 
   // Destroy the bullet sprite
   bullet.sprite.destroy()

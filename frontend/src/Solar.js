@@ -55,6 +55,7 @@ function SolarSystem(){
   const [asteroidData, setAsteroidData] = useState(null);
   const [showWelcomeScreen, setShowWelcomeScreen] = useState( true );
 
+  console.log('yooooo inside main menu')
 
   // effect to fetch asteroid data
   // need to store it in local storage
