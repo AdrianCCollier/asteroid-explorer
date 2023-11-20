@@ -81,7 +81,6 @@ export function createBulletInside(scene, player, w, h, a) {
   // Stops gravity from affecting bullet
   bullet.sprite.body.setAllowGravity(false);
 
-  bullet.sprite.setTint(0xfba012);
 
   // Adjust hitbox size
   bullet.sprite.setSize(newBulletWidth, newBulletHeight);

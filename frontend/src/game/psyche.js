@@ -57,10 +57,10 @@ import {
 
 
 
-import mapTileSet from './assets/Maps/tilesets/asteroid_floors.png'
-import wallMapTileSet from './assets/Maps/tilesets/asteroid_walls.png'
+import mapTileSet from './assets/Maps/tilesets/asteroid_floors_extruded.png'
 import mapsJSON from './assets/Maps/Psyche.json'
 import wallMapJSON from './assets/Maps/Psyche_Walls.json'
+
 
 
 // import background
@@ -77,6 +77,9 @@ import M16 from './assets/weapons/M16.png'
 
 
 import { loadHealthBar, loadShieldBar, updateBars } from './health'
+
+
+const walls = 'assets/tilesets/walls_lights_extruded.png'
 
 
 export default class Psyche extends Phaser.Scene {
@@ -98,12 +101,14 @@ export default class Psyche extends Phaser.Scene {
 
     
     this.load.image('tiles', mapTileSet)
-    this.load.image('wallTiles', wallMapTileSet)
+
+    this.load.image('wallTiles', walls)
+    
     this.load.tilemapTiledJSON('map', mapsJSON)
     this.load.tilemapTiledJSON('wallMap', wallMapJSON)
 
 
-    this.load.image('galaxy', galaxyBackground)
+    this.load.image('galaxy', 'assets/Background.jpg')
     this.load.audio('PsycheDialogue', PsycheDialogue);
     this.load.image('M16', M16)
     loadHealthBar(this);
@@ -157,6 +162,7 @@ export default class Psyche extends Phaser.Scene {
     this.enemySleepAnimators = []
 
     createBoss(this, this.boss, 3070, 3700)
+
     this.checkCollision = false // Initialize collision check
 
     // Setting a delayed timer to enable collision check
@@ -169,19 +175,17 @@ export default class Psyche extends Phaser.Scene {
       this
     )
 
-    // Create wallMap
-    this.wallMap = this.make.tilemap({ key: 'wallMap' })
-    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles')
-    this.wallLayer = this.wallMap.createLayer('Walls', wallTileSet, 0, 0)
-    this.lightLayer = this.wallMap.createLayer('Lights', wallTileSet, 0, 0)
-
     // Create map
-    this.map = this.make.tilemap({ key: 'map' })
-    const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles')
+    this.map = this.make.tilemap({ key: 'map'})
 
-    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
-    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0)
-    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0)
+    const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles', 32, 32, 1, 2)
+    const wallTileSet = this.map.addTilesetImage('Wall_Tiles', 'wallTiles', 32, 32, 1, 2);
+  
+    this.wallLayer = this.map.createLayer('Walls', wallTileSet, 0, 0)
+    this.lightLayer = this.map.createLayer('Lights', wallTileSet, 0, 0)
+    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
+    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
+    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
 
     this.asteroidLayer.setCollisionByProperty({ collides: true })
     this.alienLayer.setCollisionByProperty({ collides: true })

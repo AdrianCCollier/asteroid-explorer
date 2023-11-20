@@ -49,10 +49,13 @@ import {
   createEnemyAnimations,
 } from './animation.js'
 
-import mapTileSet from './assets/Maps/tilesets/asteroid_floors.png'
-import wallMapTileSet from './assets/Maps/tilesets/asteroid_walls.png'
+
+
+import mapTileSet from './assets/Maps/tilesets/asteroid_floors_extruded.png'
 import mapsJSON from './assets/Maps/Ryugu.json'
 import wallMapJSON from './assets/Maps/Ryugu_Walls.json'
+
+
 
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
@@ -67,6 +70,10 @@ import ScoreSystem from './ScoreSystem.js'
 import M16 from './assets/weapons/M16.png'
 
 import { loadHealthBar, loadShieldBar, updateBars } from './health'
+
+
+const walls = 'assets/tilesets/walls_lights_extruded.png'
+
 
 export default class Ryugu extends Phaser.Scene {
   constructor() {
@@ -86,12 +93,15 @@ export default class Ryugu extends Phaser.Scene {
     loadBulletImage(this)
 
     this.load.image('tiles', mapTileSet)
-    this.load.image('wallTiles', wallMapTileSet)
+
+    this.load.image('wallTiles', walls)
+    
     this.load.tilemapTiledJSON('map', mapsJSON)
     this.load.tilemapTiledJSON('wallMap', wallMapJSON)
 
-    this.load.image('galaxy', galaxyBackground)
-    this.load.audio('ryuguDialogue', ryuguDialogue)
+
+    this.load.image('galaxy', 'assets/Background.jpg')
+    this.load.audio('ryuguDialogue', ryuguDialogue);
     this.load.image('M16', M16)
     loadHealthBar(this)
   }
@@ -156,19 +166,17 @@ export default class Ryugu extends Phaser.Scene {
       this
     )
 
-    // Create wallMap
-    this.wallMap = this.make.tilemap({ key: 'wallMap' })
-    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles')
-    this.wallLayer = this.wallMap.createLayer('Walls', wallTileSet, 0, 0)
-    this.lightLayer = this.wallMap.createLayer('Lights', wallTileSet, 0, 0)
-
     // Create map
-    this.map = this.make.tilemap({ key: 'map' })
-    const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles')
+    this.map = this.make.tilemap({ key: 'map'})
 
-    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
-    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0)
-    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0)
+    const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles', 32, 32, 1, 2)
+    const wallTileSet = this.map.addTilesetImage('Wall_Tiles', 'wallTiles', 32, 32, 1, 2);
+  
+    this.wallLayer = this.map.createLayer('Walls', wallTileSet, 0, 0)
+    this.lightLayer = this.map.createLayer('Lights', wallTileSet, 0, 0)
+    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
+    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
+    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
 
     this.asteroidLayer.setCollisionByProperty({ collides: true })
     this.alienLayer.setCollisionByProperty({ collides: true })
@@ -182,7 +190,6 @@ export default class Ryugu extends Phaser.Scene {
     this.physics.add.collider(this.flyingEnemies, this.alienLayer)
     this.physics.add.collider(this.boss, this.asteroidLayer)
     this.physics.add.collider(this.boss, this.alienLayer)
-    // this.physics.add.collider(this.flyingEnemies, this.platformLayer)
 
     this.spawnLayer = this.map.createLayer('Spawns', tileset, 0, 0)
 
