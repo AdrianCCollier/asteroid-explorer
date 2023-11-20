@@ -69,8 +69,10 @@ import galaxyBackground from './assets/spaceBackground1.png'
 // Import Vesta dialogue
 import VestaDialogue from './assets/sounds/Vesta.mp3'
 
-// import new weapon
-import M16 from './assets/weapons/M16.png'
+
+
+// Import Score System 
+import ScoreSystem from './ScoreSystem.js'
 
 
 import { loadHealthBar, loadShieldBar, updateBars } from './health'
@@ -102,7 +104,6 @@ export default class Vesta extends Phaser.Scene {
 
     this.load.image('galaxy', galaxyBackground)
     this.load.audio('VestaDialogue', VestaDialogue);
-    this.load.image('M16', M16)
     loadHealthBar(this);
   }
 
@@ -123,57 +124,62 @@ export default class Vesta extends Phaser.Scene {
     // this.VestaDialogue = this.sound.add('VestaDialogue')
     // this.VestaDialogue.play()
 
-     this.VestaDialogue = this.sound.add('VestaDialogue')
+    this.VestaDialogue = this.sound.add('VestaDialogue')
 
-     // Check if the player has visited the Vesta level before
-     // Play the dialogue only the first time
-     if (localStorage.getItem('VestaVisited') !== 'true') {
-       this.VestaDialogue.play({volume: 0.5})
-       localStorage.setItem('VestaVisited', 'true')
-     }
+    // Check if the player has visited the Vesta level before
+    // Play the dialogue only the first time
+    if (localStorage.getItem('VestaVisited') !== 'true') {
+      this.VestaDialogue.play({ volume: 0.5 })
+      localStorage.setItem('VestaVisited', 'true')
+    }
+
+    // create new Score
+    this.scoreManager = new ScoreSystem(this)
 
     // Inventory Logic Feature Testing
-    this.input.keyboard.on('keydown-U', () => {
-      unlockWeapon('rocketLauncher')
-      console.log('unlockWeapon function called, from weapons.js')
+    this.input.keyboard.on('keydown-ESC', () => {
+      console.log('Escape button pressed')
+      window.location.href = '/solarSystem'
+      // save points
+      // go back to main menu
+      // access points from main menu
     })
-    
+
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
 
     this.enemies = createEnemiesGroup(this)
-    this.flyingEnemies = createFlyingEnemiesGroup(this);
-    this.boss = createBossGroup(this);
+    this.flyingEnemies = createFlyingEnemiesGroup(this)
+    this.boss = createBossGroup(this)
 
     this.enemySleepAnimators = []
-    
+
     createBoss(this, this.boss, 3700, 5720)
     this.checkCollision = false // Initialize collision check
-    
+
     // Setting a delayed timer to enable collision check
     this.time.delayedCall(
-        500,
-        () => {
-          this.checkCollision = true
-        },
-        [],
-        this
-      )
-      
+      500,
+      () => {
+        this.checkCollision = true
+      },
+      [],
+      this
+    )
 
     // Create wallMap
     this.wallMap = this.make.tilemap({ key: 'wallMap' })
-    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles');
+    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles')
     this.wallLayer = this.wallMap.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.wallMap.createLayer('Lights', wallTileSet, 0, 0)
-    
+
     // Create map
     this.map = this.make.tilemap({ key: 'map' })
     const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles')
-      
-    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
-    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
-    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
+
+    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
+    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0)
+    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0)
 
     this.asteroidLayer.setCollisionByProperty({ collides: true })
     this.alienLayer.setCollisionByProperty({ collides: true })
@@ -190,23 +196,21 @@ export default class Vesta extends Phaser.Scene {
     // this.physics.add.collider(this.flyingEnemies, this.platformLayer)
 
     this.spawnLayer = this.map.createLayer('Spawns', tileset, 0, 0)
-    
+
     this.spawnWalkingEnemies = []
     this.spawnFlyingEnemies = []
 
     this.spawnLayer.forEachTile(function (tile) {
-      if (tile.properties.spawn == true){
-        var spawnRandom = Math.random();
+      if (tile.properties.spawn == true) {
+        var spawnRandom = Math.random()
 
-        var x = tile.pixelX + 32 / 2;
-        var y = tile.pixelY + 32;
+        var x = tile.pixelX + 32 / 2
+        var y = tile.pixelY + 32
 
-        if (spawnRandom < 0.5)
-          this.spawnWalkingEnemies.push({x, y});
-        else 
-          this.spawnFlyingEnemies.push({x, y});
+        if (spawnRandom < 0.5) this.spawnWalkingEnemies.push({ x, y })
+        else this.spawnFlyingEnemies.push({ x, y })
       }
-    }, this);
+    }, this)
 
     this.spawnWalkingEnemies.forEach((spawn) => {
       createEnemyInside(this, this.enemies, spawn.x, spawn.y)
@@ -214,8 +218,6 @@ export default class Vesta extends Phaser.Scene {
     this.spawnFlyingEnemies.forEach((spawn) => {
       createFlyingEnemy(this, this.flyingEnemies, spawn.x, spawn.y)
     })
-
-
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -232,20 +234,16 @@ export default class Vesta extends Phaser.Scene {
     // fix shooting straight away
     this.shootControl = { canShoot: true } // Initialize shooting control
 
-    if (localStorage.getItem('equipped') == "\"pistol\""){
+    if (localStorage.getItem('equipped') == '"pistol"') {
       this.shootCooldown = 800 // Time in ms between allowed shots
-    }
-    else if (localStorage.getItem('equipped') == "\"ar\""){
+    } else if (localStorage.getItem('equipped') == '"ar"') {
       this.shootCooldown = 200 // Time in ms between allowed shots
-    }
-    else if (localStorage.getItem('equipped') == "\"shotgun\""){
+    } else if (localStorage.getItem('equipped') == '"shotgun"') {
       this.shootCooldown = 600 // Time in ms between allowed shots
-    }
-    else{
-      localStorage.setItem('equipped', JSON.stringify("pistol"));
+    } else {
+      localStorage.setItem('equipped', JSON.stringify('pistol'))
       this.shootCooldown = 800 // Time in ms between allowed shots
     }
-
 
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -284,9 +282,10 @@ export default class Vesta extends Phaser.Scene {
     })
     this.pickupText.setVisible(false)
 
-
     this.player = createPlayerInside(this, 109, 4580)
-    this.playerCoordsText = this.add.text(16, 100, '', { fontSize: '18px', fill: '#FF0000' }).setScrollFactor(0);
+    this.playerCoordsText = this.add
+      .text(16, 100, '', { fontSize: '18px', fill: '#FF0000' })
+      .setScrollFactor(0)
 
     // Customize dimensions of player hitbox, seen with debug mode enabled
     this.player.sprite.body.setSize(25, 63)
@@ -313,11 +312,29 @@ export default class Vesta extends Phaser.Scene {
       null,
       this
     )
-    
+
     // Add collider between the player and the enemies
-    this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
-    this.physics.add.collider(this.player.sprite, this.flyingEnemies, handlePlayerEnemyCollision, null, this);
-    this.physics.add.collider(this.player.sprite, this.boss, handlePlayerEnemyCollision, null, this);
+    this.physics.add.collider(
+      this.player.sprite,
+      this.enemies,
+      handlePlayerEnemyCollision,
+      null,
+      this
+    )
+    this.physics.add.collider(
+      this.player.sprite,
+      this.flyingEnemies,
+      handlePlayerEnemyCollision,
+      null,
+      this
+    )
+    this.physics.add.collider(
+      this.player.sprite,
+      this.boss,
+      handlePlayerEnemyCollision,
+      null,
+      this
+    )
 
     // Set up camera to follow player
     this.cameras.main.startFollow(this.player.sprite)
@@ -332,15 +349,6 @@ export default class Vesta extends Phaser.Scene {
 
     // allow player to fall off the map
     this.player.sprite.setCollideWorldBounds(true)
-
-    // Set up collider for weapon pickup
-    this.physics.add.collider(
-      this.player.sprite,
-      //this.m16,
-      this.pickUpWeapon,
-      null,
-      this
-    )
 
     // Making sprite invisible so animation can play
     this.player.sprite.alpha = 0
@@ -475,48 +483,13 @@ export default class Vesta extends Phaser.Scene {
       this.player.gunSprite.rotation = this.player.sprite.rotation
     }
 
-    // M16 weapon pickup logic
+    
 
-    let distanceToWeapon = Phaser.Math.Distance.Between(
-      this.player.sprite.x,
-      this.player.sprite.y,
-      //this.m16.x,
-      //this.m16.y
-    )
-
-    if (distanceToWeapon < 50) {
-      this.pickupText.setVisible(true)
-
-      // pick up weapon
-      if (this.cursors.pickup.isDown) {
-        //dthis.equipWeapon()
-      }
-    } else {
-      this.pickupText.setVisible(false)
-    }
+    
   }
 
 
-  // Equip M16 weapon
-  equipWeapon() {
-    const offsetX = 40
-    const offsetY = 0
-    this.m16.setVisible(true)
-    this.m16.setPosition(
-      this.player.sprite.x + offsetX,
-      this.player.sprite.y + offsetY
-    )
-    this.m16.setDepth(this.player.sprite.depth + 1)
-    this.pickupText.destroy()
-
-    // Disable physics properties once equipped
-    this.m16.setGravityY(0)
-    this.m16.setVelocity(0, 0)
-    this.m16.setImmovable(true)
-    this.m16.body.allowGravity = false
-
-    this.player.weapon = 'M16'
-  }
+  
 
   // Displays congratulation message and restarts the level when 'R' is pressed
   showCongratulationScreen() {

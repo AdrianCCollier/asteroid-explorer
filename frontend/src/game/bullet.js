@@ -1,25 +1,25 @@
 import Phaser from 'phaser';
 const maxDistance = 800
-export function createBullet(scene, player, w, h) {
-  let speed = 6; // Speed of the bullet
-  let bullet_x = player.x;
-  let bullet_y = player.y;
-  let angle = player.angle; // Angle of the player
+// export function createBullet(scene, player, w, h) {
+//   let speed = 6; // Speed of the bullet
+//   let bullet_x = player.x;
+//   let bullet_y = player.y;
+//   let angle = player.angle; // Angle of the player
   
-  // Creating a bullet object with properties like position, 
-  // velocity in x and y direction, dimensions, and sprite
-  let bullet = {
-      x: bullet_x,
-      y: bullet_y,
-      distanceTraveled: 0, // Initialize distanceTraveled to 0
-      width: w,
-      height: h,
-      velX: speed * Math.cos(Phaser.Math.DegToRad(angle)), // Convert angle to radians and calculate velocity X
-      velY: speed * Math.sin(Phaser.Math.DegToRad(angle)), // Convert angle to radians and calculate velocity Y
-      sprite: scene.add.sprite(bullet_x, bullet_y, 'bullet') // Add bullet sprite to the scene at (bullet_x, bullet_y)
-  };
-  return bullet; // Return the created bullet object
-}
+//   // Creating a bullet object with properties like position, 
+//   // velocity in x and y direction, dimensions, and sprite
+//   let bullet = {
+//       x: bullet_x,
+//       y: bullet_y,
+//       distanceTraveled: 0, // Initialize distanceTraveled to 0
+//       width: w,
+//       height: h,
+//       velX: speed * Math.cos(Phaser.Math.DegToRad(angle)), // Convert angle to radians and calculate velocity X
+//       velY: speed * Math.sin(Phaser.Math.DegToRad(angle)), // Convert angle to radians and calculate velocity Y
+//       sprite: scene.add.sprite(bullet_x, bullet_y, 'bullet') // Add bullet sprite to the scene at (bullet_x, bullet_y)
+//   };
+//   return bullet; // Return the created bullet object
+// }
 
 export function createBulletInside(scene, player, w, h, a) {
   var bulletType = "bullet";
@@ -138,9 +138,16 @@ export function createBulletInside(scene, player, w, h, a) {
         }
     }
 });*/
+
   // Add collision with enemies
   scene.physics.add.collider(bullet.sprite, scene.boss, function(bulletSprite, alien) {
     alien.animator.setTint(0xff7e87); // Tints the alien red for a frame showing damage
+    console.log('boss got shot lol, increase score here by 20')
+    scene.scoreManager.increasePoints(20)
+
+    // for now, store all points into local storage
+    localStorage.setItem('gameScore', scene.scoreManager.getCurrentPoints())
+
 
     // Set a timeout to revert the color after a short duration
     setTimeout(() => {
@@ -157,6 +164,7 @@ export function createBulletInside(scene, player, w, h, a) {
     // Check if the enemy is dead
     if (alien.health <= 0) {
         // Remove the enemy if health is 0 or less
+        
         alien.destroy();  
         if (alien.animator) {
           scene.physics.world.enable(alien.animator);
@@ -240,45 +248,46 @@ export function loadBulletImage(scene) {
 
 function handleEnemyHit(bullet, alien, scene) {
   // Decrease the enemy's health or handle as necessary
-  alien.health -= 1;
-  // Destroy the bullet sprite
-  bullet.sprite.destroy();
-  // Set bullet distance traveled to max to ensure it's removed from the update loop
-  bullet.distanceTraveled = maxDistance;
+  alien.health -= 1
+  console.log('alien got shot lol, increase score by 10')
+  scene.scoreManager.increasePoints(10)
+  // local storage
+  localStorage.setItem('gameScore', scene.scoreManager.getCurrentPoints())
 
-  
-  alien.animator.setTint(0xff7e87); // Tints the alien red for a frame showing damage
+  // Destroy the bullet sprite
+  bullet.sprite.destroy()
+  // Set bullet distance traveled to max to ensure it's removed from the update loop
+  bullet.distanceTraveled = maxDistance
+
+  alien.animator.setTint(0xff7e87) // Tints the alien red for a frame showing damage
 
   // Set a timeout to revert the color after a short duration
   setTimeout(() => {
-    alien.animator.clearTint(); // Clear the tint to revert to the original color
-  }, 100); // Adjust the duration as needed (100 milliseconds in this example)
-
-
+    alien.animator.clearTint() // Clear the tint to revert to the original color
+  }, 100) // Adjust the duration as needed (100 milliseconds in this example)
 
   if (alien.health <= 0) {
     // Saves alien's animator for sleep animation
-    var sleepAnimator;
+    var sleepAnimator
 
     // Sets up sleep animator object and adds collisions and gravity
-    sleepAnimator = {animator: alien.animator, type: ""};
-    scene.physics.world.enable(sleepAnimator.animator);
+    sleepAnimator = { animator: alien.animator, type: '' }
+    scene.physics.world.enable(sleepAnimator.animator)
     scene.physics.add.collider(sleepAnimator.animator, scene.asteroidLayer)
     scene.physics.add.collider(sleepAnimator.animator, scene.alienLayer)
     scene.physics.add.collider(sleepAnimator.animator, scene.platformLayer)
 
     // Determines the type of alien
-    if (alien.tall){
-      sleepAnimator.animator.anims.play("tall_alien_knockout", true);
-      sleepAnimator.type = "tall";
-      scene.enemySleepAnimators.push(sleepAnimator);
-    }
-    else if(alien.flying){
-      alien.animator.anims.play("flying_alien_knockout", true);
-      sleepAnimator.type = "flying";
-      scene.enemySleepAnimators.push(sleepAnimator);
+    if (alien.tall) {
+      sleepAnimator.animator.anims.play('tall_alien_knockout', true)
+      sleepAnimator.type = 'tall'
+      scene.enemySleepAnimators.push(sleepAnimator)
+    } else if (alien.flying) {
+      alien.animator.anims.play('flying_alien_knockout', true)
+      sleepAnimator.type = 'flying'
+      scene.enemySleepAnimators.push(sleepAnimator)
     }
 
-    alien.destroy();
+    alien.destroy()
   }
 }

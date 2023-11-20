@@ -9,9 +9,8 @@ import {
   handlePlayerDamage,
   asteroidFloor,
   alienFloor,
-  platformFloor
+  platformFloor,
 } from './player.js'
-
 
 import {
   createEnemiesGroup,
@@ -19,15 +18,13 @@ import {
   createBossGroup,
   createEnemyInside,
   handleEnemyMovementInside,
-  createFlyingEnemy, 
+  createFlyingEnemy,
   handleFlyingEnemyMovement,
   createBoss,
-  handleBossMovement
+  handleBossMovement,
 } from './enemy.js'
 
-
 import { createWeaponInside, loadWeaponImage, unlockWeapon } from './weapons.js'
-
 
 import {
   createBullet,
@@ -35,9 +32,7 @@ import {
   loadBulletImage,
 } from './bullet.js'
 
-
 import { createDoor, loadDoorImage } from './door.js'
-
 
 import {
   addColliderWithWorld,
@@ -46,22 +41,18 @@ import {
 } from './collisions.js'
 import GameOverScene from './gameOverScene.js'
 
-
-import { 
+import {
   loadPlayerAnimations,
-  createPlayerAnimations, 
-  updatePlayerAnimations, 
+  createPlayerAnimations,
+  updatePlayerAnimations,
   loadEnemyAnimations,
-  createEnemyAnimations
+  createEnemyAnimations,
 } from './animation.js'
-
-
 
 import mapTileSet from './assets/Maps/tilesets/asteroid_floors.png'
 import wallMapTileSet from './assets/Maps/tilesets/asteroid_walls.png'
 import mapsJSON from './assets/Maps/Ryugu.json'
 import wallMapJSON from './assets/Maps/Ryugu_Walls.json'
-
 
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
@@ -69,19 +60,20 @@ import galaxyBackground from './assets/spaceBackground1.png'
 // Import Ryugu dialogue
 import ryuguDialogue from './assets/sounds/Ryugu.mp3'
 
+// Import Score System 
+import ScoreSystem from './ScoreSystem.js'
+
 // import new weapon
 import M16 from './assets/weapons/M16.png'
 
-
 import { loadHealthBar, loadShieldBar, updateBars } from './health'
-
 
 export default class Ryugu extends Phaser.Scene {
   constructor() {
     super({ key: 'Ryugu' }) // Assigning key to this Scene
     this.player = null // Initialize player
     this.bullets = [] // Initialize bullets array
-    this.map = null;
+    this.map = null
   }
 
   preload() {
@@ -93,19 +85,16 @@ export default class Ryugu extends Phaser.Scene {
     loadWeaponImage(this)
     loadBulletImage(this)
 
-    
     this.load.image('tiles', mapTileSet)
     this.load.image('wallTiles', wallMapTileSet)
     this.load.tilemapTiledJSON('map', mapsJSON)
     this.load.tilemapTiledJSON('wallMap', wallMapJSON)
 
-
     this.load.image('galaxy', galaxyBackground)
-    this.load.audio('ryuguDialogue', ryuguDialogue);
+    this.load.audio('ryuguDialogue', ryuguDialogue)
     this.load.image('M16', M16)
-    loadHealthBar(this);
+    loadHealthBar(this)
   }
-
 
   create() {
     // Handle canvas resizing on window resize
@@ -123,57 +112,63 @@ export default class Ryugu extends Phaser.Scene {
     // this.ryuguDialogue = this.sound.add('ryuguDialogue')
     // this.ryuguDialogue.play()
 
-     this.ryuguDialogue = this.sound.add('ryuguDialogue')
+    this.ryuguDialogue = this.sound.add('ryuguDialogue')
 
-     // Check if the player has visited the Ryugu level before
-     // Play the dialogue only the first time
-     if (localStorage.getItem('RyuguVisited') !== 'true') {
-       this.ryuguDialogue.play()
-       localStorage.setItem('RyuguVisited', 'true')
-     }
+    // Check if the player has visited the Ryugu level before
+    // Play the dialogue only the first time
+    if (localStorage.getItem('RyuguVisited') !== 'true') {
+      this.ryuguDialogue.play()
+      localStorage.setItem('RyuguVisited', 'true')
+    }
 
-    // Inventory Logic Feature Testing
-    this.input.keyboard.on('keydown-U', () => {
-      unlockWeapon('rocketLauncher')
-      console.log('unlockWeapon function called, from weapons.js')
-    })
+    // create new Score 
+    this.scoreManager = new ScoreSystem(this)
     
+  
+    // Inventory Logic Feature Testing
+    this.input.keyboard.on('keydown-ESC', () => {
+      console.log('Escape button pressed')
+      window.location.href = '/solarSystem'
+      // save points
+      // go back to main menu
+      // access points from main menu
+    })
+
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
 
     this.enemies = createEnemiesGroup(this)
-    this.flyingEnemies = createFlyingEnemiesGroup(this);
-    this.boss = createBossGroup(this);
+    this.flyingEnemies = createFlyingEnemiesGroup(this)
+    this.boss = createBossGroup(this)
 
     this.enemySleepAnimators = []
-    
+
     createBoss(this, this.boss, 1315, 2200)
     this.checkCollision = false // Initialize collision check
-    
+
     // Setting a delayed timer to enable collision check
     this.time.delayedCall(
-        500,
-        () => {
-          this.checkCollision = true
-        },
-        [],
-        this
-      )
-      
+      500,
+      () => {
+        this.checkCollision = true
+      },
+      [],
+      this
+    )
 
     // Create wallMap
     this.wallMap = this.make.tilemap({ key: 'wallMap' })
-    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles');
+    const wallTileSet = this.wallMap.addTilesetImage('Wall_Tiles', 'wallTiles')
     this.wallLayer = this.wallMap.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.wallMap.createLayer('Lights', wallTileSet, 0, 0)
-    
+
     // Create map
     this.map = this.make.tilemap({ key: 'map' })
     const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles')
-      
-    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
-    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
-    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
+
+    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
+    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0)
+    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0)
 
     this.asteroidLayer.setCollisionByProperty({ collides: true })
     this.alienLayer.setCollisionByProperty({ collides: true })
@@ -190,23 +185,21 @@ export default class Ryugu extends Phaser.Scene {
     // this.physics.add.collider(this.flyingEnemies, this.platformLayer)
 
     this.spawnLayer = this.map.createLayer('Spawns', tileset, 0, 0)
-    
+
     this.spawnWalkingEnemies = []
     this.spawnFlyingEnemies = []
 
     this.spawnLayer.forEachTile(function (tile) {
-      if (tile.properties.spawn == true){
-        var spawnRandom = Math.random();
+      if (tile.properties.spawn == true) {
+        var spawnRandom = Math.random()
 
-        var x = tile.pixelX + 32 / 2;
-        var y = tile.pixelY + 32;
+        var x = tile.pixelX + 32 / 2
+        var y = tile.pixelY + 32
 
-        if (spawnRandom < 0.5)
-          this.spawnWalkingEnemies.push({x, y});
-        else 
-          this.spawnFlyingEnemies.push({x, y});
+        if (spawnRandom < 0.5) this.spawnWalkingEnemies.push({ x, y })
+        else this.spawnFlyingEnemies.push({ x, y })
       }
-    }, this);
+    }, this)
 
     this.spawnWalkingEnemies.forEach((spawn) => {
       createEnemyInside(this, this.enemies, spawn.x, spawn.y)
@@ -214,8 +207,6 @@ export default class Ryugu extends Phaser.Scene {
     this.spawnFlyingEnemies.forEach((spawn) => {
       createFlyingEnemy(this, this.flyingEnemies, spawn.x, spawn.y)
     })
-
-
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -232,17 +223,14 @@ export default class Ryugu extends Phaser.Scene {
     // fix shooting straight away
     this.shootControl = { canShoot: true } // Initialize shooting control
 
-    if (localStorage.getItem('equipped') == "\"pistol\""){
+    if (localStorage.getItem('equipped') == '"pistol"') {
       this.shootCooldown = 800 // Time in ms between allowed shots
-    }
-    else if (localStorage.getItem('equipped') == "\"ar\""){
+    } else if (localStorage.getItem('equipped') == '"ar"') {
       this.shootCooldown = 200 // Time in ms between allowed shots
-    }
-    else if (localStorage.getItem('equipped') == "\"shotgun\""){
+    } else if (localStorage.getItem('equipped') == '"shotgun"') {
       this.shootCooldown = 600 // Time in ms between allowed shots
-    }
-    else{
-      localStorage.setItem('equipped', JSON.stringify("pistol"));
+    } else {
+      localStorage.setItem('equipped', JSON.stringify('pistol'))
       this.shootCooldown = 800 // Time in ms between allowed shots
     }
 
@@ -283,10 +271,11 @@ export default class Ryugu extends Phaser.Scene {
     })
     this.pickupText.setVisible(false)
 
-
     this.player = createPlayerInside(this, 109, 3520)
-    
-    this.playerCoordsText = this.add.text(16, 100, '', { fontSize: '18px', fill: '#FF0000' }).setScrollFactor(0);
+
+    this.playerCoordsText = this.add
+      .text(16, 100, '', { fontSize: '18px', fill: '#FF0000' })
+      .setScrollFactor(0)
 
     // Customize dimensions of player hitbox, seen with debug mode enabled
     this.player.sprite.body.setSize(25, 63)
@@ -313,11 +302,29 @@ export default class Ryugu extends Phaser.Scene {
       null,
       this
     )
-    
+
     // Add collider between the player and the enemies
-    this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this);
-    this.physics.add.collider(this.player.sprite, this.flyingEnemies, handlePlayerEnemyCollision, null, this);
-    this.physics.add.collider(this.player.sprite, this.boss, handlePlayerEnemyCollision, null, this);
+    this.physics.add.collider(
+      this.player.sprite,
+      this.enemies,
+      handlePlayerEnemyCollision,
+      null,
+      this
+    )
+    this.physics.add.collider(
+      this.player.sprite,
+      this.flyingEnemies,
+      handlePlayerEnemyCollision,
+      null,
+      this
+    )
+    this.physics.add.collider(
+      this.player.sprite,
+      this.boss,
+      handlePlayerEnemyCollision,
+      null,
+      this
+    )
 
     // Set up camera to follow player
     this.cameras.main.startFollow(this.player.sprite)
@@ -355,77 +362,73 @@ export default class Ryugu extends Phaser.Scene {
   update() {
     // if the player falls off the map, end the game
     if (this.player.sprite.y > this.map.heightInPixels) {
-
       // reset variables before restarting game to avoid undefined properties error
-      this.bullets = [] 
+      this.bullets = []
       this.scene.pause()
       this.scene.stop()
       this.scene.launch('GameOverScene')
     }
-    this.enemies.getChildren().forEach(enemy => {
-      handleEnemyMovementInside(this, enemy);
-      enemy.setDepth(2); // Ensure enemies are above walls
+    this.enemies.getChildren().forEach((enemy) => {
+      handleEnemyMovementInside(this, enemy)
+      enemy.setDepth(2) // Ensure enemies are above walls
+    })
+    this.flyingEnemies.getChildren().forEach((enemy) => {
+      handleFlyingEnemyMovement(this, enemy)
+      enemy.setDepth(2) // Ensure enemies are above walls
+    })
+    this.boss.getChildren().forEach((enemy) => {
+      handleBossMovement(this, enemy)
+      enemy.setDepth(2) // Ensure enemies are above walls
+    })
 
-    });
-    this.flyingEnemies.getChildren().forEach(enemy => {
-      handleFlyingEnemyMovement(this, enemy);
-        enemy.setDepth(2); // Ensure enemies are above walls
-    });
-    this.boss.getChildren().forEach(enemy => {
-      handleBossMovement(this, enemy);
-        enemy.setDepth(2); // Ensure enemies are above walls
-    });
+    this.enemySleepAnimators.forEach((enemy) => {
+      if (enemy.type == 'tall') {
+        // sleep animation for tall alien
+        if (
+          !enemy.animator.anims.isPlaying &&
+          enemy.animator.body.velocity.y == 0
+        )
+          enemy.animator.anims.play('tall_alien_sleep', true)
+      } else if (enemy.type == 'flying') {
+        // sleep animation for flying alien
+        if (
+          !enemy.animator.anims.isPlaying &&
+          enemy.animator.body.velocity.y == 0
+        )
+          enemy.animator.anims.play('flying_alien_sleep', true)
+      } else if (enemy.type == 'boss') {
+        if (!enemy.animator.anims.isPlaying) {
+          var s = parseInt(localStorage.getItem('bossKills'))
+          s += 1
+          localStorage.setItem('bossKills', JSON.stringify(s))
+          console.log(s)
 
-
-
-    this.enemySleepAnimators.forEach((enemy) =>{
-      if (enemy.type == "tall"){ // sleep animation for tall alien
-        if (!enemy.animator.anims.isPlaying && enemy.animator.body.velocity.y == 0)
-          enemy.animator.anims.play("tall_alien_sleep", true);
-      }
-      else if (enemy.type == "flying"){ // sleep animation for flying alien
-        if (!enemy.animator.anims.isPlaying && enemy.animator.body.velocity.y == 0)
-          enemy.animator.anims.play("flying_alien_sleep", true);
-      }
-      else if (enemy.type == "boss"){
-        if (!enemy.animator.anims.isPlaying){
-
-          var s = parseInt(localStorage.getItem('bossKills'));
-          s += 1;
-          localStorage.setItem('bossKills', JSON.stringify(s));
-          console.log(s);
-
-          if (s == 1){
-            localStorage.setItem('shotgun', JSON.stringify(true));
-            localStorage.setItem('equipped', JSON.stringify("shotgun"));
-          }
-          else if (s == 2){
-            localStorage.setItem('ar', JSON.stringify(true));
-            localStorage.setItem('equipped', JSON.stringify("ar"));
+          if (s == 1) {
+            localStorage.setItem('shotgun', JSON.stringify(true))
+            localStorage.setItem('equipped', JSON.stringify('shotgun'))
+          } else if (s == 2) {
+            localStorage.setItem('ar', JSON.stringify(true))
+            localStorage.setItem('equipped', JSON.stringify('ar'))
           }
 
           // Call functions to handle the game over scenario
-          this.scene.pause();
-          this.scene.stop();
-          this.scene.launch('WinScene');
+          this.scene.pause()
+          this.scene.stop()
+          this.scene.launch('WinScene')
         }
       }
     })
 
-
-
-    if (this.enemies.getLength() <= -1){
+    if (this.enemies.getLength() <= -1) {
       //this.showCongratulationScreen()
-      this.scene.pause();
-      this.scene.stop();
+      this.scene.pause()
+      this.scene.stop()
       this.scene.launch('WinScene')
     }
 
+    updatePlayerAnimations(this)
 
-    updatePlayerAnimations(this);
-
-    updateBars(this);
-
+    updateBars(this)
 
     // Handling Player and Enemy movements and interactions every frame
     handlePlayerMovementInside(
@@ -434,9 +437,14 @@ export default class Ryugu extends Phaser.Scene {
       this.shootControl,
       this.shootCooldown
     )
-    
 
-    handleBulletMovements(this.bullets,this.enemies, this.flyingEnemies, this.boss, this)
+    handleBulletMovements(
+      this.bullets,
+      this.enemies,
+      this.flyingEnemies,
+      this.boss,
+      this
+    )
 
     // weapon direction
     if (this.player.facing === 'left') {
@@ -479,7 +487,7 @@ export default class Ryugu extends Phaser.Scene {
 
     let distanceToWeapon = Phaser.Math.Distance.Between(
       this.player.sprite.x,
-      this.player.sprite.y,
+      this.player.sprite.y
       //this.m16.x,
       //this.m16.y
     )
@@ -495,7 +503,6 @@ export default class Ryugu extends Phaser.Scene {
       this.pickupText.setVisible(false)
     }
   }
-
 
   // Equip M16 weapon
   equipWeapon() {
@@ -540,33 +547,34 @@ export default class Ryugu extends Phaser.Scene {
   }
 }
 
-
-
 function handlePlayerEnemyCollision(playerSprite, enemySprite) {
   if (!this.player.isInvulnerable) {
-      // Handle player damage and invulnerability
-      handlePlayerDamage(this.player, 1, this);
-      this.player.isInvulnerable = true;
-      this.time.delayedCall(1500, () => {
-          this.player.isInvulnerable = false;
-      }, [], this);
+    // Handle player damage and invulnerability
+    handlePlayerDamage(this.player, 1, this)
+    this.player.isInvulnerable = true
+    this.time.delayedCall(
+      1500,
+      () => {
+        this.player.isInvulnerable = false
+      },
+      [],
+      this
+    )
 
+    // const knockbackForce = 200;
+    // let knockbackDirection;
 
-      // const knockbackForce = 200;
-      // let knockbackDirection;
-      
-      // determine the direction of the knockback
-      // if (this.player.facing === 'left') {
-      //     knockbackDirection = 1; // Knockback to the right
-      // } else if (this.player.facing === 'right') {
-      //     knockbackDirection = -1; // Knockback to the left
-      // }
+    // determine the direction of the knockback
+    // if (this.player.facing === 'left') {
+    //     knockbackDirection = 1; // Knockback to the right
+    // } else if (this.player.facing === 'right') {
+    //     knockbackDirection = -1; // Knockback to the left
+    // }
 
-      // // Apply a knockback force to the player using knockbackDirection
-      // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
+    // // Apply a knockback force to the player using knockbackDirection
+    // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
 
-
-      // Debugging line to check the calculated direction
-      // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);
+    // Debugging line to check the calculated direction
+    // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);
   }
 }

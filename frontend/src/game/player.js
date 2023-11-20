@@ -19,6 +19,10 @@ import alienDamage from './assets/sounds/alien_damage.mp3'
 import bossDamage from './assets/sounds/boss_damage.mp3'
 
 
+// Import Score system to reset points if killed
+// import ScoreSystem from './ScoreSystem.js'
+
+
 export function loadWeaponSounds(scene){
   scene.load.audio('weaponFireSound', fireSound)
 
@@ -96,12 +100,12 @@ export function handlePlayerMovement(scene, player, asteroid, shootControl, shoo
     const spaceJustPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey);
     const bKeyJustPressed = Phaser.Input.Keyboard.JustDown(this.bKey);
     
-    if (kKey.isDown && shootControl.canShoot && player.hasWeapon){
-        let bullet = createBullet(scene, player, 20, 20);
-        scene.bullets.push(bullet); // Create a bullet when K is pressed
-        shootControl.canShoot = false;
-        setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
-    }
+    // if (kKey.isDown && shootControl.canShoot && player.hasWeapon){
+    //     let bullet = createBullet(scene, player, 20, 20);
+    //     scene.bullets.push(bullet); // Create a bullet when K is pressed
+    //     shootControl.canShoot = false;
+    //     setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
+    // }
 
     // Move left
     if (aKey.isDown) {
@@ -441,12 +445,19 @@ export function handlePlayerDamage(player, amount, scene) {
     player.healthBar.x = containerLeftEdge + (player.healthBar.width * player.healthBar.scaleX * 0.5);
 
     if (player.health <= 0) {
-        player.health = 0; 
-        console.log("Game Over! Player has died.");
-        // Call functions to handle the game over scenario
-        scene.scene.pause();
-        scene.scene.stop();
-        scene.scene.launch('GameOverScene', { gameScene: scene.scene.key });
+      player.health = 0
+      console.log('Game Over! Player has died.')
+
+      // Reset the points
+      scene.scoreManager.resetPoints()
+
+      // Update the score in local storage
+      localStorage.setItem('gameScore', '0')
+
+      // Call functions to handle the game over scenario
+      scene.scene.pause()
+      scene.scene.stop()
+      scene.scene.launch('GameOverScene', { gameScene: scene.scene.key })
     }
 }
 
