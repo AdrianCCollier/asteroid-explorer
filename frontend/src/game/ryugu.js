@@ -22,6 +22,7 @@ import {
   handleFlyingEnemyMovement,
   createBoss,
   handleBossMovement,
+  scaleEnemyAttributes,
 } from './enemy.js'
 
 import { createWeaponInside, loadWeaponImage, unlockWeapon } from './weapons.js'
@@ -214,6 +215,9 @@ export default class Ryugu extends Phaser.Scene {
     this.spawnFlyingEnemies.forEach((spawn) => {
       createFlyingEnemy(this, this.flyingEnemies, spawn.x, spawn.y)
     })
+
+    scaleEnemyAttributes(this.enemies, this.flyingEnemies, this.boss);
+
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(

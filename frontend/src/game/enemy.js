@@ -83,7 +83,7 @@ export function createEnemyInside(scene, group, x, y) {
     enemy.health = 2; // Add a health property with a value of 2
     enemy.direction = 1; // Enemy initial direction (1 for right, -1 for left)
     enemy.animator = null;
-
+    
     // Used to tell what kind of enemy
     enemy.tall = true;
 
@@ -97,7 +97,6 @@ export function handleEnemyMovementInside(scene, enemy) {
     // Calculate the direction vector from the enemy to the player.
     let dx = player.sprite.x - enemy.x;
     let dy = player.sprite.y - enemy.y;
-
     // Calculate the distance between the enemy and the player.
     let distance = Math.sqrt(dx * dx + dy * dy);
 
@@ -196,7 +195,7 @@ export function createFlyingEnemy(scene, group, x, y) {
     enemy.body.setOffset(0, 0);
 
     // Attach properties to the flying enemy
-    enemy.chaseSpeed = 100;
+    enemy.speed = 100;
     enemy.health = 1;
     enemy.isChasing = false;
 
@@ -223,8 +222,8 @@ export function handleFlyingEnemyMovement(scene, enemy) {
         // If within range, chase the player
         let directionX = (player.x - enemy.x) / distance;
         let directionY = (player.y - enemy.y) / distance;
-        enemy.setVelocityX(directionX * enemy.chaseSpeed); // Chase horizontally
-        enemy.setVelocityY(directionY * enemy.chaseSpeed); // Chase vertically
+        enemy.setVelocityX(directionX * enemy.speed); // Chase horizontally
+        enemy.setVelocityY(directionY * enemy.speed); // Chase vertically
         enemy.isChasing = true;
     } else {
         // If the player is out of range, the enemy remains stationary
@@ -261,7 +260,7 @@ export function createBoss(scene, group, x, y) {
     boss.body.setOffset(offsetX, offsetY);
 
     // Attach properties to the boss
-    boss.chaseSpeed = 125;
+    boss.speed = 125;
     boss.health = 20; 
 
 
@@ -287,8 +286,8 @@ export function handleBossMovement(scene, enemy) {
         // If within range, chase the player
         let directionX = (player.x - enemy.x) / distance;
         let directionY = (player.y - enemy.y) / distance;
-        enemy.setVelocityX(directionX * enemy.chaseSpeed); // Chase horizontally
-        enemy.setVelocityY(directionY * enemy.chaseSpeed); // Chase vertically
+        enemy.setVelocityX(directionX * enemy.speed); // Chase horizontally
+        enemy.setVelocityY(directionY * enemy.speed); // Chase vertically
         enemy.isChasing = true;
     } else {
         // If the player is out of range, the enemy remains stationary
@@ -303,3 +302,28 @@ export function handleBossMovement(scene, enemy) {
     updateBossEnemyAnimations(scene, enemy);
 }
 
+export function scaleEnemyAttributes(enemies, flyingEnemies, boss) {
+    const bossKills = parseInt(localStorage.getItem('bossKills'));
+  
+    const speedScaleFactor = 1.5; // increase speed for each boss kill
+    const healthScaleFactor = 1.5; // increase health for each boss kill
+  
+    // Scale each enemy group
+    enemies.getChildren().forEach(enemy => {
+      enemy.speed += bossKills * speedScaleFactor;
+      enemy.health += bossKills * healthScaleFactor;
+      console.log(enemy.health)
+    });
+    
+    flyingEnemies.getChildren().forEach(enemy => {
+        enemy.speed += bossKills * speedScaleFactor;
+        enemy.health += bossKills * healthScaleFactor;
+        console.log(enemy.health)
+    });
+    
+    boss.getChildren().forEach(enemy => {
+        enemy.speed += bossKills * speedScaleFactor;
+        enemy.health += bossKills * healthScaleFactor;
+        console.log(enemy.health)
+    });
+  }

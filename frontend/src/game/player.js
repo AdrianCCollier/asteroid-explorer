@@ -219,6 +219,7 @@ export function createPlayerInside(scene, x, y) {
     unholstering: false,
     holstered: true,
     holstering: false,
+    immovable: true, 
   }
 
   player.healthBar.setScale(2)
