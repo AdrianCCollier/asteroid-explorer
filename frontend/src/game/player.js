@@ -295,9 +295,25 @@ export function handlePlayerMovementInside(
       let bullet = createBulletInside(scene, player, 20, 20, player.angle)
       scene.bullets.push(bullet)
     } else {
+
+      let shotgunLevel = parseInt(localStorage.getItem('shotgunLevel')) || 1
       for (var i = 0; i < 6; i++) {
         // Generate a random number between 0 and 1
-        let randomNumber = Math.random() * 0.4
+        let randomNumber;
+        // Adjust the spread based on the shotgun level
+        if (shotgunLevel === 2) {
+          randomNumber = Math.random() * 0.5 // Tighter spread for level 2
+        } else if(shotgunLevel === 3) {
+          randomNumber = Math.random() * 0.3 // Tighter spread for level 3
+        } else if(shotgunLevel === 4) {
+          randomNumber = Math.random() * 0.2
+        } else if(shotgunLevel === 5) {
+          randomNumber = Math.random() * 0.1
+        } else if(shotgunLevel >= 6) {
+          randomNumber = Math.random() * 0.05
+        } else {
+          randomNumber = Math.random() * 0.9 // Default, very loose shot spread
+        }
 
         // Determine if the number should be positive or negative (50% chance for each)
         let signedNumber = Math.random() < 0.5 ? randomNumber : -randomNumber

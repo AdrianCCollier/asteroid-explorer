@@ -305,8 +305,8 @@ export function handleBossMovement(scene, enemy) {
 export function scaleEnemyAttributes(enemies, flyingEnemies, boss) {
     const bossKills = parseInt(localStorage.getItem('bossKills'));
   
-    const speedScaleFactor = 1.5; // increase speed for each boss kill
-    const healthScaleFactor = 1.5; // increase health for each boss kill
+    const speedScaleFactor = 2; // increase speed for each boss kill
+    const healthScaleFactor = 3; // increase health for each boss kill
   
     // Scale each enemy group
     enemies.getChildren().forEach(enemy => {

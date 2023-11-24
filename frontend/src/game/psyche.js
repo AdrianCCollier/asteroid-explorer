@@ -246,8 +246,35 @@ export default class Psyche extends Phaser.Scene {
 
     if (localStorage.getItem('equipped') == '"pistol"') {
       this.shootCooldown = 800 // Time in ms between allowed shots
+      if (localStorage.getItem('pistolLevel') == '2') {
+        this.shootCooldown = 600 // level 2 rate of fire
+      }
+      if (localStorage.getItem('pistolLevel') == '3') {
+        this.shootCooldown = 400 // level 2 rate of fire
+      }
+      if (localStorage.getItem('pistolLevel') == '4') {
+        this.shootCooldown = 300 // level 2 rate of fire
+      }
+      if (localStorage.getItem('pistolLevel') == '5') {
+        this.shootCooldown = 200 // level 2 rate of fire
+      }
+      if (localStorage.getItem('pistolLevel') >= '6') {
+        this.shootCooldown = 100 // level 2 rate of fire
+      }
     } else if (localStorage.getItem('equipped') == '"ar"') {
-      this.shootCooldown = 200 // Time in ms between allowed shots
+      this.shootCooldown = 250 // Time in ms between allowed shots
+      if (localStorage.getItem('arLevel') == '2') {
+        this.shootCooldown = 200 // level 2 rate of fire
+      }
+      if (localStorage.getItem('arLevel') == '3') {
+        this.shootCooldown = 150
+      }
+      if (localStorage.getItem('arLevel') == '4') {
+        this.shootCooldown = 100 // level 4 rate of fire
+      }
+      if (localStorage.getItem('arLevel') >= '5') {
+        this.shootCooldown = 75 // highest fire rate without glitch
+      }
     } else if (localStorage.getItem('equipped') == '"shotgun"') {
       this.shootCooldown = 600 // Time in ms between allowed shots
     } else {

@@ -158,28 +158,39 @@ export function createBulletInside(scene, player, w, h, a) {
     bullet.distanceTraveled = 800;
 
     // Decrease the enemy's health
-    alien.health -= 1;
+    alien.health -= 0.75;
 
     // Check if the enemy is dead
     if (alien.health <= 0) {
-        // Remove the enemy if health is 0 or less
-        
-        alien.destroy();  
-        if (alien.animator) {
-          scene.physics.world.enable(alien.animator);
-          scene.physics.add.collider(alien.animator, scene.asteroidLayer)
-          scene.physics.add.collider(alien.animator, scene.alienLayer)
-          scene.physics.add.collider(alien.animator, scene.platformLayer)
-          alien.animator.anims.play("boss_alien_death", true); // simply plays boss death
-        }
-        
-        // Check if the enemy belongs to the enemies group
-        if (scene.enemies.contains(alien)) {
-            // Remove the enemy from the group
-            scene.enemies.remove(alien, true, true);
-        }
+      // Remove the enemy if health is 0 or less
 
-        scene.enemySleepAnimators.push({animator: alien.animator, type: "boss"});
+      console.log('about to reward 500 pts');
+      // if boss dies, reward 500 points
+      scene.scoreManager.increasePoints(500)
+
+      // store in local storage before destroying alien
+      localStorage.setItem( 
+        'playerPoints',
+        scene.scoreManager.getCurrentPoints()
+      )
+      console.log('rewarded 500 pts');
+
+      alien.destroy()
+      if (alien.animator) {
+        scene.physics.world.enable(alien.animator)
+        scene.physics.add.collider(alien.animator, scene.asteroidLayer)
+        scene.physics.add.collider(alien.animator, scene.alienLayer)
+        scene.physics.add.collider(alien.animator, scene.platformLayer)
+        alien.animator.anims.play('boss_alien_death', true) // simply plays boss death
+      }
+
+      // Check if the enemy belongs to the enemies group
+      if (scene.enemies.contains(alien)) {
+        // Remove the enemy from the group
+        scene.enemies.remove(alien, true, true)
+      }
+
+      scene.enemySleepAnimators.push({ animator: alien.animator, type: 'boss' })
     }
 });
 

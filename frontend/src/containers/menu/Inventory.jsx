@@ -55,7 +55,7 @@ const Inventory = () => {
   const updateArLevel = () => {
     const updatedArLevel = arLevel + 1
     setArLevel(updatedArLevel)
-    localStorage.setItem('arLevel', arLevel.toString())
+    localStorage.setItem('arLevel', updatedArLevel.toString())
   } // end updateArLevel function
 
   const updateArLevelCost = () => {
@@ -67,7 +67,7 @@ const Inventory = () => {
   const updateShotgunLevel = () => {
     const updatedShotgunLevel = shotgunLevel + 1
     setShotgunLevel(updatedShotgunLevel)
-    localStorage.setItem('shotgunLevel', shotgunLevel.toString())
+    localStorage.setItem('shotgunLevel', updatedShotgunLevel.toString())
   } // end updateShotgunLevel function
 
   const updateShotgunLevelCost = () => {
@@ -105,6 +105,8 @@ const Inventory = () => {
       updatePlayerPoints(upgradeCost)
       updateArLevel()
       updateArLevelCost()
+      setUpgradeMessage('Upgraded: Rate of Fire')
+      setTimeout(() => setUpgradeMessage(''), 3000)
     } // end if
     else return
   } // end handleArUpgrade function
@@ -115,6 +117,8 @@ const Inventory = () => {
       updatePlayerPoints(upgradeCost)
       updateShotgunLevel()
       updateShotgunLevelCost()
+      setUpgradeMessage('Upgraded: Increased Accuracy')
+      setTimeout(() => setUpgradeMessage(''), 3000)
     } // end if
     else return
   } // end handleShotgunUpgrade function
