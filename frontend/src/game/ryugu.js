@@ -235,7 +235,23 @@ export default class Ryugu extends Phaser.Scene {
     this.shootControl = { canShoot: true } // Initialize shooting control
 
     if (localStorage.getItem('equipped') == '"pistol"') {
+      
       this.shootCooldown = 800 // Time in ms between allowed shots
+      if (localStorage.getItem('pistolLevel') == '2') {
+        this.shootCooldown = 600 // level 2 rate of fire
+      }
+      if (localStorage.getItem('pistolLevel') == '3') {
+        this.shootCooldown = 400 // level 2 rate of fire
+      }
+      if (localStorage.getItem('pistolLevel') == '4') {
+        this.shootCooldown = 300 // level 2 rate of fire
+      }
+      if (localStorage.getItem('pistolLevel') == '5') {
+        this.shootCooldown = 200 // level 2 rate of fire
+      }
+      if (localStorage.getItem('pistolLevel') == '6') {
+        this.shootCooldown = 100 // level 2 rate of fire
+      }
     } else if (localStorage.getItem('equipped') == '"ar"') {
       this.shootCooldown = 200 // Time in ms between allowed shots
     } else if (localStorage.getItem('equipped') == '"shotgun"') {

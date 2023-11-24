@@ -59,6 +59,18 @@
     color: #EDEDE3;
 }
 
+.disabled-upgrade {
+    width: 8rem;
+    height: 1rem;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    background-color: #61695f;
+    color: #EDEDE3;
+    border: none;
+
+}
 .upgrade {
     width: 8rem;
     height: 1rem;
@@ -69,6 +81,19 @@
     background-color: #2DA700;
     color: #EDEDE3;
     border: none;
+}
+
+.upgrade-message {
+  position: absolute;
+  top: 50%; 
+  left: 25%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 20px;
+  z-index: 10; 
 }
 
 .menu h3 {
