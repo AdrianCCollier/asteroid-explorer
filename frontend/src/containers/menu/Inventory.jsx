@@ -86,13 +86,33 @@ const Inventory = () => {
     if (playerPoints >= pistolLevelCost) {
       upgradeCost = pistolLevelCost
       updatePlayerPoints(upgradeCost)
-      updatePistolLevel()
+      const newLevel = pistolLevel + 1 // Calculate the new level after upgrade
+      updatePistolLevel() // Update the level
       updatePistolLevelCost()
 
-      setUpgradeMessage('Upgraded: Rate of Fire')
-      setTimeout(() => setUpgradeMessage(''), 3000)
-    } // end if
-    else return
+      // Determine the upgrade message based on the new level
+      let message
+      switch (newLevel) {
+        case 2:
+        case 4:
+        case 6:
+          message = 'Upgraded: Increased Rate of Fire'
+          break
+        case 3:
+        case 5:
+        case 7:
+          message = 'Upgraded: Increased Damage'
+          break
+   
+        default:
+          message = 'Pistol Upgraded' 
+      }
+
+      setUpgradeMessage(message)
+      setTimeout(() => setUpgradeMessage(''), 3000) // Reset message after 3 seconds
+    } else {
+      return
+    }
   } // end handlePistolUpgrade function
 
   const handleItemClick = (buttonName) => {
@@ -103,24 +123,65 @@ const Inventory = () => {
     if (playerPoints >= arLevelCost) {
       upgradeCost = arLevelCost
       updatePlayerPoints(upgradeCost)
-      updateArLevel()
+      const newLevel = arLevel + 1 // Calculate the new level after upgrade
+      updateArLevel() // Update the level
       updateArLevelCost()
-      setUpgradeMessage('Upgraded: Rate of Fire')
-      setTimeout(() => setUpgradeMessage(''), 3000)
-    } // end if
-    else return
+
+      // Determine the upgrade message based on the new level
+      let message
+      switch (newLevel) {
+        case 2:
+        case 4:
+        case 6:
+          message = 'Upgraded: Rate of Fire'
+          break
+        case 3:
+        case 5:
+        case 7:
+          message = 'Upgraded: Increased Damage'
+          break
+        default:
+          message = 'AR Upgraded'
+      }
+
+      setUpgradeMessage(message)
+      setTimeout(() => setUpgradeMessage(''), 3000) // Reset message after 3 seconds
+    } else {
+      return
+    }
   } // end handleArUpgrade function
 
   const handleShotgunUpgrade = () => {
     if (playerPoints >= shotgunLevelCost) {
       upgradeCost = shotgunLevelCost
       updatePlayerPoints(upgradeCost)
-      updateShotgunLevel()
+      const newLevel = shotgunLevel + 1
+      updateShotgunLevel() // Update the level
       updateShotgunLevelCost()
-      setUpgradeMessage('Upgraded: Increased Accuracy')
-      setTimeout(() => setUpgradeMessage(''), 3000)
-    } // end if
-    else return
+
+      // Determine the upgrade message based on the new level
+      let message
+      switch (newLevel) {
+        case 2:
+        case 4:
+        case 6:
+          message = 'Upgraded: Increased Accuracy'
+          break
+        case 3:
+        case 5:
+        case 7:
+          message = 'Upgraded: Increased Damage'
+          break
+
+        default:
+          message = 'Shotgun Upgraded'
+      }
+
+      setUpgradeMessage(message)
+      setTimeout(() => setUpgradeMessage(''), 3000) // Reset message after 3 seconds
+    } else {
+      return
+    }
   } // end handleShotgunUpgrade function
 
   // NEW FUNCTIONS

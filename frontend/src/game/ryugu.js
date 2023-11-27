@@ -239,14 +239,8 @@ export default class Ryugu extends Phaser.Scene {
       if (localStorage.getItem('pistolLevel') == '2') {
         this.shootCooldown = 600 // level 2 rate of fire
       }
-      if (localStorage.getItem('pistolLevel') == '3') {
-        this.shootCooldown = 400 // level 2 rate of fire
-      }
       if (localStorage.getItem('pistolLevel') == '4') {
         this.shootCooldown = 300 // level 2 rate of fire
-      }
-      if (localStorage.getItem('pistolLevel') == '5') {
-        this.shootCooldown = 200 // level 2 rate of fire
       }
       if (localStorage.getItem('pistolLevel') >= '6') {
         this.shootCooldown = 100 // level 2 rate of fire
@@ -256,13 +250,10 @@ export default class Ryugu extends Phaser.Scene {
       if(localStorage.getItem('arLevel') == '2') {
         this.shootCooldown = 200 // level 2 rate of fire
       }
-      if (localStorage.getItem('arLevel') == '3') {
-        this.shootCooldown = 150 
-      }
       if (localStorage.getItem('arLevel') == '4') {
         this.shootCooldown = 100 // level 4 rate of fire
       }
-      if (localStorage.getItem('arLevel') >= '5') {
+      if (localStorage.getItem('arLevel') >= '6') {
         this.shootCooldown = 75 // highest fire rate without glitch
       }
     } else if (localStorage.getItem('equipped') == '"shotgun"') {

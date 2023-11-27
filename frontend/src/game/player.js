@@ -303,12 +303,8 @@ export function handlePlayerMovementInside(
         // Adjust the spread based on the shotgun level
         if (shotgunLevel === 2) {
           randomNumber = Math.random() * 0.5 // Tighter spread for level 2
-        } else if(shotgunLevel === 3) {
-          randomNumber = Math.random() * 0.3 // Tighter spread for level 3
         } else if(shotgunLevel === 4) {
           randomNumber = Math.random() * 0.2
-        } else if(shotgunLevel === 5) {
-          randomNumber = Math.random() * 0.1
         } else if(shotgunLevel >= 6) {
           randomNumber = Math.random() * 0.05
         } else {
@@ -464,6 +460,7 @@ export function handlePlayerDamage(player, amount, scene) {
 
   // Calculate the health bar scale based on the current health
   const maxHealth = 3 // max is 3 for now
+  
   const healthPercentage = player.health / maxHealth
 
   // Update the health bar scale

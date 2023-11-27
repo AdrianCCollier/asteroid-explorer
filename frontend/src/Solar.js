@@ -1,12 +1,12 @@
-import { Header, CanvasContainer } from './containers';
+import { Header, CanvasContainer } from './containers'
 
-import QuickView from './containers/quickView/QuickView';
+import QuickView from './containers/quickView/QuickView'
 
-import Earth from './containers/canvas/Earth.jsx';
+import Earth from './containers/canvas/Earth.jsx'
 
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 
-import Game from './game/index';
+import Game from './game/index'
 
 import Landing from './landing/Landing.jsx'
 import Signin from './landing/Signin.jsx'
@@ -17,11 +17,10 @@ import React, { useEffect, useState } from 'react'
 import './Solar.css'
 import './index.css'
 
-
 function ExplorerGame0() {
   return (
     <div>
-      <Game startingScene="Ryugu"  />
+      <Game startingScene="Ryugu" />
     </div>
   )
 }
@@ -50,20 +49,18 @@ function ExplorerGame3() {
   )
 }
 
-function SolarSystem(){
-
-  const [asteroidData, setAsteroidData] = useState(null);
-  const [showWelcomeScreen, setShowWelcomeScreen] = useState( true );
+function SolarSystem() {
+  const [asteroidData, setAsteroidData] = useState(null)
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState(true)
 
   console.log('yooooo inside main menu')
 
   // effect to fetch asteroid data
   // need to store it in local storage
-  useEffect( () => {
-    
+  useEffect(() => {
     // Fetch the asteroid data from backend/server.js when the component mounts
-    // fetch('http://localhost:3000/asteroids') // Fetch from link
-    fetch('http://localhost:3000/api/custom-asteroids') // Fetch from link
+    // fetch('http://localhost:3000/api/custom-asteroids') // Fetch from link
+    fetch('https://asteroidexplorer.com/api/custom-asteroids') // Fetch from link
       .then((response) => {
         // Then take response and return it in json form so it is usable
         return response.json()
@@ -74,48 +71,40 @@ function SolarSystem(){
         setAsteroidData(data) // Save the asteroid data in a variable
       })
       .catch((error) => console.error('Error fetching asteroids:', error))
-  
-  }, []);
-
+  }, [])
 
   // effect to show welcome screen for two seconds
   // will be deleted after landing page is implemented
-  useEffect( () => {
-    const timer = setTimeout( () => {
-      setShowWelcomeScreen(false);
-    }, 0);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcomeScreen(false)
+    }, 0)
 
-    return () => clearTimeout( timer );
-  }, []);
-
-
+    return () => clearTimeout(timer)
+  }, [])
 
   return (
-    <div className="solar"> 
+    <div className="solar">
       <Header />
 
-      { showWelcomeScreen ? (
+      {showWelcomeScreen ? (
         <div className="solar__content-welcome">
           <h1>Welcome to Asteroid Explorer!</h1>
         </div>
       ) : (
-      <div className="">
-
-        <div className="solar__content__holder">
-          <div className="solar__content-dynamic-canvas">
-          <CanvasContainer asteroids={asteroidData} />
+        <div className="">
+          <div className="solar__content__holder">
+            <div className="solar__content-dynamic-canvas">
+              <CanvasContainer asteroids={asteroidData} />
+            </div>
           </div>
+
+          <QuickView />
         </div>
-
-        <QuickView />
-
-      </div>
       )}
     </div>
   )
 }
-
-
 
 function Solar() {
   return (
