@@ -40,7 +40,7 @@ app.post('/addPlayer', async (req, res) => {
   }
 })
 
-app.use('/api', asteroidRouter);
+app.use('/api', asteroidRouter)
 
 // app.get('/asteroids', (req, res) => {
 //   // Check if cache file exists

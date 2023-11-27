@@ -92,47 +92,58 @@ export function createEnemyInside(scene, group, x, y) {
     return enemy;
 }
 export function handleEnemyMovementInside(scene, enemy) {
-    let player = scene.player;
+  let player = scene.player
 
-    // Calculate the direction vector from the enemy to the player.
-    let dx = player.sprite.x - enemy.x;
-    let dy = player.sprite.y - enemy.y;
-    // Calculate the distance between the enemy and the player.
-    let distance = Math.sqrt(dx * dx + dy * dy);
+  // Calculate the direction vector from the enemy to the player.
+  let dx = player.sprite.x - enemy.x
+  let dy = player.sprite.y - enemy.y
+  // Calculate the distance between the enemy and the player.
+  let distance = Math.sqrt(dx * dx + dy * dy)
 
-    const isSolidGroundAhead = checkForSolidGroundAhead(scene, enemy);
-    enemy.shouldChasePlayer = distance < 300; // distance threshold to start chasing
-    const isAtEdge = !isSolidGroundAhead;
-    
-    if (enemy.shouldChasePlayer && !isAtEdge) {
-        if (isAtCorner(scene, enemy)){
-            enemy.setVelocityY(-300);
-        }
-        else{
-            // Normalize the direction vector 
-            let directionX = dx / distance; // Normalized direction for X
-            enemy.direction = Math.sign(directionX);
-            if (directionX > 0)
-                directionX = 1;
-            else
-                directionX = -1;
-            enemy.setVelocityX(directionX * enemy.speed);
-        }
-    } else if (isAtEdge && enemy.shouldChasePlayer) {
-        // Stop at the edge if there's no ground
-        if (!enemy.shouldChasePlayer){
-            enemy.setVelocityX(0);
-            enemy.setVelocityY(0);
-        }
-        // Optional: Enemy looks at the player
-        enemy.direction = dx > 0 ? 1 : -1;
+  const isSolidGroundAhead = checkForSolidGroundAhead(scene, enemy)
+  enemy.shouldChasePlayer = distance < 300 // distance threshold to start chasing
+  // Set a range for how close the player needs to be to trigger chasing
+  if (localStorage.getItem('bossKills') == 2) {
+    enemy.shouldChasePlayer = distance < 400
+  }
+  if (localStorage.getItem('bossKills') == 3) {
+    enemy.shouldChasePlayer = distance < 500
+  }
+  if (localStorage.getItem('bossKills') == 4) {
+    enemy.shouldChasePlayer = distance < 600
+  }
+  if (localStorage.getItem('bossKills') >= 5) {
+    enemy.shouldChasePlayer = distance < 700
+  }
+
+  const isAtEdge = !isSolidGroundAhead
+
+  if (enemy.shouldChasePlayer && !isAtEdge) {
+    if (isAtCorner(scene, enemy)) {
+      enemy.setVelocityY(-300)
     } else {
-        // Patrol behavior
-        patrolBehavior(scene, enemy);
+      // Normalize the direction vector
+      let directionX = dx / distance // Normalized direction for X
+      enemy.direction = Math.sign(directionX)
+      if (directionX > 0) directionX = 1
+      else directionX = -1
+      enemy.setVelocityX(directionX * enemy.speed)
     }
+  } else if (isAtEdge && enemy.shouldChasePlayer) {
+    // Stop at the edge if there's no ground
+    if (!enemy.shouldChasePlayer) {
+      enemy.setVelocityX(0)
+      enemy.setVelocityY(0)
+    }
+    // Optional: Enemy looks at the player
+    enemy.direction = dx > 0 ? 1 : -1
+  } else {
+    // Patrol behavior
+    patrolBehavior(scene, enemy)
+  }
 
-    // Update enemy animations.
-    updateTallEnemyAnimations(scene, enemy);
+  // Update enemy animations.
+  updateTallEnemyAnimations(scene, enemy)
 }
 
 function patrolBehavior(scene, enemy) {
@@ -216,7 +227,19 @@ export function handleFlyingEnemyMovement(scene, enemy) {
     let distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, player.x, player.y);
 
     // Set a range for how close the player needs to be to trigger chasing
-    const chaseRange = 500;
+    var chaseRange = 500;
+    if(localStorage.getItem('bossKills') == 2) {
+        chaseRange = 600;
+    }
+    if (localStorage.getItem('bossKills') == 3) {
+      chaseRange = 700
+    }
+    if (localStorage.getItem('bossKills') == 4) {
+      chaseRange = 800
+    }
+    if (localStorage.getItem('bossKills') >= 5) {
+      chaseRange = 900
+    }
 
     if (distance < chaseRange) {
         // If within range, chase the player
@@ -306,7 +329,7 @@ export function scaleEnemyAttributes(enemies, flyingEnemies, boss) {
     const bossKills = parseInt(localStorage.getItem('bossKills'));
   
     const speedScaleFactor = 2; // increase speed for each boss kill
-    const healthScaleFactor = 3; // increase health for each boss kill
+    const healthScaleFactor = 1.5; // increase health for each boss kill
   
     // Scale each enemy group
     enemies.getChildren().forEach(enemy => {

@@ -176,7 +176,8 @@ export function handlePlayerMovement(
 export function loadPlayerImage(scene) {
   scene.load.image('player', './assets/Skeleton.png')
 }
-///
+
+
 export function createPlayerInside(scene, x, y) {
   // Create the player sprite with physics body
   var playerSprite = scene.physics.add.sprite(x, y, 'player')
@@ -278,6 +279,44 @@ export function handlePlayerMovementInside(
     player.sprite.body.velocity.y = 640
   }
 
+  // Handle weapon scrolling
+  // CONTINUE HERE
+  // Define the list of weapons and current weapon
+  // const weapons = ['pistol', 'ar', 'shotgun']
+  // // console.log(weapons)
+  // if (!scene.currentWeapon) {
+  //   scene.currentWeapon =
+  //     weapons.find((weapon) => localStorage.getItem(weapon) === 'true') ||
+  //     'pistol'
+  // }
+
+  // // Add event listener for weapon scrolling
+  // scene.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+  //   let currentWeaponIndex = weapons.indexOf(scene.currentWeapon)
+
+  //   // Loop through weapons based on scroll direction
+  //   do {
+  //     if (deltaY > 0) {
+  //       // Scroll down
+  //       currentWeaponIndex = (currentWeaponIndex + 1) % weapons.length
+  //     } else {
+  //       // Scroll up
+  //       currentWeaponIndex =
+  //         (currentWeaponIndex - 1 + weapons.length) % weapons.length
+  //     }
+
+  //     // Check if the next weapon is unlocked
+  //     let nextWeapon = weapons[currentWeaponIndex]
+  //     if (localStorage.getItem(nextWeapon) === 'true') {
+  //       scene.currentWeapon = nextWeapon
+  //       console.log('Weapon changed to:', scene.currentWeapon)
+  //       localStorage.setItem('equipped', JSON.stringify(scene.currentWeapon))
+  //       // need to update local storage key value pair as: equipped = "pistol" or equipped = "ar"
+  //       break
+  //     }
+  //   } while (currentWeaponIndex !== weapons.indexOf(scene.currentWeapon))
+  // })
+
   // Handles shooting
   if (leftMouseButton && shootControl.canShoot) {
     if (localStorage.getItem('equipped') == '"pistol"') {
@@ -295,17 +334,16 @@ export function handlePlayerMovementInside(
       let bullet = createBulletInside(scene, player, 20, 20, player.angle)
       scene.bullets.push(bullet)
     } else {
-
       let shotgunLevel = parseInt(localStorage.getItem('shotgunLevel')) || 1
       for (var i = 0; i < 6; i++) {
         // Generate a random number between 0 and 1
-        let randomNumber;
+        let randomNumber
         // Adjust the spread based on the shotgun level
         if (shotgunLevel === 2) {
           randomNumber = Math.random() * 0.5 // Tighter spread for level 2
-        } else if(shotgunLevel === 4) {
+        } else if (shotgunLevel === 4) {
           randomNumber = Math.random() * 0.2
-        } else if(shotgunLevel >= 6) {
+        } else if (shotgunLevel >= 6) {
           randomNumber = Math.random() * 0.05
         } else {
           randomNumber = Math.random() * 0.9 // Default, very loose shot spread
@@ -446,6 +484,7 @@ export function handlePlayerMovementInside(
     frameCount = 0
   }
 }
+
 
 export function asteroidFloor() {}
 

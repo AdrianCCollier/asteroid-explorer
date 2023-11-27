@@ -50,21 +50,18 @@ import {
   createEnemyAnimations,
 } from './animation.js'
 
-
-
 import mapTileSet from './assets/Maps/tilesets/asteroid_floors_extruded.png'
 import mapsJSON from './assets/Maps/Ryugu.json'
 import wallMapJSON from './assets/Maps/Ryugu_Walls.json'
 
-
-
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
+
 
 // Import Ryugu dialogue
 import ryuguDialogue from './assets/sounds/Ryugu.mp3'
 
-// Import Score System 
+// Import Score System
 import ScoreSystem from './ScoreSystem.js'
 
 // import new weapon
@@ -72,9 +69,7 @@ import M16 from './assets/weapons/M16.png'
 
 import { loadHealthBar, loadShieldBar, updateBars } from './health'
 
-
 const walls = 'assets/tilesets/walls_lights_extruded.png'
-
 
 export default class Ryugu extends Phaser.Scene {
   constructor() {
@@ -96,13 +91,12 @@ export default class Ryugu extends Phaser.Scene {
     this.load.image('tiles', mapTileSet)
 
     this.load.image('wallTiles', walls)
-    
+
     this.load.tilemapTiledJSON('map', mapsJSON)
     this.load.tilemapTiledJSON('wallMap', wallMapJSON)
 
-
     this.load.image('galaxy', 'assets/Background.jpg')
-    this.load.audio('ryuguDialogue', ryuguDialogue);
+    this.load.audio('ryuguDialogue', ryuguDialogue)
     this.load.image('M16', M16)
     loadHealthBar(this)
   }
@@ -132,10 +126,9 @@ export default class Ryugu extends Phaser.Scene {
       localStorage.setItem('RyuguVisited', 'true')
     }
 
-    // create new Score 
+    // create new Score
     this.scoreManager = new ScoreSystem(this)
-    
-  
+
     // Inventory Logic Feature Testing
     this.input.keyboard.on('keydown-ESC', () => {
       console.log('Escape button pressed')
@@ -168,16 +161,30 @@ export default class Ryugu extends Phaser.Scene {
     )
 
     // Create map
-    this.map = this.make.tilemap({ key: 'map'})
+    this.map = this.make.tilemap({ key: 'map' })
 
-    const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles', 32, 32, 1, 2)
-    const wallTileSet = this.map.addTilesetImage('Wall_Tiles', 'wallTiles', 32, 32, 1, 2);
-  
+    const tileset = this.map.addTilesetImage(
+      'Floor_Tiles',
+      'tiles',
+      32,
+      32,
+      1,
+      2
+    )
+    const wallTileSet = this.map.addTilesetImage(
+      'Wall_Tiles',
+      'wallTiles',
+      32,
+      32,
+      1,
+      2
+    )
+
     this.wallLayer = this.map.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.map.createLayer('Lights', wallTileSet, 0, 0)
-    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
-    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
-    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
+    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
+    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0)
+    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0)
 
     this.asteroidLayer.setCollisionByProperty({ collides: true })
     this.alienLayer.setCollisionByProperty({ collides: true })
@@ -216,8 +223,7 @@ export default class Ryugu extends Phaser.Scene {
       createFlyingEnemy(this, this.flyingEnemies, spawn.x, spawn.y)
     })
 
-    scaleEnemyAttributes(this.enemies, this.flyingEnemies, this.boss);
-
+    scaleEnemyAttributes(this.enemies, this.flyingEnemies, this.boss)
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -247,7 +253,7 @@ export default class Ryugu extends Phaser.Scene {
       }
     } else if (localStorage.getItem('equipped') == '"ar"') {
       this.shootCooldown = 250 // Time in ms between allowed shots
-      if(localStorage.getItem('arLevel') == '2') {
+      if (localStorage.getItem('arLevel') == '2') {
         this.shootCooldown = 200 // level 2 rate of fire
       }
       if (localStorage.getItem('arLevel') == '4') {
@@ -265,11 +271,6 @@ export default class Ryugu extends Phaser.Scene {
 
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
-
-    // Add "E" key, add to its own function later
-    this.cursors.pickup = this.input.keyboard.addKey(
-      Phaser.Input.Keyboard.KeyCodes.E
-    )
 
     this.time.addEvent({
       delay: 2000,
@@ -357,6 +358,8 @@ export default class Ryugu extends Phaser.Scene {
 
     // Set up camera to follow player
     this.cameras.main.startFollow(this.player.sprite)
+
+    this.game.canvas.style.cursor = 'crosshair' 
 
     // Set the bounds of the camera to stay within our Tiled map
     this.cameras.main.setBounds(

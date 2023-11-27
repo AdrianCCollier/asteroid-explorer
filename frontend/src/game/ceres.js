@@ -9,9 +9,8 @@ import {
   handlePlayerDamage,
   asteroidFloor,
   alienFloor,
-  platformFloor
+  platformFloor,
 } from './player.js'
-
 
 import {
   createEnemiesGroup,
@@ -19,16 +18,14 @@ import {
   createBossGroup,
   createEnemyInside,
   handleEnemyMovementInside,
-  createFlyingEnemy, 
+  createFlyingEnemy,
   handleFlyingEnemyMovement,
   createBoss,
   handleBossMovement,
-  scaleEnemyAttributes
+  scaleEnemyAttributes,
 } from './enemy.js'
 
-
 import { createWeaponInside, loadWeaponImage, unlockWeapon } from './weapons.js'
-
 
 import {
   createBullet,
@@ -36,9 +33,7 @@ import {
   loadBulletImage,
 } from './bullet.js'
 
-
 import { createDoor, loadDoorImage } from './door.js'
-
 
 import {
   addColliderWithWorld,
@@ -47,22 +42,17 @@ import {
 } from './collisions.js'
 import GameOverScene from './gameOverScene.js'
 
-
-import { 
+import {
   loadPlayerAnimations,
-  createPlayerAnimations, 
-  updatePlayerAnimations, 
+  createPlayerAnimations,
+  updatePlayerAnimations,
   loadEnemyAnimations,
-  createEnemyAnimations
+  createEnemyAnimations,
 } from './animation.js'
-
-
 
 import mapTileSet from './assets/Maps/tilesets/asteroid_floors_extruded.png'
 import mapsJSON from './assets/Maps/Ceres.json'
 import wallMapJSON from './assets/Maps/Ceres_Walls.json'
-
-
 
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
@@ -73,19 +63,16 @@ import ScoreSystem from './ScoreSystem.js'
 // import new weapon
 import M16 from './assets/weapons/M16.png'
 
-
 import { loadHealthBar, loadShieldBar, updateBars } from './health'
 
-
 const walls = 'assets/tilesets/walls_lights_extruded.png'
-
 
 export default class Ceres extends Phaser.Scene {
   constructor() {
     super({ key: 'Ceres' }) // Assigning key to this Scene
     this.player = null // Initialize player
     this.bullets = [] // Initialize bullets array
-    this.map = null;
+    this.map = null
   }
 
   preload() {
@@ -97,20 +84,17 @@ export default class Ceres extends Phaser.Scene {
     loadWeaponImage(this)
     loadBulletImage(this)
 
-    
     this.load.image('tiles', mapTileSet)
 
     this.load.image('wallTiles', walls)
-    
+
     this.load.tilemapTiledJSON('map', mapsJSON)
     this.load.tilemapTiledJSON('wallMap', wallMapJSON)
 
-
     this.load.image('galaxy', 'assets/Background.jpg')
     this.load.image('M16', M16)
-    loadHealthBar(this);
+    loadHealthBar(this)
   }
-
 
   create() {
     // Handle canvas resizing on window resize
@@ -126,8 +110,8 @@ export default class Ceres extends Phaser.Scene {
 
     // Play dialogue when level starts
 
-    // Check if the player has visited the Ceres level before
-    // Play the dialogue only the first time
+    // update cursor
+    this.game.canvas.style.cursor = 'crosshair'
 
     // create new Score
     this.scoreManager = new ScoreSystem(this)
@@ -165,16 +149,30 @@ export default class Ceres extends Phaser.Scene {
     )
 
     // Create map
-    this.map = this.make.tilemap({ key: 'map'})
+    this.map = this.make.tilemap({ key: 'map' })
 
-    const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles', 32, 32, 1, 2)
-    const wallTileSet = this.map.addTilesetImage('Wall_Tiles', 'wallTiles', 32, 32, 1, 2);
-  
+    const tileset = this.map.addTilesetImage(
+      'Floor_Tiles',
+      'tiles',
+      32,
+      32,
+      1,
+      2
+    )
+    const wallTileSet = this.map.addTilesetImage(
+      'Wall_Tiles',
+      'wallTiles',
+      32,
+      32,
+      1,
+      2
+    )
+
     this.wallLayer = this.map.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.map.createLayer('Lights', wallTileSet, 0, 0)
-    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
-    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
-    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
+    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
+    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0)
+    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0)
 
     this.asteroidLayer.setCollisionByProperty({ collides: true })
     this.alienLayer.setCollisionByProperty({ collides: true })
@@ -214,7 +212,7 @@ export default class Ceres extends Phaser.Scene {
       createFlyingEnemy(this, this.flyingEnemies, spawn.x, spawn.y)
     })
 
-    scaleEnemyAttributes(this.enemies, this.flyingEnemies, this.boss);
+    scaleEnemyAttributes(this.enemies, this.flyingEnemies, this.boss)
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -396,77 +394,73 @@ export default class Ceres extends Phaser.Scene {
   update() {
     // if the player falls off the map, end the game
     if (this.player.sprite.y > this.map.heightInPixels) {
-
       // reset variables before restarting game to avoid undefined properties error
-      this.bullets = [] 
+      this.bullets = []
       this.scene.pause()
       this.scene.stop()
       this.scene.launch('GameOverScene')
     }
-    this.enemies.getChildren().forEach(enemy => {
-      handleEnemyMovementInside(this, enemy);
-      enemy.setDepth(2); // Ensure enemies are above walls
+    this.enemies.getChildren().forEach((enemy) => {
+      handleEnemyMovementInside(this, enemy)
+      enemy.setDepth(2) // Ensure enemies are above walls
+    })
+    this.flyingEnemies.getChildren().forEach((enemy) => {
+      handleFlyingEnemyMovement(this, enemy)
+      enemy.setDepth(2) // Ensure enemies are above walls
+    })
+    this.boss.getChildren().forEach((enemy) => {
+      handleBossMovement(this, enemy)
+      enemy.setDepth(2) // Ensure enemies are above walls
+    })
 
-    });
-    this.flyingEnemies.getChildren().forEach(enemy => {
-      handleFlyingEnemyMovement(this, enemy);
-        enemy.setDepth(2); // Ensure enemies are above walls
-    });
-    this.boss.getChildren().forEach(enemy => {
-      handleBossMovement(this, enemy);
-        enemy.setDepth(2); // Ensure enemies are above walls
-    });
+    this.enemySleepAnimators.forEach((enemy) => {
+      if (enemy.type == 'tall') {
+        // sleep animation for tall alien
+        if (
+          !enemy.animator.anims.isPlaying &&
+          enemy.animator.body.velocity.y == 0
+        )
+          enemy.animator.anims.play('tall_alien_sleep', true)
+      } else if (enemy.type == 'flying') {
+        // sleep animation for flying alien
+        if (
+          !enemy.animator.anims.isPlaying &&
+          enemy.animator.body.velocity.y == 0
+        )
+          enemy.animator.anims.play('flying_alien_sleep', true)
+      } else if (enemy.type == 'boss') {
+        if (!enemy.animator.anims.isPlaying) {
+          var s = parseInt(localStorage.getItem('bossKills'))
+          s += 1
+          localStorage.setItem('bossKills', JSON.stringify(s))
+          console.log(s)
 
-
-
-    this.enemySleepAnimators.forEach((enemy) =>{
-      if (enemy.type == "tall"){ // sleep animation for tall alien
-        if (!enemy.animator.anims.isPlaying && enemy.animator.body.velocity.y == 0)
-          enemy.animator.anims.play("tall_alien_sleep", true);
-      }
-      else if (enemy.type == "flying"){ // sleep animation for flying alien
-        if (!enemy.animator.anims.isPlaying && enemy.animator.body.velocity.y == 0)
-          enemy.animator.anims.play("flying_alien_sleep", true);
-      }
-      else if (enemy.type == "boss"){
-        if (!enemy.animator.anims.isPlaying){
-
-          var s = parseInt(localStorage.getItem('bossKills'));
-          s += 1;
-          localStorage.setItem('bossKills', JSON.stringify(s));
-          console.log(s);
-
-          if (s == 1){
-            localStorage.setItem('shotgun', JSON.stringify(true));
-            localStorage.setItem('equipped', JSON.stringify("shotgun"));
-          }
-          else if (s == 2){
-            localStorage.setItem('ar', JSON.stringify(true));
-            localStorage.setItem('equipped', JSON.stringify("ar"));
+          if (s == 1) {
+            localStorage.setItem('shotgun', JSON.stringify(true))
+            localStorage.setItem('equipped', JSON.stringify('shotgun'))
+          } else if (s == 2) {
+            localStorage.setItem('ar', JSON.stringify(true))
+            localStorage.setItem('equipped', JSON.stringify('ar'))
           }
 
           // Call functions to handle the game over scenario
-          this.scene.pause();
-          this.scene.stop();
-          this.scene.launch('WinScene');
+          this.scene.pause()
+          this.scene.stop()
+          this.scene.launch('WinScene')
         }
       }
     })
 
-
-
-    if (this.enemies.getLength() <= -1){
+    if (this.enemies.getLength() <= -1) {
       //this.showCongratulationScreen()
-      this.scene.pause();
-      this.scene.stop();
+      this.scene.pause()
+      this.scene.stop()
       this.scene.launch('WinScene')
     }
 
+    updatePlayerAnimations(this)
 
-    updatePlayerAnimations(this);
-
-    updateBars(this);
-
+    updateBars(this)
 
     // Handling Player and Enemy movements and interactions every frame
     handlePlayerMovementInside(
@@ -475,9 +469,14 @@ export default class Ceres extends Phaser.Scene {
       this.shootControl,
       this.shootCooldown
     )
-    
 
-    handleBulletMovements(this.bullets,this.enemies, this.flyingEnemies, this.boss, this)
+    handleBulletMovements(
+      this.bullets,
+      this.enemies,
+      this.flyingEnemies,
+      this.boss,
+      this
+    )
 
     // weapon direction
     if (this.player.facing === 'left') {
@@ -520,7 +519,7 @@ export default class Ceres extends Phaser.Scene {
 
     let distanceToWeapon = Phaser.Math.Distance.Between(
       this.player.sprite.x,
-      this.player.sprite.y,
+      this.player.sprite.y
       //this.m16.x,
       //this.m16.y
     )
@@ -536,7 +535,6 @@ export default class Ceres extends Phaser.Scene {
       this.pickupText.setVisible(false)
     }
   }
-
 
   // Equip M16 weapon
   equipWeapon() {
@@ -581,33 +579,34 @@ export default class Ceres extends Phaser.Scene {
   }
 }
 
-
-
 function handlePlayerEnemyCollision(playerSprite, enemySprite) {
   if (!this.player.isInvulnerable) {
-      // Handle player damage and invulnerability
-      handlePlayerDamage(this.player, 1, this);
-      this.player.isInvulnerable = true;
-      this.time.delayedCall(1500, () => {
-          this.player.isInvulnerable = false;
-      }, [], this);
+    // Handle player damage and invulnerability
+    handlePlayerDamage(this.player, 1, this)
+    this.player.isInvulnerable = true
+    this.time.delayedCall(
+      1500,
+      () => {
+        this.player.isInvulnerable = false
+      },
+      [],
+      this
+    )
 
+    // const knockbackForce = 200;
+    // let knockbackDirection;
 
-      // const knockbackForce = 200;
-      // let knockbackDirection;
-      
-      // determine the direction of the knockback
-      // if (this.player.facing === 'left') {
-      //     knockbackDirection = 1; // Knockback to the right
-      // } else if (this.player.facing === 'right') {
-      //     knockbackDirection = -1; // Knockback to the left
-      // }
+    // determine the direction of the knockback
+    // if (this.player.facing === 'left') {
+    //     knockbackDirection = 1; // Knockback to the right
+    // } else if (this.player.facing === 'right') {
+    //     knockbackDirection = -1; // Knockback to the left
+    // }
 
-      // // Apply a knockback force to the player using knockbackDirection
-      // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
+    // // Apply a knockback force to the player using knockbackDirection
+    // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
 
-
-      // Debugging line to check the calculated direction
-      // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);
+    // Debugging line to check the calculated direction
+    // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);
   }
 }

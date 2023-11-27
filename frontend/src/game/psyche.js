@@ -144,6 +144,10 @@ export default class Psyche extends Phaser.Scene {
     // create new Score
     this.scoreManager = new ScoreSystem(this)
 
+    // update cursor
+    this.game.canvas.style.cursor = 'crosshair' 
+
+
     // Inventory Logic Feature Testing
     this.input.keyboard.on('keydown-ESC', () => {
       console.log('Escape button pressed')

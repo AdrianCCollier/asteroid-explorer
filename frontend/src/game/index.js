@@ -53,6 +53,16 @@ class Game extends Component {
         break
     }
 
+    document.addEventListener(
+      'contextmenu',
+      function (event) {
+        event.preventDefault() // Prevents right-click menu
+      },
+      false
+    )
+
+    
+
     let config = {
       type: Phaser.AUTO,
       width: 1280,

@@ -154,6 +154,9 @@ export default class Vesta extends Phaser.Scene {
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
 
+    this.game.canvas.style.cursor = 'crosshair' 
+
+
     this.enemies = createEnemiesGroup(this)
     this.flyingEnemies = createFlyingEnemiesGroup(this)
     this.boss = createBossGroup(this)
