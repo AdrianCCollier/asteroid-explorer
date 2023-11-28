@@ -339,15 +339,15 @@ export function handlePlayerMovementInside(
         // Generate a random number between 0 and 1
         let randomNumber
         // Adjust the spread based on the shotgun level
-        if (shotgunLevel === 2) {
-          randomNumber = Math.random() * 0.5 // Tighter spread for level 2
-        } else if (shotgunLevel === 4) {
-          randomNumber = Math.random() * 0.2
+        if (shotgunLevel === 2 || shotgunLevel === 3) {
+          randomNumber = Math.random() * 0.5;
+        } else if (shotgunLevel === 4 || shotgunLevel === 5) {
+          randomNumber = Math.random() * 0.3
         } else if (shotgunLevel >= 6) {
-          randomNumber = Math.random() * 0.05
+          randomNumber = Math.random() * 0.1
         } else {
           randomNumber = Math.random() * 0.9 // Default, very loose shot spread
-        }
+        } 
 
         // Determine if the number should be positive or negative (50% chance for each)
         let signedNumber = Math.random() < 0.5 ? randomNumber : -randomNumber

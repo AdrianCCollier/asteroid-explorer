@@ -285,32 +285,32 @@ function handleEnemyHit(bullet, alien, scene) {
   // Decrease the enemy's health or handle as necessary
 
   // Increase hit damage based on weapon levels
-  if (localStorage.getItem('pistolLevel') == '3') {
+  if (localStorage.getItem('pistolLevel') == 3 || localStorage.getItem('pistolLevel') == 4) {
     alien.health -= 1.5
   }
-  if (localStorage.getItem('pistolLevel') == '5') {
+  if (localStorage.getItem('pistolLevel') == 5 || localStorage.getItem('pistolLevel') == 6) {
     alien.health -= 2.5
   }
-  if (localStorage.getItem('pistolLevel') == '7') {
+  if (localStorage.getItem('pistolLevel') >= 7) {
     alien.health -= 3.5
   }
 
-  if (localStorage.getItem('arLevel') == '3') {
+  if (localStorage.getItem('arLevel') == 3 || localStorage.getItem('arLevel') == 4) {
     alien.health -= 1.5
   }
-  if (localStorage.getItem('arLevel') == '5') {
+  if (localStorage.getItem('arLevel') == 5 || localStorage.getItem('arLevel') == 6) {
     alien.health -= 2.5
   }
-  if (localStorage.getItem('arLevel') == '7') {
+  if (localStorage.getItem('arLevel') >= 7) {
     alien.health -= 3.5
   }
-  if (localStorage.getItem('shotgunLevel') == '3') {
-    alien.health -= 1.5
+  if (localStorage.getItem('shotgunLevel') == 3 || localStorage.getItem('shotgunLevel') == 4) {
+    alien.health -= 1.5  
   }
-  if (localStorage.getItem('shotgunLevel') == '5') {
+  if (localStorage.getItem('shotgunLevel') == 5 || localStorage.getItem('shotgunLevel') == 6) {
     alien.health -= 2.5
   }
-  if (localStorage.getItem('shotgunLevel') == '7') {
+  if (localStorage.getItem('shotgunLevel') >= 7) {
     alien.health -= 3.5
   }
   alien.health -= 1

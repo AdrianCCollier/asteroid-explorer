@@ -57,7 +57,6 @@ import wallMapJSON from './assets/Maps/Ryugu_Walls.json'
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
 
-
 // Import Ryugu dialogue
 import ryuguDialogue from './assets/sounds/Ryugu.mp3'
 
@@ -242,24 +241,36 @@ export default class Ryugu extends Phaser.Scene {
 
     if (localStorage.getItem('equipped') == '"pistol"') {
       this.shootCooldown = 800 // Time in ms between allowed shots
-      if (localStorage.getItem('pistolLevel') == '2') {
-        this.shootCooldown = 600 // level 2 rate of fire
+      if (
+        localStorage.getItem('pistolLevel') == 2 ||
+        localStorage.getItem('pistolLevel') == 3
+      ) {
+        this.shootCooldown = 500 // level 2 rate of fire
       }
-      if (localStorage.getItem('pistolLevel') == '4') {
+      if (
+        localStorage.getItem('pistolLevel') == 4 ||
+        localStorage.getItem('pistolLevel') == 5
+      ) {
         this.shootCooldown = 300 // level 2 rate of fire
       }
-      if (localStorage.getItem('pistolLevel') >= '6') {
+      if (localStorage.getItem('pistolLevel') >= 6) {
         this.shootCooldown = 100 // level 2 rate of fire
       }
     } else if (localStorage.getItem('equipped') == '"ar"') {
       this.shootCooldown = 250 // Time in ms between allowed shots
-      if (localStorage.getItem('arLevel') == '2') {
+      if (
+        localStorage.getItem('arLevel') == 2 ||
+        localStorage.getItem('arLevel') == 3
+      ) {
         this.shootCooldown = 200 // level 2 rate of fire
       }
-      if (localStorage.getItem('arLevel') == '4') {
+      if (
+        localStorage.getItem('arLevel') == 4 ||
+        localStorage.getItem('arLevel') == 5
+      ) {
         this.shootCooldown = 100 // level 4 rate of fire
       }
-      if (localStorage.getItem('arLevel') >= '6') {
+      if (localStorage.getItem('arLevel') >= 6) {
         this.shootCooldown = 75 // highest fire rate without glitch
       }
     } else if (localStorage.getItem('equipped') == '"shotgun"') {
@@ -359,7 +370,7 @@ export default class Ryugu extends Phaser.Scene {
     // Set up camera to follow player
     this.cameras.main.startFollow(this.player.sprite)
 
-    this.game.canvas.style.cursor = 'crosshair' 
+    this.game.canvas.style.cursor = 'crosshair'
 
     // Set the bounds of the camera to stay within our Tiled map
     this.cameras.main.setBounds(

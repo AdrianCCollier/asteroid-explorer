@@ -246,33 +246,36 @@ export default class Vesta extends Phaser.Scene {
 
     if (localStorage.getItem('equipped') == '"pistol"') {
       this.shootCooldown = 800 // Time in ms between allowed shots
-      if (localStorage.getItem('pistolLevel') == '2') {
-        this.shootCooldown = 600 // level 2 rate of fire
+      if (
+        localStorage.getItem('pistolLevel') == 2 ||
+        localStorage.getItem('pistolLevel') == 3
+      ) {
+        this.shootCooldown = 500 // level 2 rate of fire
       }
-      if (localStorage.getItem('pistolLevel') == '3') {
-        this.shootCooldown = 400 // level 2 rate of fire
-      }
-      if (localStorage.getItem('pistolLevel') == '4') {
+      if (
+        localStorage.getItem('pistolLevel') == 4 ||
+        localStorage.getItem('pistolLevel') == 5
+      ) {
         this.shootCooldown = 300 // level 2 rate of fire
       }
-      if (localStorage.getItem('pistolLevel') == '5') {
-        this.shootCooldown = 200 // level 2 rate of fire
-      }
-      if (localStorage.getItem('pistolLevel') >= '6') {
+      if (localStorage.getItem('pistolLevel') >= 6) {
         this.shootCooldown = 100 // level 2 rate of fire
       }
     } else if (localStorage.getItem('equipped') == '"ar"') {
       this.shootCooldown = 250 // Time in ms between allowed shots
-      if (localStorage.getItem('arLevel') == '2') {
+      if (
+        localStorage.getItem('arLevel') == 2 ||
+        localStorage.getItem('arLevel') == 3
+      ) {
         this.shootCooldown = 200 // level 2 rate of fire
       }
-      if (localStorage.getItem('arLevel') == '3') {
-        this.shootCooldown = 150
-      }
-      if (localStorage.getItem('arLevel') == '4') {
+      if (
+        localStorage.getItem('arLevel') == 4 ||
+        localStorage.getItem('arLevel') == 5
+      ) {
         this.shootCooldown = 100 // level 4 rate of fire
       }
-      if (localStorage.getItem('arLevel') >= '5') {
+      if (localStorage.getItem('arLevel') >= 6) {
         this.shootCooldown = 75 // highest fire rate without glitch
       }
     } else if (localStorage.getItem('equipped') == '"shotgun"') {
