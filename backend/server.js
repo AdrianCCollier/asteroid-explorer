@@ -1,5 +1,6 @@
 const express = require('express')
 const axios = require('axios')
+const bcrypt = require('bcrypt')
 const app = express()
 const path = require('path')
 const port = process.env.PORT || 3000
@@ -11,6 +12,7 @@ app.use(express.static('/home/bitnami/htdocs'))
 // app.use(express.static(path.join(__dirname, '../frontend/build')))
 app.use(express.json())
 
+// const User = require('/models/User'); 
 const asteroidRouter = require('./routes/customAsteroids')
 const fs = require('fs')
 
@@ -22,12 +24,35 @@ const { connectToDatabase, db } = require('./database/database')
 
 connectToDatabase()
 
+
 // addPlayer POST route, for future use
 app.post('/addPlayer', async (req, res) => {
   const newPlayer = {
     name: req.body.name,
     level: req.body.level,
+}
+
+app.post('/register', async (req, res) => {
+  try {
+    const {username, password} = req.body;
+    
+    // Check if the user already exists
+    const existingUser = await User.findOne({username});
+    if(existingUser) {
+      return res.status(400).send('Username already exists');
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create and store new user
+    const newUser = new User({username, password: hashedPassword });
+    await newUser.save();
+    res.status(201).send('User registered successfully');
+  } catch(error) {
+    res.status(500).send('Error occurred during registration :(');
   }
+});
 
   try {
     const database = await connectToDatabase()

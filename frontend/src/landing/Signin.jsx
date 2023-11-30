@@ -26,17 +26,17 @@ function Signin() {
                 </div>
                 
                 <Link to='/solarSystem'>
-                    <Button className ="submit">Submit</Button>
+                    <Button className ="submit">Sign In</Button>
                 </Link>
                 <p className = "signin">
-                    Need an account ?
+                    Need an account?
                     <a href = "/landing"> Register</a>
                 </p>
                 <p className = "signin">
                     <Link to = '/solarSystem' >
                         <div className = 'tooltip-container'>
                             <Button className = "submit">Quick Play</Button>
-                            <div className = 'tooltip'>? Progress will be stored locally</div>
+                            <div className = 'tooltip'>Progress Will Be Stored Locally</div>
                         </div>
                     </Link>
                 </p>

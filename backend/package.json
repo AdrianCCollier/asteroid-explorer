@@ -7,18 +7,20 @@
   "dependencies": {
     "antd": "^5.9.3",
     "axios": "^1.5.0",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.17.1",
     "fetch": "^1.1.0",
     "fs": "^0.0.1-security",
     "mongodb": "^6.1.0",
-    "mongoose": "^7.5.3",
+    "mongoose": "^7.6.6",
     "react-router": "^6.19.0",
     "react-router-dom": "^6.19.0",
     "redis": "^4.6.10"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "concurrently": "^8.2.1",
     "nodemon": "^3.0.1"
   }
