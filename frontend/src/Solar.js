@@ -59,8 +59,8 @@ function SolarSystem() {
   // need to store it in local storage
   useEffect(() => {
     // Fetch the asteroid data from backend/server.js when the component mounts
-    // fetch('http://localhost:3000/api/custom-asteroids') // Fetch from link
-    fetch('https://asteroidexplorer.com/api/custom-asteroids') // Fetch from link
+    fetch('http://localhost:3000/api/custom-asteroids') // Fetch from link
+    // fetch('https://asteroidexplorer.com/api/custom-asteroids') // Fetch from link
       .then((response) => {
         // Then take response and return it in json form so it is usable
         return response.json()

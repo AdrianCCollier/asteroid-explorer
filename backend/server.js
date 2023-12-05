@@ -8,8 +8,8 @@ const cors = require('cors')
 require('dotenv').config()
 app.use(cors())
 app.use(express.static('public'))
-app.use(express.static('/home/bitnami/htdocs'))
-// app.use(express.static(path.join(__dirname, '../frontend/build')))
+// app.use(express.static('/home/bitnami/htdocs'))
+app.use(express.static(path.join(__dirname, '../frontend/build')))
 app.use(express.json())
 
 // const User = require('/models/User'); 
@@ -26,44 +26,46 @@ connectToDatabase()
 
 
 // addPlayer POST route, for future use
-app.post('/addPlayer', async (req, res) => {
-  const newPlayer = {
-    name: req.body.name,
-    level: req.body.level,
-}
+// app.post('/addPlayer', async (req, res) => {
+  
+//   const newPlayer = {
+//     name: req.body.name,
+//     level: req.body.level,
+//   }
 
-app.post('/register', async (req, res) => {
-  try {
-    const {username, password} = req.body;
+//   try {
+//     const database = await connectToDatabase()
+//     const playerCollection = database.collection('players')
+//     const result = await playerCollection.insertOne(newPlayer)
+//     res.json(result)
+//   } catch (error) {
+//     console.error(error)
+//     res.status(500).send('Error occurred while inserting data', error)
+//   }
+// });
+
+
+// app.post('/register', async (req, res) => {
+//   try {
+//     const {username, password} = req.body;
     
-    // Check if the user already exists
-    const existingUser = await User.findOne({username});
-    if(existingUser) {
-      return res.status(400).send('Username already exists');
-    }
+//     // Check if the user already exists
+//     const existingUser = await User.findOne({username});
+//     if(existingUser) {
+//       return res.status(400).send('Username already exists');
+//     }
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+//     // Hash the password
+//     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create and store new user
-    const newUser = new User({username, password: hashedPassword });
-    await newUser.save();
-    res.status(201).send('User registered successfully');
-  } catch(error) {
-    res.status(500).send('Error occurred during registration :(');
-  }
-});
-
-  try {
-    const database = await connectToDatabase()
-    const playerCollection = database.collection('players')
-    const result = await playerCollection.insertOne(newPlayer)
-    res.json(result)
-  } catch (error) {
-    console.error(error)
-    res.status(500).send('Error occurred while inserting data', error)
-  }
-})
+//     // Create and store new user
+//     const newUser = new User({username, password: hashedPassword });
+//     await newUser.save();
+//     res.status(201).send('User registered successfully');
+//   } catch(error) {
+//     res.status(500).send('Error occurred during registration :(');
+//   }
+// });
 
 app.use('/api', asteroidRouter)
 

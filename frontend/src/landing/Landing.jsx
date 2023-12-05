@@ -22,7 +22,8 @@ function Landing() {
       return
     }
     try {
-      const response = await axios.post('/api/register', { username, password })
+      // const response = await axios.post('/api/register', { username, password })
+      console.log('inside try')
     } catch (error) {
       console.log('inside catch statement in Landing.jsx, ran into an issue')
     }
@@ -77,8 +78,8 @@ function Landing() {
           </div>
 
           <Button type="submit" className="submit" onClick={startAudio}>
-              Submit
-            </Button>
+            Submit
+          </Button>
 
           <p className="signin">
             Already have an account?
