@@ -68,7 +68,7 @@ import wallMapJSON from './assets/Maps/Psyche_Walls.json'
 import galaxyBackground from './assets/spaceBackground1.png'
 
 // Import Psyche dialogue
-import PsycheDialogue from './assets/sounds/Psyche.mp3'
+import PsycheDialogue from './assets/sounds/Static_Psyche_Intro.mp3'
 
 // Import Score System
 import ScoreSystem from './ScoreSystem.js'
@@ -137,7 +137,7 @@ export default class Psyche extends Phaser.Scene {
     // Check if the player has visited the Psyche level before
     // Play the dialogue only the first time
     if (localStorage.getItem('PsycheVisited') !== 'true') {
-      this.PsycheDialogue.play({ volume: 0.5 })
+      this.PsycheDialogue.play({ volume: 0.4 })
       localStorage.setItem('PsycheVisited', 'true')
     }
 

@@ -57,6 +57,11 @@ import wallMapJSON from './assets/Maps/Ceres_Walls.json'
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
 
+
+// Import Psyche dialogue
+import CeresDialogue from './assets/sounds/Static_Ceres_Intro.mp3'
+
+
 // Import Score system
 import ScoreSystem from './ScoreSystem.js'
 
@@ -92,6 +97,7 @@ export default class Ceres extends Phaser.Scene {
     this.load.tilemapTiledJSON('wallMap', wallMapJSON)
 
     this.load.image('galaxy', 'assets/Background.jpg')
+    this.load.audio('CeresDialogue', CeresDialogue);
     this.load.image('M16', M16)
     loadHealthBar(this)
   }
@@ -109,6 +115,15 @@ export default class Ceres extends Phaser.Scene {
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
 
     // Play dialogue when level starts
+    this.CeresDialogue = this.sound.add('CeresDialogue')
+
+    // Check if the player has visited the Vesta level before
+    // Play the dialogue only the first time
+    if (localStorage.getItem('CeresVisited') !== 'true') {
+      this.CeresDialogue.setVolume(0.4);
+      this.CeresDialogue.play({ volume: 0.4 })
+      localStorage.setItem('CeresVisited', 'true')
+    }
 
     // update cursor
     this.game.canvas.style.cursor = 'crosshair'

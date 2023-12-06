@@ -5,7 +5,7 @@ import { Header } from '../containers'
 import sound from './chiphead64-11pm.mp3'
 
 // Handling account registration logic
-import axios from 'axios'
+//import axios from 'axios'
 
 import './landing.css'
 
@@ -40,6 +40,8 @@ function Landing() {
     setAudioStarted(true)
   }
 
+  const introProgress = localStorage.getItem('intro');
+  
   console.log('Inside landing')
   return (
     <div className="landing">
@@ -86,12 +88,25 @@ function Landing() {
             <a href="/signIn"> Sign in</a>
           </p>
           <div className="signin">
-            <Link to="/solarSystem">
-              <div className="tooltip-container">
-                <Button className="submit">Quick Play</Button>
-                <div className="tooltip">Progress Will Be Stored Locally</div>
-              </div>
-            </Link>
+
+            <div>
+              {introProgress !== null ? (
+                <Link to="/solarSystem">
+                  <div className="tooltip-container">
+                    <Button className="submit">Quick Play</Button>
+                    <div className="tooltip">Progress Will Be Stored Locally</div>
+                  </div>
+                </Link>
+              ) : (
+                <Link to="/intro">
+                  <div className="tooltip-container">
+                    <Button className="submit">Quick Play</Button>
+                    <div className="tooltip">Progress Will Be Stored Locally</div>
+                  </div>
+                </Link>
+              )}
+            </div>
+
           </div>
         </Form>
       </div>

@@ -68,7 +68,7 @@ import wallMapJSON from './assets/Maps/Vesta_Walls.json'
 import galaxyBackground from './assets/spaceBackground1.png'
 
 // Import Vesta dialogue
-import VestaDialogue from './assets/sounds/Vesta.mp3'
+import VestaDialogue from './assets/sounds/Static_Vesta_Intro.mp3'
 
 
 
@@ -135,6 +135,7 @@ export default class Vesta extends Phaser.Scene {
     // Check if the player has visited the Vesta level before
     // Play the dialogue only the first time
     if (localStorage.getItem('VestaVisited') !== 'true') {
+      this.VestaDialogue.setVolume(0.4);
       this.VestaDialogue.play({ volume: 0.5 })
       localStorage.setItem('VestaVisited', 'true')
     }

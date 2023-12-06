@@ -11,11 +11,15 @@ import Game from './game/index'
 import Landing from './landing/Landing.jsx'
 import Signin from './landing/Signin.jsx'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 
 // Style
 import './Solar.css'
 import './index.css'
+
+import cutscene from './Intro.mp4';
+
+import { useNavigate } from 'react-router-dom';
 
 function ExplorerGame0() {
   return (
@@ -48,6 +52,55 @@ function ExplorerGame3() {
     </div>
   )
 }
+
+function Intro() {
+  const videoRef = useRef(null);
+  const [videoEnded, setVideoEnded] = useState(false);
+  const navigate = useNavigate();
+
+  localStorage.setItem('intro', JSON.stringify(true));
+
+  const handleVideoEnd = () => {
+    console.log("ended");
+    setVideoEnded(true);
+  };
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      // After 500 milliseconds (1 second), unmute the video
+      if (videoRef.current) {
+        videoRef.current.muted = false;
+      }
+    }, 500);
+
+    // Clear the timeout if the component unmounts before the delay
+    return () => clearTimeout(timeoutId);
+  }, []);
+
+  useEffect(() => {
+    if (videoEnded) {
+      // Navigate to /solarSystem when video ends
+      navigate('/solarSystem');
+    }
+  }, [videoEnded, navigate]);
+
+  return (
+    <div className="App" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+      <video 
+      ref={videoRef} 
+      src={cutscene}
+      autoPlay 
+      muted 
+      onEnded={handleVideoEnd} 
+      style={{
+        width: '80%',
+        height: 'auto',
+        maxWidth: '100%',
+        maxHeight: '100%',
+      }}/>
+    </div>
+  );
+};
 
 function SolarSystem() {
   const [asteroidData, setAsteroidData] = useState(null)
@@ -106,27 +159,34 @@ function SolarSystem() {
   )
 }
 
-function Solar() {
-  return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/level0" element={<ExplorerGame0 />} />
+function Solar() {/*
+  
 
-          <Route path="/level1" element={<ExplorerGame1 />} />
 
-          <Route path="/level2" element={<ExplorerGame2 />} />
+  if (localStorage.getItem('intro') != null){*/
+    return (
+      <Router>
+        <div className="App">
+          <Routes>
+            <Route path="/level0" element={<ExplorerGame0 />} />
 
-          <Route path="/level3" element={<ExplorerGame3 />} />
+            <Route path="/level1" element={<ExplorerGame1 />} />
 
-          <Route path="/landing" element={<Landing />} />
-          <Route path="/solarSystem" element={<SolarSystem />} />
-          <Route path="/signin" element={<Signin />} />
-          <Route index element={<Landing />} />
-        </Routes>
-      </div>
-    </Router>
-  )
+            <Route path="/level2" element={<ExplorerGame2 />} />
+
+            <Route path="/level3" element={<ExplorerGame3 />} />
+
+            <Route path="/intro" element={<Intro />} />
+
+            <Route path="/landing" element={<Landing />} />
+            <Route path="/solarSystem" element={<SolarSystem />} />
+            <Route path="/signin" element={<Signin />} />
+            <Route index element={<Landing />} />
+          </Routes>
+        </div>
+      </Router>
+    )
+  
 }
 
 export default Solar

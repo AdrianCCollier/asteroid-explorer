@@ -58,7 +58,7 @@ import wallMapJSON from './assets/Maps/Ryugu_Walls.json'
 import galaxyBackground from './assets/spaceBackground1.png'
 
 // Import Ryugu dialogue
-import ryuguDialogue from './assets/sounds/Ryugu.mp3'
+import ryuguDialogue from './assets/sounds/Static_Ryugu_Intro.mp3'
 
 // Import Score System
 import ScoreSystem from './ScoreSystem.js'
@@ -121,6 +121,7 @@ export default class Ryugu extends Phaser.Scene {
     // Check if the player has visited the Ryugu level before
     // Play the dialogue only the first time
     if (localStorage.getItem('RyuguVisited') !== 'true') {
+      this.ryuguDialogue.setVolume(0.4);
       this.ryuguDialogue.play()
       localStorage.setItem('RyuguVisited', 'true')
     }

@@ -609,15 +609,137 @@ export function updatePlayerAnimations(scene){
 
 
 export function loadEnemyAnimations(scene){
-  // Animations loading for tall alies
-  scene.load.spritesheet("tall_walk", "./assets/sprites/tall_alien_walking.png", {
-    frameWidth: 32,
-    frameHeight: 64}
-  );
-  scene.load.spritesheet("tall_agro", "./assets/sprites/tall_alien_agro.png", {
-    frameWidth: 32,
-    frameHeight: 64}
-  );
+  
+
+
+
+  if (scene.scene.key == "Ryugu"){
+    // Animations loading for tall alies
+    scene.load.spritesheet("tall_walk", "./assets/sprites/ryugu_tall_alien_walking.png", {
+      frameWidth: 32,
+      frameHeight: 64}
+    );
+    scene.load.spritesheet("tall_agro", "./assets/sprites/ryugu_tall_alien_agro.png", {
+      frameWidth: 32,
+      frameHeight: 64}
+    );
+
+    // Animation loading for flying aliens
+    scene.load.spritesheet("flying_walk", "./assets/sprites/ryugu_flying_alien_walking.png", {
+      frameWidth: 32,
+      frameHeight: 32}
+    );
+    scene.load.spritesheet("flying_agro", "./assets/sprites/ryugu_flying_alien_agro.png", {
+      frameWidth: 32,
+      frameHeight: 32}
+    );
+
+    // Animation loading for boss alien
+    scene.load.spritesheet("boss_walk", "./assets/sprites/ryugu_boss_alien_walking.png", {
+      frameWidth: 128,
+      frameHeight: 128}
+    );
+    scene.load.spritesheet("boss_death", "./assets/sprites/ryugu_boss_alien_death.png", {
+      frameWidth: 128,
+      frameHeight: 128}
+    );
+  }
+  else if (scene.scene.key == "Vesta"){
+    // Animations loading for tall alies
+    scene.load.spritesheet("tall_walk", "./assets/sprites/vesta_tall_alien_walking.png", {
+      frameWidth: 32,
+      frameHeight: 64}
+    );
+    scene.load.spritesheet("tall_agro", "./assets/sprites/vesta_tall_alien_agro.png", {
+      frameWidth: 32,
+      frameHeight: 64}
+    );
+
+    // Animation loading for flying aliens
+    scene.load.spritesheet("flying_walk", "./assets/sprites/vesta_flying_alien_walking.png", {
+      frameWidth: 32,
+      frameHeight: 32}
+    );
+    scene.load.spritesheet("flying_agro", "./assets/sprites/vesta_flying_alien_agro.png", {
+      frameWidth: 32,
+      frameHeight: 32}
+    );
+
+    // Animation loading for boss alien
+    scene.load.spritesheet("boss_walk", "./assets/sprites/vesta_boss_alien_walking.png", {
+      frameWidth: 128,
+      frameHeight: 128}
+    );
+    scene.load.spritesheet("boss_death", "./assets/sprites/vesta_boss_alien_death.png", {
+      frameWidth: 128,
+      frameHeight: 128}
+    );
+  } 
+  else if (scene.scene.key == "Psyche"){
+    // Animations loading for tall alies
+    scene.load.spritesheet("tall_walk", "./assets/sprites/psyche_tall_alien_walking.png", {
+      frameWidth: 32,
+      frameHeight: 64}
+    );
+    scene.load.spritesheet("tall_agro", "./assets/sprites/psyche_tall_alien_agro.png", {
+      frameWidth: 32,
+      frameHeight: 64}
+    );
+
+    // Animation loading for flying aliens
+    scene.load.spritesheet("flying_walk", "./assets/sprites/psyche_flying_alien_walking.png", {
+      frameWidth: 32,
+      frameHeight: 32}
+    );
+    scene.load.spritesheet("flying_agro", "./assets/sprites/psyche_flying_alien_agro.png", {
+      frameWidth: 32,
+      frameHeight: 32}
+    );
+
+    // Animation loading for boss alien
+    scene.load.spritesheet("boss_walk", "./assets/sprites/psyche_boss_alien_walking.png", {
+      frameWidth: 128,
+      frameHeight: 128}
+    );
+    scene.load.spritesheet("boss_death", "./assets/sprites/psyche_boss_alien_death.png", {
+      frameWidth: 128,
+      frameHeight: 128}
+    );
+  }
+  else{
+    // Animations loading for tall alies
+    scene.load.spritesheet("tall_walk", "./assets/sprites/ceres_tall_alien_walking.png", {
+      frameWidth: 32,
+      frameHeight: 64}
+    );
+    scene.load.spritesheet("tall_agro", "./assets/sprites/ceres_tall_alien_agro.png", {
+      frameWidth: 32,
+      frameHeight: 64}
+    );
+
+    // Animation loading for flying aliens
+    scene.load.spritesheet("flying_walk", "./assets/sprites/ceres_flying_alien_walking.png", {
+      frameWidth: 32,
+      frameHeight: 32}
+    );
+    scene.load.spritesheet("flying_agro", "./assets/sprites/ceres_flying_alien_agro.png", {
+      frameWidth: 32,
+      frameHeight: 32}
+    );
+
+    // Animation loading for boss alien
+    scene.load.spritesheet("boss_walk", "./assets/sprites/ceres_boss_alien_walking.png", {
+      frameWidth: 128,
+      frameHeight: 128}
+    );
+    scene.load.spritesheet("boss_death", "./assets/sprites/ceres_boss_alien_death.png", {
+      frameWidth: 128,
+      frameHeight: 128}
+    );
+  }
+
+
+  // Knockout Animations loading for tall alies
   scene.load.spritesheet("tall_knockout", "./assets/sprites/tall_alien_knockout.png", {
     frameWidth: 32,
     frameHeight: 64}
@@ -628,15 +750,7 @@ export function loadEnemyAnimations(scene){
   );
 
 
-  // Animation loading for flying aliens
-  scene.load.spritesheet("flying_walk", "./assets/sprites/flying_alien_walking.png", {
-    frameWidth: 32,
-    frameHeight: 32}
-  );
-  scene.load.spritesheet("flying_agro", "./assets/sprites/flying_alien_agro.png", {
-    frameWidth: 32,
-    frameHeight: 32}
-  );
+  // Knockout Animation loading for flying aliens
   scene.load.spritesheet("flying_knockout", "./assets/sprites/flying_alien_knockout.png", {
     frameWidth: 32,
     frameHeight: 32}
@@ -644,21 +758,6 @@ export function loadEnemyAnimations(scene){
   scene.load.spritesheet("flying_sleep", "./assets/sprites/flying_alien_sleep.png", {
     frameWidth: 32,
     frameHeight: 32}
-  );
-
-
-  // Animation loading for boss alien
-  scene.load.spritesheet("boss_walk", "./assets/sprites/boss_alien_walking.png", {
-    frameWidth: 128,
-    frameHeight: 128}
-  );
-  scene.load.spritesheet("boss_death", "./assets/sprites/boss_alien_death.png", {
-    frameWidth: 128,
-    frameHeight: 128}
-  );
-  scene.load.spritesheet("boss_good", "./assets/sprites/boss_alien_good.png", {
-    frameWidth: 128,
-    frameHeight: 128}
   );
 }
 
