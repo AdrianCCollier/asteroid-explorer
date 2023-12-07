@@ -40,7 +40,7 @@ import {
   addColliderWithGround,
   addObjectToWorld,
 } from './collisions.js'
-import GameOverScene from './gameOverScene.js'
+
 
 import {
   loadPlayerAnimations,
@@ -101,6 +101,8 @@ export default class Ryugu extends Phaser.Scene {
   }
 
   create() {
+    this.physics.world.gravity.y = 9.8 * 0.0011 * 20000; // Adjusted gravity
+
     // Handle canvas resizing on window resize
     const canvas = this.game.canvas
     function resizeCanvas() {
@@ -131,11 +133,7 @@ export default class Ryugu extends Phaser.Scene {
 
     // Inventory Logic Feature Testing
     this.input.keyboard.on('keydown-ESC', () => {
-      console.log('Escape button pressed')
-      window.location.href = '/solarSystem'
-      // save points
-      // go back to main menu
-      // access points from main menu
+      this.scene.launch('PauseScene', { gameScene: this })
     })
 
     // add background
@@ -315,6 +313,9 @@ export default class Ryugu extends Phaser.Scene {
 
     this.player = createPlayerInside(this, 109, 3520)
 
+    this.player.chaseCount = 0;
+    this.player.bossChase = false;
+
     this.playerCoordsText = this.add
       .text(16, 100, '', { fontSize: '18px', fill: '#FF0000' })
       .setScrollFactor(0)
@@ -404,6 +405,11 @@ export default class Ryugu extends Phaser.Scene {
   } // end create function
 
   update() {
+    if (this.player.chaseCount < 0){
+      this.player.chaseCount = 0;
+    }
+
+
     // if the player falls off the map, end the game
     if (this.player.sprite.y > this.map.heightInPixels) {
       // reset variables before restarting game to avoid undefined properties error

@@ -332,6 +332,10 @@ function handleEnemyHit(bullet, alien, scene) {
   }, 100) // Adjust the duration as needed (100 milliseconds in this example)
 
   if (alien.health <= 0) {
+    if (scene.player.chaseCount > 0){
+      scene.player.chaseCount -= 1;
+    }
+
     // Saves alien's animator for sleep animation
     var sleepAnimator
 

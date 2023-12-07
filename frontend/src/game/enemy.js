@@ -87,6 +87,9 @@ export function createEnemyInside(scene, group, x, y) {
     // Used to tell what kind of enemy
     enemy.tall = true;
 
+    enemy.chasingPlayer = true;
+    enemy.chasingCount = 0;
+
     createTallEnemyAnimator(scene, enemy);
 
     return enemy;
@@ -114,6 +117,23 @@ export function handleEnemyMovementInside(scene, enemy) {
   }
   if (localStorage.getItem('bossKills') >= 5) {
     enemy.shouldChasePlayer = distance < 700
+  }
+
+  if (enemy.shouldChasePlayer)
+    if (scene.player.bossChase)
+      enemy.shouldChasePlayer = false;
+
+  if (enemy.shouldChasePlayer){
+    if (enemy.chasingCount == 0){
+      enemy.chasingCount = 1;
+      scene.player.chaseCount+=1;
+    }
+  }
+  else{
+    if (enemy.chasingCount != 0){
+      enemy.chasingCount = 0;
+      scene.player.chaseCount-=1;
+    }
   }
 
   const isAtEdge = !isSolidGroundAhead
@@ -210,6 +230,8 @@ export function createFlyingEnemy(scene, group, x, y) {
     enemy.health = 1;
     enemy.isChasing = false;
 
+    enemy.chasingPlayer = true;
+    enemy.chasingCount = 0;
 
     // Used to tell what kind of enemy
     enemy.flying = true;
@@ -241,7 +263,7 @@ export function handleFlyingEnemyMovement(scene, enemy) {
       chaseRange = 900
     }
 
-    if (distance < chaseRange) {
+    if (distance < chaseRange && !scene.player.bossChase) {
         // If within range, chase the player
         let directionX = (player.x - enemy.x) / distance;
         let directionY = (player.y - enemy.y) / distance;
@@ -253,6 +275,19 @@ export function handleFlyingEnemyMovement(scene, enemy) {
         enemy.setVelocityX(0);
         enemy.setVelocityY(0);
         enemy.isChasing = false;
+    }
+
+    if (distance < chaseRange){
+      if (enemy.chasingCount == 0){
+        enemy.chasingCount = 1;
+        scene.player.chaseCount+=1;
+      }
+    }
+    else{
+      if (enemy.chasingCount != 0){
+        enemy.chasingCount = 0;
+        scene.player.chaseCount-=1;
+      }
     }
 
     // Update flying enemy animations 
@@ -296,6 +331,7 @@ export function createBoss(scene, group, x, y) {
     return boss;
 }
 
+var bossActivated = false;
 export function handleBossMovement(scene, enemy) {
     let player = scene.player.sprite; 
 
@@ -303,9 +339,21 @@ export function handleBossMovement(scene, enemy) {
     let distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, player.x, player.y);
 
     // Set a range for how close the player needs to be to trigger chasing
-    const chaseRange = 600;
+    var chaseRange = 600;
 
-    if (distance < chaseRange) {
+    if (scene.scene.key == "Ryugu")
+      chaseRange = 250;
+    else if (scene.scene.key == "Vesta")
+      chaseRange = 800;
+    else if (scene.scene.key == "Spyche")
+      chaseRange = 700;
+    else
+      chaseRange = 800;
+
+    if (distance < chaseRange || bossActivated) {
+        scene.player.bossChase = true;
+
+        bossActivated = true;
         // If within range, chase the player
         let directionX = (player.x - enemy.x) / distance;
         let directionY = (player.y - enemy.y) / distance;

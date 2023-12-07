@@ -344,9 +344,9 @@ export function handlePlayerMovementInside(
         } else if (shotgunLevel === 4 || shotgunLevel === 5) {
           randomNumber = Math.random() * 0.3
         } else if (shotgunLevel >= 6) {
-          randomNumber = Math.random() * 0.1
+          randomNumber = Math.random() * 0.2
         } else {
-          randomNumber = Math.random() * 0.9 // Default, very loose shot spread
+          randomNumber = Math.random() * 0.6 // Default, very loose shot spread
         } 
 
         // Determine if the number should be positive or negative (50% chance for each)
@@ -493,6 +493,19 @@ export function alienFloor() {}
 export function platformFloor() {}
 
 export function handlePlayerDamage(player, amount, scene) {
+  player.animator.setTint(0xff7e87) // Tints the alien red for a frame showing damage
+  player.shootingAnimator.setTint(0xff7e87)
+  player.armAnimator.setTint(0xff7e87)
+  player.strapAnimator.setTint(0xff7e87)
+
+    // Set a timeout to revert the color after a short duration
+    setTimeout(() => {
+      player.animator.clearTint() // Clear the tint to revert to the original color
+      player.shootingAnimator.clearTint() 
+      player.armAnimator.clearTint() 
+      player.strapAnimator.clearTint() 
+    }, 100) // Adjust the duration as needed (100 milliseconds in this example)
+
   player.sprite.setVelocityY(-200)
 
   player.health -= amount // Deduct the amount of damage taken

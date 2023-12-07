@@ -45,7 +45,7 @@ import {
   addColliderWithGround,
   addObjectToWorld,
 } from './collisions.js'
-import GameOverScene from './gameOverScene.js'
+
 
 
 import { 
@@ -115,6 +115,8 @@ export default class Vesta extends Phaser.Scene {
 
 
   create() {
+    this.physics.world.gravity.y = 9.8 * 0.22 * 125; // Adjusted gravity
+
     // Handle canvas resizing on window resize
     const canvas = this.game.canvas
     function resizeCanvas() {
@@ -145,11 +147,7 @@ export default class Vesta extends Phaser.Scene {
 
     // Inventory Logic Feature Testing
     this.input.keyboard.on('keydown-ESC', () => {
-      console.log('Escape button pressed')
-      window.location.href = '/solarSystem'
-      // save points
-      // go back to main menu
-      // access points from main menu
+      this.scene.launch('PauseScene', { gameScene: this })
     })
 
     // add background
@@ -324,6 +322,10 @@ export default class Vesta extends Phaser.Scene {
     this.pickupText.setVisible(false)
 
     this.player = createPlayerInside(this, 109, 4580)
+
+    this.player.chaseCount = 0;
+    this.player.bossChase = false;
+
     this.playerCoordsText = this.add
       .text(16, 100, '', { fontSize: '18px', fill: '#FF0000' })
       .setScrollFactor(0)
@@ -402,6 +404,10 @@ export default class Vesta extends Phaser.Scene {
   } // end create function
 
   update() {
+    if (this.player.chaseCount < 0){
+      this.player.chaseCount = 0;
+    }
+
     // if the player falls off the map, end the game
     if (this.player.sprite.y > this.map.heightInPixels) {
 

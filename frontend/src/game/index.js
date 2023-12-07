@@ -11,6 +11,7 @@ import SidescrollerScene3 from './sidescrollerScene3.js'
 import ConfirmationScene from './confirmationScene.js'
 import GameOverScene from './gameOverScene.js'
 import WinScene from './winScene.js'
+import PauseScene from './pause.js'
 
 import React, { useRef, Component } from 'react'
 import Phaser from 'phaser'
@@ -28,25 +29,25 @@ class Game extends Component {
     let scenes = []
     switch (startingScene) {
       case 'SidescrollerScene':
-        scenes = [SidescrollerScene, ConfirmationScene, GameOverScene, WinScene]
+        scenes = [SidescrollerScene, ConfirmationScene, GameOverScene, WinScene, PauseScene]
         break
       case 'SidescrollerScene2':
-        scenes = [SidescrollerScene2, ConfirmationScene, GameOverScene, WinScene]
+        scenes = [SidescrollerScene2, ConfirmationScene, GameOverScene, WinScene, PauseScene]
         break
       case 'SidescrollerScene3':
-        scenes = [SidescrollerScene3, ConfirmationScene, GameOverScene, WinScene]
+        scenes = [SidescrollerScene3, ConfirmationScene, GameOverScene, WinScene, PauseScene]
         break
       case 'Ryugu':
-        scenes = [Ryugu, ConfirmationScene, GameOverScene, WinScene]
+        scenes = [Ryugu, ConfirmationScene, GameOverScene, WinScene, PauseScene]
         break;
       case 'Vesta':
-        scenes = [Vesta, ConfirmationScene, GameOverScene, WinScene]
+        scenes = [Vesta, ConfirmationScene, GameOverScene, WinScene, PauseScene]
         break;
       case 'Psyche':
-        scenes = [Psyche, ConfirmationScene, GameOverScene, WinScene]
+        scenes = [Psyche, ConfirmationScene, GameOverScene, WinScene, PauseScene]
         break;
       case 'Ceres':
-        scenes = [Ceres, ConfirmationScene, GameOverScene, WinScene]
+        scenes = [Ceres, ConfirmationScene, GameOverScene, WinScene, PauseScene]
         break;
       default:
         scenes = [GameOverScene] // default case
@@ -65,16 +66,15 @@ class Game extends Component {
 
     let config = {
       type: Phaser.AUTO,
-      width: 1280,
-      height: 720,
+      width: 1920 * 0.75,
+      height: 1080 * 0.75,
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 400 },
-          //debug: true,
+          gravity: { y: 9.8 * 0.27 * 150},
         },
       },
-      scene: scenes
+      scene: scenes,
     }
     this.game = new Phaser.Game(config)
   }
