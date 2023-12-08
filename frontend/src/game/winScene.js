@@ -19,25 +19,6 @@ class WinScene extends Phaser.Scene {
         window.location.href = '/solarSystem';
       }, [], this);
       
-      /*// Styling Yes Button
-      const yesButton = this.add.text(this.cameras.main.width / 2 - 70, this.cameras.main.height / 2 + 20, 'Yes', { fill: '#0f0', fontSize: '32px', padding: { x: 20, y: 10 }, backgroundColor: '#000000' })
-          .setInteractive()
-          .on('pointerdown', () => {
-              this.scene.stop();
-              this.scene.start('SidescrollerScene');
-          })
-          .on('pointerover', () => yesButton.setBackgroundColor('#555555')) // Changing background color when hovered
-          .on('pointerout', () => yesButton.setBackgroundColor('#000000')); // Changing background color back when not hovered
-      
-      // Styling No Button
-      const noButton = this.add.text(this.cameras.main.width / 2 + 70, this.cameras.main.height / 2 + 20, 'No', { fill: '#f00', fontSize: '32px', padding: { x: 20, y: 10 }, backgroundColor: '#000000' })
-          .setInteractive()
-          .on('pointerdown', () => {
-              this.scene.stop();
-              window.location.href = '/'; // Change the URL to '/'
-          })
-          .on('pointerover', () => noButton.setBackgroundColor('#555555')) // Changing background color when hovered
-          .on('pointerout', () => noButton.setBackgroundColor('#000000')); // Changing background color back when not hovered*/
   }
 }
 

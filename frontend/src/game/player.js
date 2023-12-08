@@ -110,12 +110,6 @@ export function handlePlayerMovement(
   const spaceJustPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey)
   const bKeyJustPressed = Phaser.Input.Keyboard.JustDown(this.bKey)
 
-  // if (kKey.isDown && shootControl.canShoot && player.hasWeapon){
-  //     let bullet = createBullet(scene, player, 20, 20);
-  //     scene.bullets.push(bullet); // Create a bullet when K is pressed
-  //     shootControl.canShoot = false;
-  //     setTimeout(() => {shootControl.canShoot = true;}, shootCooldown);
-  // }
 
   // Move left
   if (aKey.isDown) {

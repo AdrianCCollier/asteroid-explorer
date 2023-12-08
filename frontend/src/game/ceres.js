@@ -179,7 +179,8 @@ export default class Ceres extends Phaser.Scene {
       1,
       2
     )
-
+    
+    // Create tiled layers
     this.wallLayer = this.map.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.map.createLayer('Lights', wallTileSet, 0, 0)
     this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
@@ -616,21 +617,5 @@ function handlePlayerEnemyCollision(playerSprite, enemySprite) {
       [],
       this
     )
-
-    // const knockbackForce = 200;
-    // let knockbackDirection;
-
-    // determine the direction of the knockback
-    // if (this.player.facing === 'left') {
-    //     knockbackDirection = 1; // Knockback to the right
-    // } else if (this.player.facing === 'right') {
-    //     knockbackDirection = -1; // Knockback to the left
-    // }
-
-    // // Apply a knockback force to the player using knockbackDirection
-    // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
-
-    // Debugging line to check the calculated direction
-    // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);
   }
 }
