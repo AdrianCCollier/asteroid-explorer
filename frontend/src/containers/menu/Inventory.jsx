@@ -9,7 +9,7 @@ const Inventory = () => {
 
   const [upgradeMessage, setUpgradeMessage] = useState('')
 
-  // Attempt to fetch data from local storage, if not found, set default values
+  // For this and all below, attempt to fetch data from local storage, if not found, set default values
   const [playerPoints, setPlayerPoints] = useState(
     parseInt(localStorage.getItem('playerPoints')) || 0
   )

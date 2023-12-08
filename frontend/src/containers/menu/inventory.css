@@ -1,3 +1,4 @@
+/* Styling for the inventory menu itself */
 .inventory-menu {
     position: absolute;
     left: 50%;
@@ -6,6 +7,7 @@
     margin-top: 3rem;
 }
 
+/* Styling for the menu */
 .menu {
     display: flex;
     align-items: center;
@@ -17,6 +19,7 @@
     border: none
 }
 
+/* Create the grid weapons layout */
 .menu ul{
     list-style: none;
     padding: 0;
@@ -25,6 +28,7 @@
     grid-gap: 15px;
 }
 
+/* Style the h1 text  */
 .menu h1{
     justify-content: center;
     list-style: none;
@@ -37,11 +41,14 @@
     margin-top: 5px;
 }
 
+/* Style the h2 text  */
+
 .menu h2 {
     margin-bottom: 0;
     color: #EDEDE3;
 }
 
+/* Create styling for each individual item */
 .item {
     border: 1px solid #ddd;
     padding: 10px;
@@ -59,6 +66,7 @@
     color: #EDEDE3;
 }
 
+/* Disabled upgrades will appear as gray, indicating they cannot be clicked */
 .disabled-upgrade {
     width: 8rem;
     height: 1rem;
@@ -71,6 +79,8 @@
     border: none;
 
 }
+
+/* Upgrades will appear as green, marked as available */
 .upgrade {
     width: 8rem;
     height: 1rem;
@@ -83,6 +93,7 @@
     border: none;
 }
 
+/* Define the location and styling for the upgrade message such as 'Increased Rate of Fire' */
 .upgrade-message {
   position: absolute;
   top: 50%; 
