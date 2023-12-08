@@ -17,9 +17,9 @@ import React, { useEffect, useState, useRef } from 'react'
 import './Solar.css'
 import './index.css'
 
-import cutscene from './Intro.mp4';
+import cutscene from './Intro.mp4'
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 
 function ExplorerGame0() {
   return (
@@ -54,53 +54,62 @@ function ExplorerGame3() {
 }
 
 function Intro() {
-  const videoRef = useRef(null);
-  const [videoEnded, setVideoEnded] = useState(false);
-  const navigate = useNavigate();
+  const videoRef = useRef(null)
+  const [videoEnded, setVideoEnded] = useState(false)
+  const navigate = useNavigate()
 
-  localStorage.setItem('intro', JSON.stringify(true));
+  localStorage.setItem('intro', JSON.stringify(true))
 
   const handleVideoEnd = () => {
-    console.log("ended");
-    setVideoEnded(true);
-  };
+    console.log('ended')
+    setVideoEnded(true)
+  }
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       // After 500 milliseconds (1 second), unmute the video
       if (videoRef.current) {
-        videoRef.current.muted = false;
+        videoRef.current.muted = false
       }
-    }, 500);
+    }, 500)
 
     // Clear the timeout if the component unmounts before the delay
-    return () => clearTimeout(timeoutId);
-  }, []);
+    return () => clearTimeout(timeoutId)
+  }, [])
 
   useEffect(() => {
     if (videoEnded) {
       // Navigate to /solarSystem when video ends
-      navigate('/solarSystem');
+      navigate('/solarSystem')
     }
-  }, [videoEnded, navigate]);
+  }, [videoEnded, navigate])
 
   return (
-    <div className="App" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
-      <video 
-      ref={videoRef} 
-      src={cutscene}
-      autoPlay 
-      muted 
-      onEnded={handleVideoEnd} 
+    <div
+      className="App"
       style={{
-        width: '80%',
-        height: 'auto',
-        maxWidth: '100%',
-        maxHeight: '100%',
-      }}/>
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+      }}
+    >
+      <video
+        ref={videoRef}
+        src={cutscene}
+        autoPlay
+        muted
+        onEnded={handleVideoEnd}
+        style={{
+          width: '80%',
+          height: 'auto',
+          maxWidth: '100%',
+          maxHeight: '100%',
+        }}
+      />
     </div>
-  );
-};
+  )
+}
 
 function SolarSystem() {
   const [asteroidData, setAsteroidData] = useState(null)
@@ -159,34 +168,34 @@ function SolarSystem() {
   )
 }
 
-function Solar() {/*
+function Solar() {
+  /*
   
 
 
   if (localStorage.getItem('intro') != null){*/
-    return (
-      <Router>
-        <div className="App">
-          <Routes>
-            <Route path="/level0" element={<ExplorerGame0 />} />
+  return (
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/level0" element={<ExplorerGame0 />} />
 
-            <Route path="/level1" element={<ExplorerGame1 />} />
+          <Route path="/level1" element={<ExplorerGame1 />} />
 
-            <Route path="/level2" element={<ExplorerGame2 />} />
+          <Route path="/level2" element={<ExplorerGame2 />} />
 
-            <Route path="/level3" element={<ExplorerGame3 />} />
+          <Route path="/level3" element={<ExplorerGame3 />} />
 
-            <Route path="/intro" element={<Intro />} />
+          <Route path="/intro" element={<Intro />} />
 
-            <Route path="/landing" element={<Landing />} />
-            <Route path="/solarSystem" element={<SolarSystem />} />
-            <Route path="/signin" element={<Signin />} />
-            <Route index element={<Landing />} />
-          </Routes>
-        </div>
-      </Router>
-    )
-  
+          <Route path="/landing" element={<Landing />} />
+          <Route path="/solarSystem" element={<SolarSystem />} />
+          <Route path="/signin" element={<Signin />} />
+          <Route index element={<Landing />} />
+        </Routes>
+      </div>
+    </Router>
+  )
 }
 
 export default Solar

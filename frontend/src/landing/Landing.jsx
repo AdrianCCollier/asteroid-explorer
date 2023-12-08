@@ -5,7 +5,7 @@ import { Header } from '../containers'
 import sound from './chiphead64-11pm.mp3'
 
 // Handling account registration logic
-//import axios from 'axios'
+import axios from 'axios'
 
 import './landing.css'
 
@@ -22,8 +22,10 @@ function Landing() {
       return
     }
     try {
-      // const response = await axios.post('/api/register', { username, password })
-      console.log('inside try')
+      const response = await axios.post(
+        'http://localhost:3000/api/register',
+        { username, password }
+      )
     } catch (error) {
       console.log('inside catch statement in Landing.jsx, ran into an issue')
     }

@@ -4,6 +4,8 @@
     left: 10%;
 }
 
+
+/* Styling and general placement of tooltip appearance when an asteroid is clicked */
 .asteroid-tooltipFirst,
 .asteroid-tooltipastSecond,
 .asteroid-tooltipThird,
@@ -23,6 +25,7 @@
     justify-content: center;
 }
 
+/* Explicit custom tooltip placement, some asteroids are close to the canvas edge, this ensures they stay within */
 .asteroid-tooltipFirst {
     transform: translateX(calc(40%)) translateY(60%);
 }
@@ -36,8 +39,6 @@
 .asteroid-tooltipFourth {
     transform: translateX(calc(0% - 40px)) translateY(80%);
 }
-
-/* Ceres tooltip needs to be float left to avoid going off screen */
 
 .asteroid-info-item {
     margin-bottom: 10px;

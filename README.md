@@ -1,3 +1,11 @@
+Welcome to our Asteroid Explorer Project! 
+To get started, follow these steps:
+
+cd frontend && npm install
+cd ../backend && npm install
+npm run dev (this starts the backend localhost:3000 and frontend localhost:3001 together)
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

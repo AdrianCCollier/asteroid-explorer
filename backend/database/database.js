@@ -4,6 +4,8 @@ const DATABASE_URI = process.env.DATABASE_URI
 
 let db;
 
+// This function can be imported and used in any other files that require a database connection,
+// This avoids repeated code
 async function connectToDatabase() {
   if (db) return db // return existing db connection if already connected
 

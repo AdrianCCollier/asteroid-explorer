@@ -331,9 +331,6 @@ function CanvasContainer({ asteroids }) {
       var rad7 = 45 // Ceres Radius
 
       // calculate the distance from the mouse to each asteroids center
-      // var distance1 = Math.sqrt((mouseX - plan1X) ** 2 + (mouseY - plan1Y) ** 2)
-      // var distance2 = Math.sqrt((mouseX - plan2X) ** 2 + (mouseY - plan2Y) ** 2)
-      //var distance3 = Math.sqrt((mouseX - plan3X) ** 2 + (mouseY - plan3Y) ** 2)
       var distance4 = Math.sqrt((mouseX - ast4X) ** 2 + (mouseY - ast4Y) ** 2)
       var distance5 = Math.sqrt((mouseX - ast5X) ** 2 + (mouseY - ast5Y) ** 2)
       var distance6 = Math.sqrt((mouseX - ast6X) ** 2 + (mouseY - ast6Y) ** 2)
@@ -341,9 +338,6 @@ function CanvasContainer({ asteroids }) {
 
       // check if mouse is inside any of the circles
       if (
-        // distance1 < rad1 ||
-        // distance2 < rad2 ||
-        // distance3 < rad3 ||
         distance4 < rad4 ||
         distance5 < rad5 ||
         distance6 < rad6 ||
@@ -379,10 +373,7 @@ function CanvasContainer({ asteroids }) {
         context.drawImage( backgroundImage, 0, 0, canvas.width, canvas.height )
       }
 
-      //drawSun(context, canvas.height)
       drawEarth(context, canvas.height, canvas.width)
-      // drawMercury( context, canvas.height, canvas.width )
-      // drawVenus( context, canvas.height, canvas.width )
       drawAsteroids(context, canvas.height, canvas.width)
 
       let shipHeight = 32
@@ -433,7 +424,6 @@ function CanvasContainer({ asteroids }) {
       var mouseX = e.clientX - rect.left
       var mouseY = e.clientY - rect.top
 
-      // HERE
       var ryuguX = shipCanvas.width * 0.35
       var ryuguY = shipCanvas.height * 0.6
 

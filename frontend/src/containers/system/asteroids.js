@@ -6,7 +6,7 @@ function drawAsteroids( context, canvasHeight, canvasWidth ) {
   const vestaImage = new Image()
   const psyche16Image = new Image()
   const ceresImage = new Image()
-
+  
   ryuguImage.src = './assets/Ryugu.png'
   vestaImage.src = './assets/Vesta.png'
   psyche16Image.src = './assets/16Psyche.png'

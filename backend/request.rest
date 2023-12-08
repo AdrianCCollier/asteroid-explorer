@@ -1,0 +1,25 @@
+// Postman alternative tool for endpoint testing
+###
+
+GET http://localhost:3000/users
+
+###
+
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+    "name": "adrian9",
+    "password": "123"
+}
+###
+
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+    "name": "adrian",
+    "password": "password"
+}
+
+###
