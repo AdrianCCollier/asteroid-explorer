@@ -423,23 +423,8 @@ function handlePlayerEnemyCollision(playerSprite, enemySprite) {
           this.player.isInvulnerable = false;
       }, [], this);
 
-      // const knockbackForce = 200;
-      // let knockbackDirection;
-      
-      // determine the direction of the knockback
-      // if (this.player.facing === 'left') {
-      //     knockbackDirection = 1; // Knockback to the right
-      // } else if (this.player.facing === 'right') {
-      //     knockbackDirection = -1; // Knockback to the left
-      // }
-
-      // // Apply a knockback force to the player using knockbackDirection
-      // playerSprite.setVelocityX(knockbackForce * knockbackDirection);
-
       // slight vertical knockback
       playerSprite.setVelocityY(-150);
 
-      // Debugging line to check the calculated direction
-      // console.log(`Knockback applied with force: ${knockbackForce * knockbackDirection}`);
   }
 }

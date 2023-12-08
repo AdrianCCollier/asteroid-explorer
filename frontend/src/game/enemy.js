@@ -39,24 +39,13 @@ export function createEnemy(scene, asteroid, w, h) {
     return enemy;
 }
 
-// export function handleEnemyMovement(scene, bullets, enemy) {
-//     // Iterate over each bullet
-//     bullets.forEach(bullet => {
-//         if (bullet && bullet.sprite) {
-//             // Check if the bullet intersects with the enemy and destroy the enemy if true
-//             if (Phaser.Geom.Intersects.RectangleToRectangle(bullet.sprite.getBounds(), enemy.sprite.getBounds())) {
-//                 enemy.sprite.destroy();
-//             }
-//         }
-//     });
-// }
-
 
 export function loadEnemyImage(scene) {
     // Load the enemy image into the scene
     scene.load.image('enemy', './assets/alien.png');
 }
-///
+
+// Create enemy group
 export function createEnemiesGroup(scene) {
     let enemies = scene.physics.add.group();
     return enemies;
@@ -202,6 +191,7 @@ function checkForSolidGroundAhead(scene, enemy) {
     return (AsteroidTile && AsteroidTile.collides) || (AlienTile && AlienTile.collides || (PlatformTile && PlatformTile.collides));
 }
 
+// Create enemy group
 export function createFlyingEnemiesGroup(scene) {
     let flyingEnemies = scene.physics.add.group({
         allowGravity: false, // Flying enemies are not affected by gravity
@@ -294,6 +284,7 @@ export function handleFlyingEnemyMovement(scene, enemy) {
     updateFlyingEnemyAnimations(scene, enemy);
 }
 
+// Create enemy group
 export function createBossGroup(scene) {
     let boss = scene.physics.add.group({
         allowGravity: false, // Flying enemies are not affected by gravity

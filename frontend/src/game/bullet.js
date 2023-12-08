@@ -1,26 +1,7 @@
 import Phaser from 'phaser'
 const maxDistance = 800
-// export function createBullet(scene, player, w, h) {
-//   let speed = 6; // Speed of the bullet
-//   let bullet_x = player.x;
-//   let bullet_y = player.y;
-//   let angle = player.angle; // Angle of the player
 
-//   // Creating a bullet object with properties like position,
-//   // velocity in x and y direction, dimensions, and sprite
-//   let bullet = {
-//       x: bullet_x,
-//       y: bullet_y,
-//       distanceTraveled: 0, // Initialize distanceTraveled to 0
-//       width: w,
-//       height: h,
-//       velX: speed * Math.cos(Phaser.Math.DegToRad(angle)), // Convert angle to radians and calculate velocity X
-//       velY: speed * Math.sin(Phaser.Math.DegToRad(angle)), // Convert angle to radians and calculate velocity Y
-//       sprite: scene.add.sprite(bullet_x, bullet_y, 'bullet') // Add bullet sprite to the scene at (bullet_x, bullet_y)
-//   };
-//   return bullet; // Return the created bullet object
-// }
-
+// Creates a bullet that varies depending on the current weapon
 export function createBulletInside(scene, player, w, h, a) {
   var bulletType = 'bullet'
   var speed = 8
@@ -87,56 +68,6 @@ export function createBulletInside(scene, player, w, h, a) {
     newBulletWidth / bullet.sprite.width,
     newBulletHeight / bullet.sprite.height
   )
-
-  /*
-  // Add collision with enemies
-  scene.physics.add.collider(bullet.sprite, scene.enemies, function(bulletSprite, alien) {
-    // Remove the bullet
-    bulletSprite.destroy();
-    bullet.distanceTraveled = 800;
-
-    // Decrease the enemy's health
-    alien.health -= 1;
-    alien.setVelocityY(-150)
-    // Check if the enemy is dead
-    if (alien.health <= 0) {
-        // Remove the enemy if health is 0 or less
-        alien.destroy();
-        if (alien.animator) {
-            alien.animator.destroy();
-        }
-        
-        // Check if the enemy belongs to the enemies group
-        if (scene.enemies.contains(alien)) {
-            // Remove the enemy from the group
-            scene.enemies.remove(alien, true, true);
-        }
-    }
-});
-  // Add collision with enemies
-  scene.physics.add.collider(bullet.sprite, scene.flyingEnemies, function(bulletSprite, alien) {
-    // Remove the bullet
-    bulletSprite.destroy();
-    bullet.distanceTraveled = 800;
-
-    // Decrease the enemy's health
-    alien.health -= 1;
-
-    // Check if the enemy is dead
-    if (alien.health <= 0) {
-        // Remove the enemy if health is 0 or less
-        alien.destroy();  
-        if (alien.animator) {
-            alien.animator.destroy();
-        }
-        
-        // Check if the enemy belongs to the enemies group
-        if (scene.enemies.contains(alien)) {
-            // Remove the enemy from the group
-            scene.enemies.remove(alien, true, true);
-        }
-    }
-});*/
 
   // Add collision with enemies
   scene.physics.add.collider(
