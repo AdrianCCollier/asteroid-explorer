@@ -1,9 +1,7 @@
 import React, {useLayoutEffect, useState, useRef} from 'react';
 import './earth.css';
 
-
-
-// Menu will need a new prop for asteroid information
+// This function defines the dimensions and attributes of Earth in our solar system
 function Earth({ earthMenuVisible }) {
 
     console.log( 'Inside Earth Screen' );
@@ -17,23 +15,23 @@ function Earth({ earthMenuVisible }) {
         const context2 = canvas.getContext( '2d' );
     
         const resizeCanvas = () => {
-          
+
           canvas.width = window.innerWidth * 0.78;
           canvas.height = window.innerHeight * 0.79;
 
           // calculate the radius based on the size of the canvas
           const earthRadius = Math.min( canvas.width, canvas.height ) * 0.3;
-          const venusRadius = Math.min( canvas.width, canvas.height ) * 0.26;
+        // const venusRadius = Math.min( canvas.width, canvas.height ) * 0.26;
     
           context2.fillStyle = 'black';
           context2.fillRect( 0, 0, canvas.width, canvas.height );
     
           setCanvasDimensions( {width: canvas.width, height: canvas.height} );
           
-          // need to call functions to draw the Earth and Venus inside of resizeCanvas function so that
-          // whenever the canvas is resized the Earth and Venus don't disapear
+          // need to call functions to draw the Earthinside of resizeCanvas function so that
+          // whenever the canvas is resized the Earth doesn't dissappear
           drawEarth( earthRadius, canvas.width, canvas.height, context2);
-          drawVenus( venusRadius );
+        //   drawVenus( venusRadius );
           
         } // end resizeCanvas function
 
@@ -50,14 +48,6 @@ function Earth({ earthMenuVisible }) {
             };
         } // end drawEarth function
 
-        const drawVenus = ( radius ) => {
-            context2.beginPath();
-            context2.moveTo( -100, canvas.height / 2 );
-            context2.arc( -100, canvas.height / 2, radius, 3 * Math.PI, Math.PI / 2 );
-            context2.fillStyle = '#C57F00';
-            context2.fill();
-            context2.closePath();
-        } // end drawVenus function
 
         resizeCanvas();
 

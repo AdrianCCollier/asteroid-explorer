@@ -5,8 +5,7 @@ import { Button } from 'antd'
 import drawAsteroids from '../system/asteroids.js'
 import './canvas.css'
 
-// Adrian, 9/22. added asteroids as a prop here, being passed down from Solar.js, its coming all the way from localhost:3000/asteroids, it was sent to Solar.js, and now here. The goal is to display actual asteroid data when an asteroid is clicked, so its going to asteroids.js next
-// Malyk, 9/25. "click" event listening for asteroids has been moved into here. asteroid information should be passed to Menu inside return
+// Function to initialize our canvas container with placeholder values and data
 function CanvasContainer({ asteroids }) {
   const canvasRef = useRef(null)
   const shipCanvasRef = useRef(null)
@@ -40,6 +39,7 @@ function CanvasContainer({ asteroids }) {
   // state to keep track of which asteroid was clicked, to load different phaser levels
   const [clickedAsteroidIndex, setClickedAsteroidIndex] = useState(null)
 
+  // function to determine the visibility of our tool tip window when an asteroid is clicked
   const handleAsteroidClick = (index) => {
     setTooltipVisible((prevTooltipVisible) => {
       const updatedTooltipVisible = [...prevTooltipVisible]
@@ -49,23 +49,27 @@ function CanvasContainer({ asteroids }) {
         updatedTooltipVisible[i] = false
       } // end for
 
+      // Open the tooltip with the updated visibility
       updatedTooltipVisible[index] = !updatedTooltipVisible[index]
       console.log('Inside handleAsteroidCLick const ' + index)
       return updatedTooltipVisible
     })
   }
 
+  // Import ship sprites for asteroid travel animation
   const shipImage = new Image()
   shipImage.src = './assets/Ship.png'
   const flyingShipImage = new Image()
   flyingShipImage.src = './assets/Ship_Flying1.png'
 
+  // Set the initial coordinates of the flying spaceship 
   const [shipPosition, setShipPosition] = useState({
     shipX: localStorage.getItem( 'shipX' ) || 320,
     shipY: localStorage.getItem( 'shipY' ) || ( window.innerHeight * 0.785 ) * 0.55
   })
   
 
+  // Define the travel path between earth and ryugu
   const earthToRyugu = (shipCanvas) => {
     console.log( "inside earth to ryugu function" )
     console.log( localStorage )
@@ -76,6 +80,7 @@ function CanvasContainer({ asteroids }) {
     let shipY = shipPosition.shipY
     let rotationAngle = Math.PI / 2 // rotates by 90 degrees radian
 
+    // Execute the flying spaceship travel animation
     const animate = () => {
 
       // draw the background without clearing the entire canvas
@@ -121,6 +126,7 @@ function CanvasContainer({ asteroids }) {
 
   } // end earth to Ryugu function
 
+  // Define the travel path between ryugu and vesta
   const ryuguToVesta = (shipCanvas) => {
     console.log( "inside Ryugu to Vesta function" )
     console.log( localStorage )
@@ -177,6 +183,7 @@ function CanvasContainer({ asteroids }) {
 
   } // end Ryugu to Vesta function
 
+  // Define the travel path between vesta and psyche
   const vestaToPsyche = (shipCanvas) => {
     console.log( "inside Vesta to Psyche function" )
     console.log( localStorage )
@@ -232,6 +239,7 @@ function CanvasContainer({ asteroids }) {
 
   } // end Vesta to Psyche 16 function
 
+  // define the path between psyche and ceres
   const pycheToCeres = (shipCanvas) => {
     console.log( "inside Psyche to Ceres function" )
     console.log( localStorage )
@@ -286,6 +294,7 @@ function CanvasContainer({ asteroids }) {
 
   } // end Psyche to Ceres function
 
+  // Store ship coordinates into local storage
   useEffect( () => {
     console.log( "Inside use effect to store shipX and shipY" )
     const storedShipX = localStorage.getItem( 'shipX' )
@@ -300,35 +309,33 @@ function CanvasContainer({ asteroids }) {
   useEffect(() => {
     const shipCanvas = canvasRef.current
 
+    // Calculate the location of each asteroid on the canvas, to ensure it can be clicked
     shipCanvas.addEventListener('mousemove', function (e) {
       var rect = shipCanvas.getBoundingClientRect()
       var mouseX = e.clientX - rect.left
       var mouseY = e.clientY - rect.top
 
-      //var plan3X = canvas.width * 0.25 // for Earth
-      //var plan3Y = canvas.height * 0.5 // for Earth
-
       // Ryugu
-      var ast4X = shipCanvas.width * 0.35 // for asteroid 1
-      var ast4Y = shipCanvas.height * 0.6 // for asteroid 1
+      var ast4X = shipCanvas.width * 0.35 
+      var ast4Y = shipCanvas.height * 0.6 
 
       // Vesta
-      var ast5X = shipCanvas.width * 0.511 // for asteroid 2
-      var ast5Y = shipCanvas.height * 0.18 // for asteroid 2
+      var ast5X = shipCanvas.width * 0.511 
+      var ast5Y = shipCanvas.height * 0.18 
 
       // Psyche
-      var ast6X = shipCanvas.width * 0.7 // for asteroid 3
-      var ast6Y = shipCanvas.height * 0.4 // for astesroid 3
+      var ast6X = shipCanvas.width * 0.7 
+      var ast6Y = shipCanvas.height * 0.4 
 
       // Ceres
-      var ast7X = shipCanvas.width * 0.9 // for asteroid 4
-      var ast7Y = shipCanvas.height * 0.45 // for asteroid 4
+      var ast7X = shipCanvas.width * 0.9 
+      var ast7Y = shipCanvas.height * 0.45 
 
-      //var rad3 = 75 // radius of Earth
+      // Define the radius of our asteroids
       var rad4 = 15 // Ryugu
       var rad5 = 35 // Vesta
       var rad6 = 25 // Psyche
-      var rad7 = 45 // Ceres Radius
+      var rad7 = 45 // Ceres 
 
       // calculate the distance from the mouse to each asteroids center
       var distance4 = Math.sqrt((mouseX - ast4X) ** 2 + (mouseY - ast4Y) ** 2)
@@ -350,6 +357,8 @@ function CanvasContainer({ asteroids }) {
     })
   }, [canvasRef])
 
+
+  // Handle Ship/Canvas dimension and travel logic
   useLayoutEffect(() => {
     const canvas = canvasRef.current
     const shipCanvas = shipCanvasRef.current
@@ -413,13 +422,11 @@ function CanvasContainer({ asteroids }) {
 
     // eventListener to handle the clicking of an asteroid
     shipCanvas.addEventListener('click', function (e) {
-      // Malyk 10/5/23
-      // you will get errors if you do not first check to ensure that asteroids is not empty even though asteroids should not be empty when we are at this point
-      // no I do not know why
       if (!asteroids || asteroids.length < 3) {
         return
       } // end if
 
+      // Use our earlier defined coordinates to link each asteroid to specific X,Y coordinates
       var rect = shipCanvas.getBoundingClientRect()
       var mouseX = e.clientX - rect.left
       var mouseY = e.clientY - rect.top

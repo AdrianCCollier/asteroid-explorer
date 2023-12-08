@@ -2,11 +2,14 @@ import React, { useState } from 'react'
 import { Button } from 'antd'
 import './inventory.css'
 
+// This function is responsible for our Game Inventory, it allows players to view their current points, weapons, and upgrades
 const Inventory = () => {
+  // Set null and empty states initially
   const [selectedButton, setSelectedButton] = useState(null)
 
   const [upgradeMessage, setUpgradeMessage] = useState('')
 
+  // Attempt to fetch data from local storage, if not found, set default values
   const [playerPoints, setPlayerPoints] = useState(
     parseInt(localStorage.getItem('playerPoints')) || 0
   )
@@ -39,49 +42,61 @@ const Inventory = () => {
 
   var upgradeCost = 0
 
+  // Function to update our pistol level
+  // Player must have enough points to call this function
+  // It increases the pistol level, which is used dynamically within Phaser to upgrade our weapon
   const updatePistolLevel = () => {
     const updatedPistolLevel = pistolLevel + 1
     setPistolLevel(updatedPistolLevel)
-    // localStorage.setItem('pistolLevel', pistolLevel.toString())
-    localStorage.setItem('pistolLevel', updatedPistolLevel.toString()) // Update this line
+    localStorage.setItem('pistolLevel', updatedPistolLevel.toString())
   } // end updatePistolLevel function
 
+  // Function to increase the pistol cost
+  // This function is called once an upgrade has been made
+  // Ensuring that the next upgrade is more expensive
   const updatePistolLevelCost = () => {
     const updatedPistolLevelCost = pistolLevelCost + 500
     setPistolLevelCost(updatedPistolLevelCost)
     localStorage.setItem('pistolLevelCost', pistolLevelCost.toString())
   }
 
+  // Same logic
   const updateArLevel = () => {
     const updatedArLevel = arLevel + 1
     setArLevel(updatedArLevel)
     localStorage.setItem('arLevel', updatedArLevel.toString())
   } // end updateArLevel function
 
+  // Same logic
   const updateArLevelCost = () => {
     const updatedArLevelCost = arLevelCost + 500
     setArLevelCost(updatedArLevelCost)
     localStorage.setItem('arLevelCost', arLevelCost.toString())
   }
 
+  // Same logic 
   const updateShotgunLevel = () => {
     const updatedShotgunLevel = shotgunLevel + 1
     setShotgunLevel(updatedShotgunLevel)
     localStorage.setItem('shotgunLevel', updatedShotgunLevel.toString())
   } // end updateShotgunLevel function
 
+  // Same logic
   const updateShotgunLevelCost = () => {
     const updatedShotgunLevelCost = shotgunLevelCost + 500
     setShotgunLevelCost(updatedShotgunLevelCost)
     localStorage.setItem('shotgunLevelCost', shotgunLevelCost.toString())
   }
-
+  
+  // This function is called once an upgrade has been made. It reduces the player points by the upgrade cost and updates local storage 
   const updatePlayerPoints = (upgradeCost) => {
     const updatedPoints = playerPoints - upgradeCost
     setPlayerPoints(updatedPoints)
     localStorage.setItem('playerPoints', updatedPoints.toString())
   } // end updatePlayerPoints function
 
+  // This function uses the above functions to upgrade the player's weapon.
+  // Once enough points have been accumulated, the upgrade cost is updated, along with the weapon level, and cost
   const handlePistolUpgrade = () => {
     if (playerPoints >= pistolLevelCost) {
       upgradeCost = pistolLevelCost
@@ -91,6 +106,7 @@ const Inventory = () => {
       updatePistolLevelCost()
 
       // Determine the upgrade message based on the new level
+      // Within Phaser, a similar switch statement exists to determine upgrades based on current level
       let message
       switch (newLevel) {
         case 2:
@@ -103,9 +119,9 @@ const Inventory = () => {
         case 7:
           message = 'Upgraded: Increased Damage'
           break
-   
+
         default:
-          message = 'Pistol Upgraded' 
+          message = 'Pistol Upgraded'
       }
 
       setUpgradeMessage(message)
@@ -212,6 +228,7 @@ const Inventory = () => {
     return 'upgrade'
   }
 
+  // JSX content, creates our Inventory menu
   return (
     <div className="inventory-menu">
       <div

@@ -2,7 +2,7 @@ import React from 'react';
 import './header.css'
 
 
-// Creates a header div
+// Component that creates the Asteroid Explorer Header in gradient text
 const Header = () => {
     return (
         <div className = "solarsystem__header section__padding">

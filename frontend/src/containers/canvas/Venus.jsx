@@ -1,9 +1,7 @@
 import React, {useLayoutEffect, useState, useRef} from 'react';
 import './venus.css';
 
-
-
-// Menu will need a new prop for asteroid information
+// This function defines the dimensions and attributes of Venus in our solar system, this will be replaced by an asteroid in the future
 function Venus({ venusMenuVisible }) {
 
     console.log( 'Inside Venus Screen' );
