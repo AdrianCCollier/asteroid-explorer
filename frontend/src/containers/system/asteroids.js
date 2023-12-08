@@ -1,12 +1,16 @@
+
+// This function is responsible for rendering, and positioning the asteroids inside our canvas
 function drawAsteroids( context, canvasHeight, canvasWidth ) {
   // first asteroid - Ryugu
   
 
+  // Create new Image objects
   const ryuguImage = new Image()
   const vestaImage = new Image()
   const psyche16Image = new Image()
   const ceresImage = new Image()
   
+  // Link each Image to its png path
   ryuguImage.src = './assets/Ryugu.png'
   vestaImage.src = './assets/Vesta.png'
   psyche16Image.src = './assets/16Psyche.png'
@@ -33,7 +37,7 @@ function drawAsteroids( context, canvasHeight, canvasWidth ) {
     context.drawImage( ceresImage, canvasWidth * 0.875 , canvasHeight * 0.403, 256/2.7, 256/2.7);
   };
 
-  // keeping commented out for debuging
+  // keeping commented out for future debugging, asteroids sometimes don't appear when the page is loaded.
   /*
   var centerX = canvasWidth * 0.35
   var centerY = canvasHeight * 0.6

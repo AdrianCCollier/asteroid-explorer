@@ -1,3 +1,4 @@
+/* Styling for our quick view, this includes sound control, the left and right columns, and text styling */
 .quickView__button-column {
     display: flex;
     flex-direction: column;

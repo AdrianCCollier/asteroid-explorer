@@ -1,26 +1,23 @@
+// This is the entry point of our React application, typically called App.js
+// Here, we import all the components that make up our application
 import { Header, CanvasContainer } from './containers'
-
 import QuickView from './containers/quickView/QuickView'
-
-import Earth from './containers/canvas/Earth.jsx'
-
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
-
 import Game from './game/index'
-
 import Landing from './landing/Landing.jsx'
 import Signin from './landing/Signin.jsx'
-
 import React, { useEffect, useState, useRef } from 'react'
 
-// Style
+// Styling sheet imports
 import './Solar.css'
 import './index.css'
 
+// Cutscene to be played the first time only 
 import cutscene from './Intro.mp4'
 
 import { useNavigate } from 'react-router-dom'
 
+// Return the Ryugu level, which will be linked to /level0
 function ExplorerGame0() {
   return (
     <div>
@@ -28,6 +25,7 @@ function ExplorerGame0() {
     </div>
   )
 }
+// Return the Vesta level, which will be linked to /level1
 
 function ExplorerGame1() {
   return (
@@ -37,6 +35,8 @@ function ExplorerGame1() {
   )
 }
 
+// Return the Psyche level, which will be linked to level2
+
 function ExplorerGame2() {
   return (
     <div>
@@ -44,6 +44,8 @@ function ExplorerGame2() {
     </div>
   )
 }
+
+// Return the Ceres level, which will be linked to level3
 
 function ExplorerGame3() {
   return (
@@ -115,8 +117,6 @@ function SolarSystem() {
   const [asteroidData, setAsteroidData] = useState(null)
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true)
 
-  console.log('yooooo inside main menu')
-
   // effect to fetch asteroid data
   // need to store it in local storage
   useEffect(() => {
@@ -169,11 +169,9 @@ function SolarSystem() {
 }
 
 function Solar() {
-  /*
+
   
-
-
-  if (localStorage.getItem('intro') != null){*/
+  // Conditionally render a different Phaser scene, based on the route path, to create a multi-leveling system
   return (
     <Router>
       <div className="App">

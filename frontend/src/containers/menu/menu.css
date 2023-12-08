@@ -1,3 +1,4 @@
+/* Styling for the menu and buttons within our solar system UI */
 .frontend__containers__menu {
   position: absolute;
   background-color: rgb( 0, 0, 0 );
@@ -36,7 +37,7 @@
     height: 6rem;
     font-size: 50px;
     font-family: 'Courier New', Courier, monospace;
-    background-color: #00C137;
+    background-color: #88a18f;
     border: none;
     transition: color 0.3s;
   }

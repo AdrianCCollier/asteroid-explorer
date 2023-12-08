@@ -1,3 +1,4 @@
+// This function is responsible for rendering, and positioning Earth into our Canvas
 function drawEarth( context, canvasHeight, canvasWidth ) {
     // Create an image element for the Earth sprite
     const earthImage = new Image();

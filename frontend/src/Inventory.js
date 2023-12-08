@@ -1,3 +1,4 @@
+
 class Inventory {
   constructor() {
     this.unlockedItems = []

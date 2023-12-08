@@ -9,6 +9,7 @@ import sound from './chiphead64-11pm.mp3'
 import './quickView.css'
 
 
+// This function is responsible for creating the layout of our Quickview panel
 const QuickView = () => {
 
     const [buttonWidth, setButtonWidth] = useState( '' )
@@ -20,6 +21,8 @@ const QuickView = () => {
     const [soundMuteVisible, setSoundMuteVisible] = useState( true )
     const audioRef = useRef( null )
     
+
+    // Handle the click of each body, toggle the visibility of this to true, and others as false
     const handleSolarClick = () => {
             console.log( 'Solar button clicked!')
             setEarthMenuVisible( false )

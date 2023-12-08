@@ -4,13 +4,14 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Solar from './Solar';
 
-// Style
+// Styling
 import './index.css';
 
 
+// Render React inside root div
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-
+// Handle weapon local storage case to set pistol as default
 localStorage.setItem('pistol', JSON.stringify(true))
 
 if (localStorage.getItem('shotgun') == null)
