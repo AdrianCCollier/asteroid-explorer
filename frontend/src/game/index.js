@@ -5,9 +5,9 @@ import Psyche from './psyche.js'
 import Ceres from './ceres.js'
 
 import Level1Scene from './level1.js'
-import SidescrollerScene from './sidescrollerScene.js'
-import SidescrollerScene2 from './sidescrollerScene2.js'
-import SidescrollerScene3 from './sidescrollerScene3.js'
+// import SidescrollerScene from './sidescrollerScene.js'
+// import SidescrollerScene2 from './sidescrollerScene2.js'
+// import SidescrollerScene3 from './sidescrollerScene3.js'
 import ConfirmationScene from './confirmationScene.js'
 import GameOverScene from './gameOverScene.js'
 import WinScene from './winScene.js'
@@ -27,34 +27,8 @@ class Game extends Component {
     const { startingScene } = this.props
 
     let scenes = []
+    // Conditionally load a different asteroid based on the URL endpoint
     switch (startingScene) {
-      // case 'SidescrollerScene':
-      //   scenes = [
-      //     SidescrollerScene,
-      //     ConfirmationScene,
-      //     GameOverScene,
-      //     WinScene,
-      //     PauseScene,
-      //   ]
-      //   break
-      // case 'SidescrollerScene2':
-      //   scenes = [
-      //     SidescrollerScene2,
-      //     ConfirmationScene,
-      //     GameOverScene,
-      //     WinScene,
-      //     PauseScene,
-      //   ]
-      //   break
-      // case 'SidescrollerScene3':
-      //   scenes = [
-      //     SidescrollerScene3,
-      //     ConfirmationScene,
-      //     GameOverScene,
-      //     WinScene,
-      //     PauseScene,
-      //   ]
-      //   break
       case 'Ryugu':
         scenes = [Ryugu, ConfirmationScene, GameOverScene, WinScene, PauseScene]
         break
@@ -87,6 +61,7 @@ class Game extends Component {
       false
     )
 
+    // Phaser settings
     let config = {
       type: Phaser.AUTO,
       width: 1920 * 0.75,
@@ -112,7 +87,6 @@ class Game extends Component {
   render() {
     return (
       <div className="gameContainer">
-        {/* <img src={solarBackground} alt="Solar Background" /> */}
       </div>
     )
   }

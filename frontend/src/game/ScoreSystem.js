@@ -1,3 +1,4 @@
+// ScoreSystem displays the current score in game
 class ScoreSystem {
   constructor(scene) {
     this.scene = scene;

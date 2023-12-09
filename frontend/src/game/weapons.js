@@ -17,6 +17,7 @@ export function createWeapon(scene, asteroid, w, h) {
   return weapon;
 }
 
+// Load weapon images
 export function loadWeaponImage(scene) {
   scene.load.image('weapon1', './assets/mini.png');
   scene.load.image('weapon2', './assets/miniLeft.png');

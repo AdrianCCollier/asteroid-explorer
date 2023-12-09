@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 
+// WinScene appears when a player defeats a boss, message displays, then is rerouted back to the main menu after 3 seconds
 class WinScene extends Phaser.Scene {
   constructor() {
       super({ key: 'WinScene' });
