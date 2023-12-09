@@ -1,10 +1,40 @@
-Welcome to our Asteroid Explorer Project! 
+Welcome to our Asteroid Explorer Project!
 To get started, follow these steps:
+
+Unzip this file in your local machine
+or clone our Github repo from: https://github.com/AdrianCCollier/asteroid-explorer.git
+
+do:
 
 cd frontend && npm install
 cd ../backend && npm install
 npm run dev (this starts the backend localhost:3000 and frontend localhost:3001 together)
 
+We accumulated quite a large amount of files and folders over the semester, here are our three main components:
+
+/backend -> nodejs expressjs server with mongodb. The main logic is in /backend/server.js
+
+/frontend/src -> Our React Application, this massive folder contains our solar system UI
+/frontend/src/game -> Our Phaser game, the game exists and is mounted when a user clicks on an asteroid within React
+
+Backend endpoints:
+localhost:3000/api/asteroids
+localhost:3000/api/custom-asteroids
+
+Frontend endpoints:
+localhost:3001/landing
+localhost:3001/intro
+localhost:3001/solarSystem
+localhost:3001/level0
+localhost:3001/level1
+localhost:3001/level2
+localhost:3001/level3
+
+This game is fully deployed via AWS LightSail and can be played by visiting:
+www.asteroidexplorer.com
+asteroidexplorer.com
+
+Default React Documentation Below
 
 # Getting Started with Create React App
 

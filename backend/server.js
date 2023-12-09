@@ -108,7 +108,7 @@ app.post('/api/register', async (req, res) => {
 app.use('/api', asteroidRouter)
 
 
-app.get('/asteroids', (req, res) => {
+app.get('/api/asteroids', (req, res) => {
   // Check if cache file exists
   if (fs.existsSync(CACHE_FILE)) {
     const cachedDataRaw = fs.readFileSync(CACHE_FILE, 'utf-8')
