@@ -1,3 +1,5 @@
+/* The Styling for game.css only deals with resizing the Phaser canvas window and adjusting its dimensions and positioning */
+
 body {
     background-color: black;
 }
@@ -26,7 +28,3 @@ body {
     overflow: hidden; 
     background-color: #0024; 
 }
-
-/* .gameContainer img {
-    width: 100%;
-} */

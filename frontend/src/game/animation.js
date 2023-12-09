@@ -1,7 +1,5 @@
 import Phaser from 'phaser'
 
-
-
 export function loadPlayerAnimations(scene){
   // NORMAL ANIMS
   scene.load.spritesheet("walk", "./assets/sprites/player_walk.png",{

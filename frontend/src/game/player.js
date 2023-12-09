@@ -8,8 +8,8 @@ import {
 
 import Phaser from 'phaser'
 
+// Import sound effects
 import fireSound from './assets/sounds/fireSound.mp3'
-
 import jumpSound from './assets/sounds/jump.mp3'
 import boostSound from './assets/sounds/boost.mp3'
 import stunPistol from './assets/sounds/pistol_stun.mp3'
@@ -23,9 +23,8 @@ import playerDamage from './assets/sounds/player_damage.mp3'
 import alienDamage from './assets/sounds/alien_damage.mp3'
 import bossDamage from './assets/sounds/boss_damage.mp3'
 
-// Import Score system to reset points if killed
-// import ScoreSystem from './ScoreSystem.js'
 
+// Load all weapon sounds that will be used in game
 export function loadWeaponSounds(scene) {
   scene.load.audio('weaponFireSound', fireSound)
 
@@ -311,7 +310,7 @@ export function handlePlayerMovementInside(
   //   } while (currentWeaponIndex !== weapons.indexOf(scene.currentWeapon))
   // })
 
-  // Handles shooting
+  // Conditionally adjust weapon volume and sound effect
   if (leftMouseButton && shootControl.canShoot) {
     if (localStorage.getItem('equipped') == '"pistol"') {
       // Play weapon shooting sound
@@ -324,9 +323,11 @@ export function handlePlayerMovementInside(
       scene.sound.play('stunShotgun', { volume: 0.1 })
     }
 
+    // For the pistol and ar, shoot bullets in linear path
     if (localStorage.getItem('equipped') != '"shotgun"') {
       let bullet = createBulletInside(scene, player, 20, 20, player.angle)
       scene.bullets.push(bullet)
+    // For the shotgun, generate 6 bullets that will spray to achieve a shotgun effect
     } else {
       let shotgunLevel = parseInt(localStorage.getItem('shotgunLevel')) || 1
       for (var i = 0; i < 6; i++) {

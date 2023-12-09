@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 
+// GameOverScene appears when a player dies, A black screen appears with the window text box, giving the player the option to try again, or return back to the main menu
 class GameOverScene extends Phaser.Scene {
   constructor() {
       super({ key: 'GameOverScene' });

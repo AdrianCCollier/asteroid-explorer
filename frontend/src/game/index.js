@@ -28,41 +28,64 @@ class Game extends Component {
 
     let scenes = []
     switch (startingScene) {
-      case 'SidescrollerScene':
-        scenes = [SidescrollerScene, ConfirmationScene, GameOverScene, WinScene, PauseScene]
-        break
-      case 'SidescrollerScene2':
-        scenes = [SidescrollerScene2, ConfirmationScene, GameOverScene, WinScene, PauseScene]
-        break
-      case 'SidescrollerScene3':
-        scenes = [SidescrollerScene3, ConfirmationScene, GameOverScene, WinScene, PauseScene]
-        break
+      // case 'SidescrollerScene':
+      //   scenes = [
+      //     SidescrollerScene,
+      //     ConfirmationScene,
+      //     GameOverScene,
+      //     WinScene,
+      //     PauseScene,
+      //   ]
+      //   break
+      // case 'SidescrollerScene2':
+      //   scenes = [
+      //     SidescrollerScene2,
+      //     ConfirmationScene,
+      //     GameOverScene,
+      //     WinScene,
+      //     PauseScene,
+      //   ]
+      //   break
+      // case 'SidescrollerScene3':
+      //   scenes = [
+      //     SidescrollerScene3,
+      //     ConfirmationScene,
+      //     GameOverScene,
+      //     WinScene,
+      //     PauseScene,
+      //   ]
+      //   break
       case 'Ryugu':
         scenes = [Ryugu, ConfirmationScene, GameOverScene, WinScene, PauseScene]
-        break;
+        break
       case 'Vesta':
         scenes = [Vesta, ConfirmationScene, GameOverScene, WinScene, PauseScene]
-        break;
+        break
       case 'Psyche':
-        scenes = [Psyche, ConfirmationScene, GameOverScene, WinScene, PauseScene]
-        break;
+        scenes = [
+          Psyche,
+          ConfirmationScene,
+          GameOverScene,
+          WinScene,
+          PauseScene,
+        ]
+        break
       case 'Ceres':
         scenes = [Ceres, ConfirmationScene, GameOverScene, WinScene, PauseScene]
-        break;
+        break
       default:
         scenes = [GameOverScene] // default case
         break
     }
 
+    // Prevents mouse right-click in game for more immersive game experience
     document.addEventListener(
       'contextmenu',
       function (event) {
-        event.preventDefault() // Prevents right-click menu
+        event.preventDefault()
       },
       false
     )
-
-    
 
     let config = {
       type: Phaser.AUTO,
@@ -71,7 +94,7 @@ class Game extends Component {
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 9.8 * 0.27 * 150},
+          gravity: { y: 9.8 * 0.27 * 150 },
         },
       },
       scene: scenes,

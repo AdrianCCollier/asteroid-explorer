@@ -63,9 +63,6 @@ import ryuguDialogue from './assets/sounds/Static_Ryugu_Intro.mp3'
 // Import Score System
 import ScoreSystem from './ScoreSystem.js'
 
-// import new weapon
-import M16 from './assets/weapons/M16.png'
-
 import { loadHealthBar, loadShieldBar, updateBars } from './health'
 
 const walls = 'assets/tilesets/walls_lights_extruded.png'
@@ -96,7 +93,7 @@ export default class Ryugu extends Phaser.Scene {
 
     this.load.image('galaxy', 'assets/Background.jpg')
     this.load.audio('ryuguDialogue', ryuguDialogue)
-    this.load.image('M16', M16)
+
     loadHealthBar(this)
   }
 
@@ -385,14 +382,7 @@ export default class Ryugu extends Phaser.Scene {
     // allow player to fall off the map
     this.player.sprite.setCollideWorldBounds(true)
 
-    // Set up collider for weapon pickup
-    this.physics.add.collider(
-      this.player.sprite,
-      //this.m16,
-      this.pickUpWeapon,
-      null,
-      this
-    )
+   
 
     // Making sprite invisible so animation can play
     this.player.sprite.alpha = 0
@@ -533,13 +523,11 @@ export default class Ryugu extends Phaser.Scene {
       this.player.gunSprite.rotation = this.player.sprite.rotation
     }
 
-    // M16 weapon pickup logic
+
 
     let distanceToWeapon = Phaser.Math.Distance.Between(
       this.player.sprite.x,
       this.player.sprite.y
-      //this.m16.x,
-      //this.m16.y
     )
 
     if (distanceToWeapon < 50) {
@@ -554,26 +542,7 @@ export default class Ryugu extends Phaser.Scene {
     }
   }
 
-  // Equip M16 weapon
-  equipWeapon() {
-    const offsetX = 40
-    const offsetY = 0
-    this.m16.setVisible(true)
-    this.m16.setPosition(
-      this.player.sprite.x + offsetX,
-      this.player.sprite.y + offsetY
-    )
-    this.m16.setDepth(this.player.sprite.depth + 1)
-    this.pickupText.destroy()
-
-    // Disable physics properties once equipped
-    this.m16.setGravityY(0)
-    this.m16.setVelocity(0, 0)
-    this.m16.setImmovable(true)
-    this.m16.body.allowGravity = false
-
-    this.player.weapon = 'M16'
-  }
+  
 
   // Displays congratulation message and restarts the level when 'R' is pressed
   showCongratulationScreen() {
