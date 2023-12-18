@@ -1,0 +1,22 @@
+.start-button {
+  background-color: #00bfff; /* Neon blue */
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 20px; /* Gives a rounded shape */
+  font-family: 'Orbitron', sans-serif;
+  font-size: 20px;
+  cursor: pointer;
+  outline: none;
+  box-shadow: 0 0 15px rgba(0, 191, 255, 0.7);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.start-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 191, 255, 0.9);
+}
+
+.start-button:active {
+  transform: scale(0.95);
+}

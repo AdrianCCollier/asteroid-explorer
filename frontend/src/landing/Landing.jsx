@@ -2,39 +2,37 @@ import React, { useState, useEffect } from 'react'
 import { Form, Button } from 'antd'
 import { Link } from 'react-router-dom'
 import { Header } from '../containers'
+import StartButton from './StartButton'
 import sound from './chiphead64-11pm.mp3'
-
-// Handling account registration logic
-import axios from 'axios'
 
 import './landing.css'
 
 function Landing() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
+  // const [username, setUsername] = useState('')
+  // const [password, setPassword] = useState('')
+  // const [confirmPassword, setConfirmPassword] = useState('')
   const [audioStarted, setAudioStarted] = useState(false)
 
-  const handleRegister = async (e) => {
-    e.preventDefault()
-    // handle password mismatch
-    if (password !== confirmPassword) {
-      return
-    }
-    try {
-      const response = await axios.post(
-        'http://localhost:3000/api/register',
-        { username, password }
-      )
-    } catch (error) {
-      console.log('inside catch statement in Landing.jsx, ran into an issue')
-    }
-  }
+  // const handleRegister = async (e) => {
+  //   e.preventDefault()
+  //   // handle password mismatch
+  //   if (password !== confirmPassword) {
+  //     return
+  //   }
+  //   try {
+  //     const response = await axios.post(
+  //       'http://localhost:3000/api/register',
+  //       { username, password }
+  //     )
+  //   } catch (error) {
+  //     console.log('inside catch statement in Landing.jsx, ran into an issue')
+  //   }
+  // }
 
   useEffect(() => {
     if (audioStarted) {
       const audio = new Audio(sound)
-      audio.play()
+      audio.play();
     } // end if
   }, [audioStarted])
 
@@ -48,8 +46,12 @@ function Landing() {
   return (
     <div className="landing">
       <Header />
+      <StartButton />
       <div className="body">
-        <Form autoComplete="off" className="form" onSubmit={handleRegister}>
+
+
+      
+        {/* <Form autoComplete="off" className="form" >
           <p className="title">Register</p>
           <div className="form-group">
             <label>
@@ -110,7 +112,7 @@ function Landing() {
             </div>
 
           </div>
-        </Form>
+        </Form> */}
       </div>
     </div>
   )
