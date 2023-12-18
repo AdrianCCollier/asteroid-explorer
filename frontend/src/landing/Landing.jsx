@@ -1,118 +1,40 @@
 import React, { useState, useEffect } from 'react'
-import { Form, Button } from 'antd'
-import { Link } from 'react-router-dom'
 import { Header } from '../containers'
 import StartButton from './StartButton'
 import sound from './chiphead64-11pm.mp3'
-
-import './landing.css'
+import Background from './Background2.mp4'
+import './Landing.css'
+import { useNavigate } from 'react-router'
 
 function Landing() {
-  // const [username, setUsername] = useState('')
-  // const [password, setPassword] = useState('')
-  // const [confirmPassword, setConfirmPassword] = useState('')
-  const [audioStarted, setAudioStarted] = useState(false)
 
-  // const handleRegister = async (e) => {
-  //   e.preventDefault()
-  //   // handle password mismatch
-  //   if (password !== confirmPassword) {
-  //     return
-  //   }
-  //   try {
-  //     const response = await axios.post(
-  //       'http://localhost:3000/api/register',
-  //       { username, password }
-  //     )
-  //   } catch (error) {
-  //     console.log('inside catch statement in Landing.jsx, ran into an issue')
-  //   }
-  // }
+  const [audioStarted, setAudioStarted] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (audioStarted) {
       const audio = new Audio(sound)
       audio.play();
-    } // end if
-  }, [audioStarted])
+    } 
+  }, [audioStarted]);
 
-  const startAudio = () => {
+  const startAudioAndNavigate = () => {
     setAudioStarted(true)
-  }
+  
 
   const introProgress = localStorage.getItem('intro');
-  
-  console.log('Inside landing')
+  const route = introProgress !== null ? '/solarSystem' : '/intro';
+  navigate(route);
+  }
   return (
     <div className="landing">
+      <video autoPlay loop muted className="gameplay-background">
+        <source src={Background} type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
       <Header />
-      <StartButton />
-      <div className="body">
-
-
-      
-        {/* <Form autoComplete="off" className="form" >
-          <p className="title">Register</p>
-          <div className="form-group">
-            <label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-              <span>Username</span>
-            </label>
-            <label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              <span>Password</span>
-            </label>
-            <label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-              <span>Confirm Password</span>
-            </label>
-          </div>
-
-          <Button type="submit" className="submit" onClick={startAudio}>
-            Submit
-          </Button>
-
-          <p className="signin">
-            Already have an account?
-            <a href="/signIn"> Sign in</a>
-          </p>
-          <div className="signin">
-
-            <div>
-              {introProgress !== null ? (
-                <Link to="/solarSystem">
-                  <div className="tooltip-container">
-                    <Button className="submit">Quick Play</Button>
-                    <div className="tooltip">Progress Will Be Stored Locally</div>
-                  </div>
-                </Link>
-              ) : (
-                <Link to="/intro">
-                  <div className="tooltip-container">
-                    <Button className="submit">Quick Play</Button>
-                    <div className="tooltip">Progress Will Be Stored Locally</div>
-                  </div>
-                </Link>
-              )}
-            </div>
-
-          </div>
-        </Form> */}
+      <div className="centered-content">
+        <StartButton onClick={startAudioAndNavigate} />
       </div>
     </div>
   )

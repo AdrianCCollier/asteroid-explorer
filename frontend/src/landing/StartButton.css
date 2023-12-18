@@ -1,11 +1,12 @@
 .start-button {
+
   background-color: #00bfff; /* Neon blue */
   color: white;
   border: none;
-  padding: 15px 30px;
+  padding: 20px 40px;
   border-radius: 20px; /* Gives a rounded shape */
   font-family: 'Orbitron', sans-serif;
-  font-size: 20px;
+  font-size: 28px;
   cursor: pointer;
   outline: none;
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.7);
