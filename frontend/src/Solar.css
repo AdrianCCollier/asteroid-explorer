@@ -1,7 +1,11 @@
 .solar {
   width: 100vw;
   height: 100vh;
-  background: url( './images/space_bg.jpg' );
+  padding: 0;
+  margin: 0;
+  /* background: url( './images/space_bg.jpg' ); */
+  /* border: 5px solid green; */
+  background-color: black;
   background-size: cover;
 }
 
@@ -12,11 +16,11 @@
 }
 
 .solar__content__holder {
-  background: rgb( 255, 255, 255, 0.012 );
-  box-shadow: 0px 8px 32px 0 rgba( 0, 0, 0, 0.25 );
-  backdrop-filter: blur(25px);
+  /* background: rgb( 255, 255, 255, 0.012 ); */
+  /* box-shadow: 0px 8px 32px 0 rgba( 0, 0, 0, 0.25 ); */
+  /* backdrop-filter: blur(25px); */
   padding: 0px 16px 16px 16px;
-  border-radius: 16px;
+  /* border-radius: 16px; */
   font-family: sans-serif;
   width:95vw;
   height: 80vh;

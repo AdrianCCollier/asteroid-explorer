@@ -1,5 +1,3 @@
-// This is the entry point of our React application, typically called App.js
-// Here, we import all the components that make up our application
 import { Header, CanvasContainer } from './containers'
 import QuickView from './containers/quickView/QuickView'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
@@ -161,7 +159,7 @@ function SolarSystem() {
             </div>
           </div>
 
-          <QuickView />
+          {/* <QuickView /> */}
         </div>
       )}
     </div>

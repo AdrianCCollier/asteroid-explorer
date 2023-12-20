@@ -1,3 +1,4 @@
+import './Asteroids.css'
 
 // This function is responsible for rendering, and positioning the asteroids inside our canvas
 function drawAsteroids( context, canvasHeight, canvasWidth ) {

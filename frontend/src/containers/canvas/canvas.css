@@ -1,7 +1,9 @@
+
 .frontend__containers__canvas{
     position: absolute;
     top: 2%;
-    left: 10%;
+    left: 0%;
+    border: solid 5px yellow;
 }
 
 
