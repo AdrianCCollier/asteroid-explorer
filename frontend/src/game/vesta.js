@@ -68,7 +68,7 @@ import wallMapJSON from './assets/Maps/Vesta_Walls.json'
 import galaxyBackground from './assets/spaceBackground1.png'
 
 // Import Vesta dialogue
-import VestaDialogue from './assets/sounds/Static_Vesta_Intro.mp3'
+// import VestaDialogue from './assets/sounds/Static_Vesta_Intro.mp3'
 
 
 
@@ -109,7 +109,7 @@ export default class Vesta extends Phaser.Scene {
 
 
     this.load.image('galaxy', 'assets/Background.jpg')
-    this.load.audio('VestaDialogue', VestaDialogue);
+    // this.load.audio('VestaDialogue', VestaDialogue);
     loadHealthBar(this);
   }
 
@@ -132,15 +132,15 @@ export default class Vesta extends Phaser.Scene {
     // this.VestaDialogue = this.sound.add('VestaDialogue')
     // this.VestaDialogue.play()
 
-    this.VestaDialogue = this.sound.add('VestaDialogue')
+    // this.VestaDialogue = this.sound.add('VestaDialogue')
 
     // Check if the player has visited the Vesta level before
     // Play the dialogue only the first time
-    if (localStorage.getItem('VestaVisited') !== 'true') {
-      this.VestaDialogue.setVolume(0.4);
-      this.VestaDialogue.play({ volume: 0.5 })
-      localStorage.setItem('VestaVisited', 'true')
-    }
+    // if (localStorage.getItem('VestaVisited') !== 'true') {
+    //   this.VestaDialogue.setVolume(0.4);
+    //   this.VestaDialogue.play({ volume: 0.5 })
+    //   localStorage.setItem('VestaVisited', 'true')
+    // }
 
     // create new Score
     this.scoreManager = new ScoreSystem(this)

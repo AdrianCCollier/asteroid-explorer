@@ -1,8 +1,6 @@
-// Starting point for react application
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import Solar from './Solar';
+import App from './App';
 
 // Styling
 import './index.css';
@@ -24,5 +22,5 @@ if (localStorage.getItem('bossKills') == null)
     localStorage.setItem('bossKills', JSON.stringify(0))
 
 root.render(
-    <Solar />
+    <App />
 );

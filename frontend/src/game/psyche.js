@@ -69,7 +69,7 @@ import wallMapJSON from './assets/Maps/Psyche_Walls.json'
 import galaxyBackground from './assets/spaceBackground1.png'
 
 // Import Psyche dialogue
-import PsycheDialogue from './assets/sounds/Static_Psyche_Intro.mp3'
+// import PsycheDialogue from './assets/sounds/Static_Psyche_Intro.mp3'
 
 // Import Score System
 import ScoreSystem from './ScoreSystem.js'
@@ -107,7 +107,7 @@ export default class Psyche extends Phaser.Scene {
 
 
     this.load.image('galaxy', 'assets/Background.jpg')
-    this.load.audio('PsycheDialogue', PsycheDialogue);
+    // this.load.audio('PsycheDialogue', PsycheDialogue);
     loadHealthBar(this);
   }
 
@@ -130,14 +130,14 @@ export default class Psyche extends Phaser.Scene {
     // this.PsycheDialogue = this.sound.add('PsycheDialogue')
     // this.PsycheDialogue.play()
 
-    this.PsycheDialogue = this.sound.add('PsycheDialogue')
+    // this.PsycheDialogue = this.sound.add('PsycheDialogue')
 
     // Check if the player has visited the Psyche level before
     // Play the dialogue only the first time
-    if (localStorage.getItem('PsycheVisited') !== 'true') {
-      this.PsycheDialogue.play({ volume: 0.4 })
-      localStorage.setItem('PsycheVisited', 'true')
-    }
+    // if (localStorage.getItem('PsycheVisited') !== 'true') {
+    //   this.PsycheDialogue.play({ volume: 0.4 })
+    //   localStorage.setItem('PsycheVisited', 'true')
+    // }
 
     // create new Score
     this.scoreManager = new ScoreSystem(this)

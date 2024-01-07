@@ -3,7 +3,6 @@ import { Header } from '../containers'
 import StartButton from './StartButton'
 import sound from './chiphead64-11pm.mp3'
 import Background from './Background2.mp4'
-import TickerTape from './TickerTape'
 import './Landing.css'
 import { useNavigate } from 'react-router'
 
@@ -37,10 +36,7 @@ function Landing() {
       <div className="centered-content">
         <StartButton onClick={startAudioAndNavigate} />
       </div>
-      <TickerTape
-        text="Creators: Andrew Melo, Malyk Banka, Alex Flores, Adrian Collier"
-        speed={50}
-      />
+      
     </div>
   )
 }

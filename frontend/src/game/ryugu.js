@@ -58,7 +58,7 @@ import wallMapJSON from './assets/Maps/Ryugu_Walls.json'
 import galaxyBackground from './assets/spaceBackground1.png'
 
 // Import Ryugu dialogue
-import ryuguDialogue from './assets/sounds/Static_Ryugu_Intro.mp3'
+// import ryuguDialogue from './assets/sounds/Static_Ryugu_Intro.mp3'
 
 // Import Score System
 import ScoreSystem from './ScoreSystem.js'
@@ -92,7 +92,7 @@ export default class Ryugu extends Phaser.Scene {
     this.load.tilemapTiledJSON('wallMap', wallMapJSON)
 
     this.load.image('galaxy', 'assets/Background.jpg')
-    this.load.audio('ryuguDialogue', ryuguDialogue)
+    // this.load.audio('ryuguDialogue', ryuguDialogue)
 
     loadHealthBar(this)
   }
@@ -115,15 +115,15 @@ export default class Ryugu extends Phaser.Scene {
     // this.ryuguDialogue = this.sound.add('ryuguDialogue')
     // this.ryuguDialogue.play()
 
-    this.ryuguDialogue = this.sound.add('ryuguDialogue')
+    // this.ryuguDialogue = this.sound.add('ryuguDialogue')
 
     // Check if the player has visited the Ryugu level before
     // Play the dialogue only the first time
-    if (localStorage.getItem('RyuguVisited') !== 'true') {
-      this.ryuguDialogue.setVolume(0.4);
-      this.ryuguDialogue.play()
-      localStorage.setItem('RyuguVisited', 'true')
-    }
+    // if (localStorage.getItem('RyuguVisited') !== 'true') {
+    //   this.ryuguDialogue.setVolume(0.4);
+    //   this.ryuguDialogue.play()
+    //   localStorage.setItem('RyuguVisited', 'true')
+    // }
 
     // create new Score
     this.scoreManager = new ScoreSystem(this)

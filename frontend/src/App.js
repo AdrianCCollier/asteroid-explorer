@@ -1,5 +1,5 @@
 import { Header, CanvasContainer } from './containers'
-import QuickView from './containers/quickView/QuickView'
+// import QuickView from './containers/quickView/QuickView'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import Game from './game/index'
 import Landing from './landing/Landing.jsx'
@@ -7,7 +7,7 @@ import Signin from './landing/Signin.jsx'
 import React, { useEffect, useState, useRef } from 'react'
 
 // Styling sheet imports
-import './Solar.css'
+import './App.css'
 import './index.css'
 
 // Cutscene to be played the first time only 
@@ -15,43 +15,52 @@ import cutscene from './Intro.mp4'
 
 import { useNavigate } from 'react-router-dom'
 
-// Return the Ryugu level, which will be linked to /level0
-function ExplorerGame0() {
+
+function ExplorerGame({startingScene}) {
   return (
     <div>
-      <Game startingScene="Ryugu" />
+      <Game startingScene={startingScene} />
     </div>
-  )
+  );
 }
+
+// // Return the Ryugu level, which will be linked to /level0
+// function ExplorerGame0() {
+//   return (
+//     <div>
+//       <Game startingScene="Ryugu" />
+//     </div>
+//   )
+// }
 // Return the Vesta level, which will be linked to /level1
 
-function ExplorerGame1() {
-  return (
-    <div>
-      <Game startingScene="Vesta" />
-    </div>
-  )
-}
+// function ExplorerGame1() {
+//   return (
+//     <div>
+//       <Game startingScene="Vesta" />
+//     </div>
+//   )
+// }
 
-// Return the Psyche level, which will be linked to level2
+// // Return the Psyche level, which will be linked to level2
 
-function ExplorerGame2() {
-  return (
-    <div>
-      <Game startingScene="Psyche" />
-    </div>
-  )
-}
+// function ExplorerGame2() {
+//   return (
+//     <div>
+//       <Game startingScene="Psyche" />
+//     </div>
+//   )
+// }
 
-// Return the Ceres level, which will be linked to level3
+// // Return the Ceres level, which will be linked to level3
 
-function ExplorerGame3() {
-  return (
-    <div>
-      <Game startingScene="Ceres" />
-    </div>
-  )
-}
+// function ExplorerGame3() {
+//   return (
+//     <div>
+//       <Game startingScene="Ceres" />
+//     </div>
+//   )
+// }
 
 function Intro() {
   const videoRef = useRef(null)
@@ -158,15 +167,13 @@ function SolarSystem() {
               <CanvasContainer asteroids={asteroidData} />
             </div>
           </div>
-
-          {/* <QuickView /> */}
         </div>
       )}
     </div>
   )
 }
 
-function Solar() {
+function App() {
 
   
   // Conditionally render a different Phaser scene, based on the route path, to create a multi-leveling system
@@ -174,13 +181,30 @@ function Solar() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/level0" element={<ExplorerGame0 />} />
+          <Route
+            path="/level0"
+            element={<ExplorerGame startingScene="Ryugu" />}
+          />
+          <Route
+            path="/level1"
+            element={<ExplorerGame startingScene="Vesta" />}
+          />
+          <Route
+            path="/level2"
+            element={<ExplorerGame startingScene="Psyche" />}
+          />
+          <Route
+            path="/level3"
+            element={<ExplorerGame startingScene="Ceres" />}
+          />
 
+          {/* <Route path="/level0" element={<ExplorerGame0 />} /> */}
+{/* 
           <Route path="/level1" element={<ExplorerGame1 />} />
 
           <Route path="/level2" element={<ExplorerGame2 />} />
 
-          <Route path="/level3" element={<ExplorerGame3 />} />
+          <Route path="/level3" element={<ExplorerGame3 />} /> */}
 
           <Route path="/intro" element={<Intro />} />
 
@@ -194,4 +218,4 @@ function Solar() {
   )
 }
 
-export default Solar
+export default App
