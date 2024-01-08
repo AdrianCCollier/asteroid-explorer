@@ -3,10 +3,7 @@
   height: 100vh;
   padding: 0;
   margin: 0;
-  /* background: url( './images/space_bg.jpg' ); */
-  /* border: 5px solid green; */
   background-color: black;
-  background-size: cover;
 }
 
 .solar__content-welcome {

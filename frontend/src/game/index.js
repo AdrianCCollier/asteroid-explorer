@@ -5,9 +5,6 @@ import Psyche from './psyche.js'
 import Ceres from './ceres.js'
 
 import Level1Scene from './level1.js'
-// import SidescrollerScene from './sidescrollerScene.js'
-// import SidescrollerScene2 from './sidescrollerScene2.js'
-// import SidescrollerScene3 from './sidescrollerScene3.js'
 import ConfirmationScene from './confirmationScene.js'
 import GameOverScene from './gameOverScene.js'
 import WinScene from './winScene.js'
@@ -15,8 +12,6 @@ import PauseScene from './pause.js'
 
 import React, { useRef, Component } from 'react'
 import Phaser from 'phaser'
-
-// import solarBackground from '../images/space_bg_blur.jpg';
 
 class Game extends Component {
   game = null

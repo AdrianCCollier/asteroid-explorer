@@ -10,57 +10,18 @@ import React, { useEffect, useState, useRef } from 'react'
 import './App.css'
 import './index.css'
 
-// Cutscene to be played the first time only 
+// Cutscene to be played the first time only
 import cutscene from './Intro.mp4'
 
 import { useNavigate } from 'react-router-dom'
 
-
-function ExplorerGame({startingScene}) {
+function ExplorerGame({ startingScene }) {
   return (
     <div>
       <Game startingScene={startingScene} />
     </div>
-  );
+  )
 }
-
-// // Return the Ryugu level, which will be linked to /level0
-// function ExplorerGame0() {
-//   return (
-//     <div>
-//       <Game startingScene="Ryugu" />
-//     </div>
-//   )
-// }
-// Return the Vesta level, which will be linked to /level1
-
-// function ExplorerGame1() {
-//   return (
-//     <div>
-//       <Game startingScene="Vesta" />
-//     </div>
-//   )
-// }
-
-// // Return the Psyche level, which will be linked to level2
-
-// function ExplorerGame2() {
-//   return (
-//     <div>
-//       <Game startingScene="Psyche" />
-//     </div>
-//   )
-// }
-
-// // Return the Ceres level, which will be linked to level3
-
-// function ExplorerGame3() {
-//   return (
-//     <div>
-//       <Game startingScene="Ceres" />
-//     </div>
-//   )
-// }
 
 function Intro() {
   const videoRef = useRef(null)
@@ -124,12 +85,10 @@ function SolarSystem() {
   const [asteroidData, setAsteroidData] = useState(null)
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true)
 
-  // effect to fetch asteroid data
-  // need to store it in local storage
   useEffect(() => {
     // Fetch the asteroid data from backend/server.js when the component mounts
     fetch('http://localhost:3000/api/custom-asteroids') // Fetch from link
-    // fetch('https://asteroidexplorer.com/api/custom-asteroids') // Fetch from link
+      // fetch('https://asteroidexplorer.com/api/custom-asteroids') // AWS deployment endpoint
       .then((response) => {
         // Then take response and return it in json form so it is usable
         return response.json()
@@ -174,8 +133,6 @@ function SolarSystem() {
 }
 
 function App() {
-
-  
   // Conditionally render a different Phaser scene, based on the route path, to create a multi-leveling system
   return (
     <Router>
@@ -197,15 +154,7 @@ function App() {
             path="/level3"
             element={<ExplorerGame startingScene="Ceres" />}
           />
-
-          {/* <Route path="/level0" element={<ExplorerGame0 />} /> */}
-{/* 
-          <Route path="/level1" element={<ExplorerGame1 />} />
-
-          <Route path="/level2" element={<ExplorerGame2 />} />
-
-          <Route path="/level3" element={<ExplorerGame3 />} /> */}
-
+          
           <Route path="/intro" element={<Intro />} />
 
           <Route path="/landing" element={<Landing />} />

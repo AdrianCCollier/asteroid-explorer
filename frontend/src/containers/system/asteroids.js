@@ -1,9 +1,7 @@
-import './Asteroids.css'
+
 
 // This function is responsible for rendering, and positioning the asteroids inside our canvas
 function drawAsteroids( context, canvasHeight, canvasWidth ) {
-  // first asteroid - Ryugu
-  
 
   // Create new Image objects
   const ryuguImage = new Image()
@@ -37,48 +35,6 @@ function drawAsteroids( context, canvasHeight, canvasWidth ) {
     // draw the Ceres image on the canvas
     context.drawImage( ceresImage, canvasWidth * 0.875 , canvasHeight * 0.403, 256/2.7, 256/2.7);
   };
-
-  // keeping commented out for future debugging, asteroids sometimes don't appear when the page is loaded.
-  /*
-  var centerX = canvasWidth * 0.35
-  var centerY = canvasHeight * 0.6
-  context.beginPath()
-  context.moveTo(centerX, centerY)
-  context.arc(centerX, centerY, 12, 0, Math.PI * 2)
-  context.fillStyle = '#71716D'
-  context.fill()
-  context.closePath()
-
-  // second asteroid - Vesta
-  centerX = canvasWidth * 0.511
-  centerY = canvasHeight * 0.18
-  context.beginPath()
-  context.moveTo(centerX, centerY)
-  context.arc(centerX, centerY, 35, 0, Math.PI * 2)
-  context.fillStyle = '#71716D'
-  context.fill()
-  context.closePath()
-
-  // third asteroid - Psyche 16
-  centerX = canvasWidth * 0.699
-  centerY = canvasHeight * 0.4
-  context.beginPath()
-  context.moveTo(centerX, centerY)
-  context.arc(centerX, centerY, 24, 0, Math.PI * 2)
-  context.fillStyle = '#71716D'
-  context.fill()
-  context.closePath()
-
-  // fourth asteroid - Ceres
-  centerX = canvasWidth * 0.9
-  centerY = canvasHeight * 0.45
-  context.beginPath()
-  context.moveTo(centerX, centerY)
-  context.arc(centerX, centerY, 45, 0, Math.PI * 2)
-  context.fillStyle = '#71716D'
-  context.fill()
-  context.closePath()
-  */
 }
 
 export default drawAsteroids
