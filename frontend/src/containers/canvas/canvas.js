@@ -1,9 +1,8 @@
 import React, { useRef, useLayoutEffect, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
 import { Button } from 'antd'
 import drawEarth from '../system/earth.js'
-import drawAsteroids from '../system/asteroids.js'
+import drawAsteroids from '../system/Asteroids.js'
 import './Canvas.css'
 
 // Function to initialize our canvas container with placeholder values and data
@@ -12,14 +11,15 @@ function CanvasContainer({ asteroids }) {
   const canvasRef = useRef(null)
 
   const [canvasDimensions, setCanvasDimensions] = useState({
-    width: 0,
-    height: 0,
-  })
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
   const [asteroidInformation, setAsteroidInformation] = useState({
-    name: null,
-    diameter: null,
-    distanceFromEarth: null,
+    index: null,
+    name: '',
+    diameter: 0,
+    distanceFromEarth: 0,
   })
 
   const [tooltipVisible, setTooltipVisible] = useState([
@@ -32,110 +32,40 @@ function CanvasContainer({ asteroids }) {
   // state to keep track of which asteroid was clicked, to load different phaser levels
   const [clickedAsteroidIndex, setClickedAsteroidIndex] = useState(null)
 
-  // function to determine the visibility of our tool tip window when an asteroid is clicked
-  const handleAsteroidClick = (index) => {
-    setTooltipVisible((prevTooltipVisible) => {
-      const updatedTooltipVisible = [...prevTooltipVisible]
-
-      // loop to close all other tooltips before opening current tooltip
-      for (let i = 0; i < updatedTooltipVisible.length; i++) {
-        updatedTooltipVisible[i] = false
-      } // end for
-
-      // Open the tooltip with the updated visibility
-      updatedTooltipVisible[index] = !updatedTooltipVisible[index]
-      console.log('Inside handleAsteroidCLick const ' + index)
-      return updatedTooltipVisible
-    })
-  }
-
-  useEffect(() => {
-    const mainCanvas = canvasRef.current
-
-    // Calculate the location of each asteroid on the canvas, to ensure it can be clicked
-    mainCanvas.addEventListener('mousemove', function (e) {
-      var rect = mainCanvas.getBoundingClientRect()
-      var mouseX = e.clientX - rect.left
-      var mouseY = e.clientY - rect.top
-
-      // Ryugu
-      var ast4X = mainCanvas.width * 0.35
-      var ast4Y = mainCanvas.height * 0.6
-
-      // Vesta
-      var ast5X = mainCanvas.width * 0.511
-      var ast5Y = mainCanvas.height * 0.18
-
-      // Psyche
-      var ast6X = mainCanvas.width * 0.7
-      var ast6Y = mainCanvas.height * 0.4
-
-      // Ceres
-      var ast7X = mainCanvas.width * 0.9
-      var ast7Y = mainCanvas.height * 0.45
-
-      // Define the radius of our asteroids
-      var rad4 = 15 // Ryugu
-      var rad5 = 35 // Vesta
-      var rad6 = 25 // Psyche
-      var rad7 = 45 // Ceres
-
-      // calculate the distance from the mouse to each asteroids center
-      var distance4 = Math.sqrt((mouseX - ast4X) ** 2 + (mouseY - ast4Y) ** 2)
-      var distance5 = Math.sqrt((mouseX - ast5X) ** 2 + (mouseY - ast5Y) ** 2)
-      var distance6 = Math.sqrt((mouseX - ast6X) ** 2 + (mouseY - ast6Y) ** 2)
-      var distance7 = Math.sqrt((mouseX - ast7X) ** 2 + (mouseY - ast7Y) ** 2)
-
-      // check if mouse is inside any of the circles
-      if (
-        distance4 < rad4 ||
-        distance5 < rad5 ||
-        distance6 < rad6 ||
-        distance7 < rad7
-      ) {
-        mainCanvas.style.cursor = 'pointer'
-      } else {
-        mainCanvas.style.cursor = 'default'
-      }
-    })
-  }, [canvasRef])
-
   useLayoutEffect(() => {
-    const canvas = canvasRef.current
-    const context = canvas.getContext('2d')
+    const canvas = canvasRef.current;
+    const context = canvas.getContext('2d');
+    const backgroundImage = new Image();
+    backgroundImage.src = './assets/Background.jpg';
 
     const resizeCanvas = () => {
       canvas.width = window.innerWidth * 0.77
       canvas.height = window.innerHeight * 0.785
-
-      // mainCanvas.width = window.innerWidth * 0.77
-      // mainCanvas.height = window.innerHeight * 0.785
-
+      drawAsteroids(context, canvas.height, canvas.width);
       setCanvasDimensions({ width: canvas.width, height: canvas.height })
 
-      const backgroundImage = new Image()
-      backgroundImage.src = './assets/Background.jpg'
+      backgroundImage.onload = () => {
+        context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height)
+      };
 
-      backgroundImage.onload = function () {
-        // context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height)
-      }
+      // drawEarth(context, canvas.height, canvas.width);
+      drawAsteroids(context, canvas.height, canvas.width);
 
-      // drawEarth(context, canvas.height, canvas.width)
-      drawAsteroids(context, canvas.height, canvas.width)
-    } // end resize canvas function
 
-    resizeCanvas()
+    }; // end resizeCanvas function
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
 
     // eventListener to handle the clicking of an asteroid
     canvas.addEventListener('click', function (e) {
       if (!asteroids || asteroids.length < 3) {
-        return
+        return;
       } // end if
 
-      // Use our earlier defined coordinates to link each asteroid to specific X,Y coordinates
-      var rect = canvas.getBoundingClientRect()
-      var mouseX = e.clientX - rect.left
-      var mouseY = e.clientY - rect.top
+      const rect = canvasRef.current.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
 
       var ryuguX = canvas.width * 0.35
       var ryuguY = canvas.height * 0.6
@@ -152,7 +82,7 @@ function CanvasContainer({ asteroids }) {
       var rad1 = 15
       var rad2 = 35
       var rad3 = 25
-      var rad4 = 45
+      var ryuguRadius = 45
 
       // calculate the distance from the mouse to each asteroids center
       var distance1 = Math.sqrt((mouseX - ryuguX) ** 2 + (mouseY - ryuguY) ** 2)
@@ -204,7 +134,7 @@ function CanvasContainer({ asteroids }) {
         handleAsteroidClick(2)
         setClickedAsteroidIndex(2)
       } // end else if
-      else if (distance4 < rad4) {
+      else if (distance4 < ryuguRadius) {
         console.log('Asteroid 3 clicked')
         setCanvasDimensions({
           width: ast4X - 50,
@@ -227,6 +157,98 @@ function CanvasContainer({ asteroids }) {
       window.removeEventListener('resize', resizeCanvas)
     }
   }, [asteroids])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  // function to determine the visibility of our tool tip window when an asteroid is clicked
+  const handleAsteroidClick = (index) => {
+    setTooltipVisible((prevTooltipVisible) => {
+      const updatedTooltipVisible = [...prevTooltipVisible]
+
+      // loop to close all other tooltips before opening current tooltip
+      for (let i = 0; i < updatedTooltipVisible.length; i++) {
+        updatedTooltipVisible[i] = false
+      } // end for
+
+      // Open the tooltip with the updated visibility
+      updatedTooltipVisible[index] = !updatedTooltipVisible[index]
+      console.log('Inside handleAsteroidCLick const ' + index)
+      return updatedTooltipVisible
+    })
+  }
+
+  useEffect(() => {
+    const mainCanvas = canvasRef.current
+
+    // Calculate the location of each asteroid on the canvas, to ensure it can be clicked
+    mainCanvas.addEventListener('mousemove', function (e) {
+      var rect = mainCanvas.getBoundingClientRect() // getBoundingClientRect()
+      var mouseX = e.clientX - rect.left
+      var mouseY = e.clientY - rect.top
+
+      // Coordinates are the same as in the drawAsteroids function
+      var ast4X = mainCanvas.width * 0.35
+      var ast5X = mainCanvas.width * 0.511
+      var ast6X = mainCanvas.width * 0.7
+      var ast7X = mainCanvas.width * 0.875
+
+      var ast4Y = mainCanvas.height * 0.6
+      var ast5Y = mainCanvas.height * 0.18
+      var ast6Y = mainCanvas.height * 0.4
+      var ast7Y = mainCanvas.height * 0.45
+
+      // Calculate radii based on image dimensions (half of width or height)
+      var ryuguRadius = 256 / 11.5 / 2
+      var rad5 = 256 / 3.75 / 2
+      var rad6 = 256 / 5 / 2
+      var rad7 = 256 / 2.7 / 2
+
+      var distance4 = Math.sqrt((mouseX - ast4X) ** 2 + (mouseY - ast4Y) ** 2)
+      var distance5 = Math.sqrt((mouseX - ast5X) ** 2 + (mouseY - ast5Y) ** 2)
+      var distance6 = Math.sqrt((mouseX - ast6X) ** 2 + (mouseY - ast6Y) ** 2)
+      var distance7 = Math.sqrt((mouseX - ast7X) ** 2 + (mouseY - ast7Y) ** 2)
+
+      // check if mouse is inside any of the circles
+      if (
+        distance4 < ryuguRadius ||
+        distance5 < rad5 ||
+        distance6 < rad6 ||
+        distance7 < rad7
+      ) {
+        mainCanvas.style.cursor = 'pointer'
+      } else {
+        mainCanvas.style.cursor = 'default'
+      }
+    })
+  }, [canvasRef])
+
 
   return (
     <div className="frontend__containers__canvas">

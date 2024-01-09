@@ -7,5 +7,5 @@ export { default as Menu } from './menu/Menu.jsx';
 // export { default as drawMercury } from './system/mercury';
 // export { default as drawVenus } from './system/venus';
 export { default as Earth } from './Canvas/Earth.jsx';
-export { default as drawAsteroids } from './system/asteroids';
+export { default as drawAsteroids } from './system/Asteroids';
 export { default as Inventory } from './menu/Inventory.jsx';
