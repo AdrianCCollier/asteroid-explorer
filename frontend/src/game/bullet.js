@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-const maxDistance = 800
+const maxDistance = 1000
 
 // Creates a bullet that varies depending on the current weapon
 export function createBulletInside(scene, player, w, h, a) {

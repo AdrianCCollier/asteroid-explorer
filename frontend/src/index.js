@@ -10,7 +10,7 @@ import './index.css';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 // Handle weapon local storage case to set pistol as default
-localStorage.setItem('pistol', JSON.stringify(true))
+localStorage.setItem('ar', JSON.stringify(false))
 
 if (localStorage.getItem('shotgun') == null)
     localStorage.setItem('shotgun', JSON.stringify(false))
