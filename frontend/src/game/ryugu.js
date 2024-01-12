@@ -101,7 +101,7 @@ export default class Ryugu extends Phaser.Scene {
   }
 
   create() {
-    this.physics.world.gravity.y = 9.8 * 0.0011 * 20000; // Adjusted gravity
+    this.physics.world.gravity.y = 9.8 * 0.0011 * 20000 // Adjusted gravity
 
     // Handle canvas resizing on window resize
     const canvas = this.game.canvas
@@ -118,8 +118,33 @@ export default class Ryugu extends Phaser.Scene {
     this.themeSound = this.sound.add('theme', {
       loop: true,
       volume: 1,
-    });
+    })
     this.themeSound.play()
+
+    // Create a tutorial message
+    this.tutorialText = this.add
+      .text(50, 200, 'Left Mouse Click to fire', {
+        font: '18px Arial',
+        fill: 'purple',
+        backgroundColor: '#000000',
+        padding: {
+          x: 10,
+          y: 5,
+        },
+        border: '1px solid #ffffff',
+      })
+      .setScrollFactor(0)
+      .setDepth(1000)
+
+    // Optionally make the text disappear after some time
+    this.time.delayedCall(
+      5000,
+      () => {
+        this.tutorialText.setVisible(false)
+      },
+      [],
+      this
+    )
 
     // this.ryuguDialogue = this.sound.add('ryuguDialogue')
 
@@ -316,8 +341,8 @@ export default class Ryugu extends Phaser.Scene {
 
     this.player = createPlayerInside(this, 109, 3520)
 
-    this.player.chaseCount = 0;
-    this.player.bossChase = false;
+    this.player.chaseCount = 0
+    this.player.bossChase = false
 
     this.playerCoordsText = this.add
       .text(16, 100, '', { fontSize: '18px', fill: '#FF0000' })
@@ -387,8 +412,6 @@ export default class Ryugu extends Phaser.Scene {
 
     // allow player to fall off the map
     this.player.sprite.setCollideWorldBounds(true)
-
-   
 
     // Making sprite invisible so animation can play
     this.player.sprite.alpha = 0
