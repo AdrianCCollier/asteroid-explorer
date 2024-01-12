@@ -123,9 +123,9 @@ export default class Ryugu extends Phaser.Scene {
 
     // Create a tutorial message
     this.tutorialText = this.add
-      .text(50, 200, 'Left Mouse Click to fire', {
+      .text(0, 300, 'Left Mouse Click to fire', {
         font: '18px Arial',
-        fill: 'purple',
+        fill: '#ffffff',
         backgroundColor: '#000000',
         padding: {
           x: 10,
