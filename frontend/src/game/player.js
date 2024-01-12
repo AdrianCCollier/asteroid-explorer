@@ -317,7 +317,7 @@ export function handlePlayerMovementInside(
       scene.sound.play('stunPistol', { volume: 0.25 })
     } else if (localStorage.getItem('equipped') == '"ar"') {
       // Play weapon shooting sound
-      scene.sound.play('stunAR', { volume: 0.1 })
+      scene.sound.play('stunAR', { volume: 0.2 })
     } else if (localStorage.getItem('equipped') == '"shotgun"') {
       // Play weapon shooting sound
       scene.sound.play('stunShotgun', { volume: 0.2 })
