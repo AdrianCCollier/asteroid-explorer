@@ -71,6 +71,9 @@ import galaxyBackground from './assets/spaceBackground1.png'
 // Import Psyche dialogue
 // import PsycheDialogue from './assets/sounds/Static_Psyche_Intro.mp3'
 
+// Import Psyche Theme
+import psycheTheme from './assets/sounds/space-chillout.mp3'
+
 // Import Score System
 import ScoreSystem from './ScoreSystem.js'
 
@@ -108,6 +111,7 @@ export default class Psyche extends Phaser.Scene {
 
     this.load.image('galaxy', 'assets/Background.jpg')
     // this.load.audio('PsycheDialogue', PsycheDialogue);
+    this.load.audio('psycheTheme', psycheTheme);
     loadHealthBar(this);
   }
 
@@ -126,6 +130,11 @@ export default class Psyche extends Phaser.Scene {
     resizeCanvas() // Initial resizing
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
 
+    this.psycheTheme = this.sound.add('psycheTheme', {
+      loop: true,
+      volume: 0.3,
+    });
+    this.psycheTheme.play();
     // Play dialogue when level starts
     // this.PsycheDialogue = this.sound.add('PsycheDialogue')
     // this.PsycheDialogue.play()
@@ -198,7 +207,7 @@ export default class Psyche extends Phaser.Scene {
     this.physics.add.collider(this.flyingEnemies, this.alienLayer)
     this.physics.add.collider(this.boss, this.asteroidLayer)
     this.physics.add.collider(this.boss, this.alienLayer)
-    // this.physics.add.collider(this.flyingEnemies, this.platformLayer)
+    this.physics.add.collider(this.flyingEnemies, this.platformLayer)
 
     this.spawnLayer = this.map.createLayer('Spawns', tileset, 0, 0)
 

@@ -1,4 +1,4 @@
-// Import libraries and dependancies 
+// Import libraries and dependancies
 const express = require('express')
 const axios = require('axios')
 // To salt and hash passwords
@@ -27,7 +27,7 @@ app.use(express.static(path.join(__dirname, '../frontend/build')))
 app.use(express.json())
 
 // Import the User model from models/User.js, for account creation
-const User = require('./models/User'); 
+const User = require('./models/User')
 const asteroidRouter = require('./routes/customAsteroids')
 const fs = require('fs')
 
@@ -51,32 +51,32 @@ app.get('/users', (req, res) => {
 // Account creation, submits username, along with salted/hashed password
 app.post('/users', async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(req.body.password, 10)
 
-    const user = new User({username: req.body.name, password: hashedPassword });
-    await user.save();
+    const user = new User({ username: req.body.name, password: hashedPassword })
+    await user.save()
 
     res.status(201).send('User created successfully')
-  } catch(error) {
+  } catch (error) {
     console.error('Error creating user:', error)
-    res.status(500).send('Error occurred while creating user');
+    res.status(500).send('Error occurred while creating user')
   }
 })
 
 // If credentials exist, redirect to homepage
-app.post('/users/login', async(req, res) => {
-  const user = users.find(user => user.name = req.body.name)
-  
-  if(user == null) {
+app.post('/users/login', async (req, res) => {
+  const user = users.find((user) => (user.name = req.body.name))
+
+  if (user == null) {
     return res.status(400).send('No User Found')
   }
   try {
-    if(await bcrypt.compare(req.body.password, user.password)) {
+    if (await bcrypt.compare(req.body.password, user.password)) {
       res.send('Success')
     } else {
-      res.send('Not Allowed');
+      res.send('Not Allowed')
     }
-  } catch{
+  } catch {
     res.status(500).send()
   }
 })
@@ -106,7 +106,6 @@ app.post('/api/register', async (req, res) => {
 
 // route for custom asteroids, /api/custom-asteroids
 app.use('/api', asteroidRouter)
-
 
 app.get('/api/asteroids', (req, res) => {
   // Check if cache file exists

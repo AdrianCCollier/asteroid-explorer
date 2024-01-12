@@ -70,6 +70,7 @@ import galaxyBackground from './assets/spaceBackground1.png'
 // Import Vesta dialogue
 // import VestaDialogue from './assets/sounds/Static_Vesta_Intro.mp3'
 
+import vestaTheme from './assets/sounds/appulse.mp3'
 
 
 // Import Score System 
@@ -110,12 +111,13 @@ export default class Vesta extends Phaser.Scene {
 
     this.load.image('galaxy', 'assets/Background.jpg')
     // this.load.audio('VestaDialogue', VestaDialogue);
+    this.load.audio('vestaTheme', vestaTheme);
     loadHealthBar(this);
   }
 
 
   create() {
-    this.physics.world.gravity.y = 9.8 * 0.22 * 125; // Adjusted gravity
+    this.physics.world.gravity.y = 9.8 * 0.22 * 125 // Adjusted gravity
 
     // Handle canvas resizing on window resize
     const canvas = this.game.canvas
@@ -131,6 +133,11 @@ export default class Vesta extends Phaser.Scene {
     // Play dialogue when level starts
     // this.VestaDialogue = this.sound.add('VestaDialogue')
     // this.VestaDialogue.play()
+    this.vestaTheme = this.sound.add('vestaTheme', {
+      volume: 0.5,
+      loop: true,
+    })
+    this.vestaTheme.play()
 
     // this.VestaDialogue = this.sound.add('VestaDialogue')
 
@@ -153,15 +160,14 @@ export default class Vesta extends Phaser.Scene {
     // add background
     this.add.image(960, 540, 'galaxy').setScrollFactor(0.15)
 
-    this.game.canvas.style.cursor = 'crosshair' 
-
+    this.game.canvas.style.cursor = 'crosshair'
 
     this.enemies = createEnemiesGroup(this)
     this.flyingEnemies = createFlyingEnemiesGroup(this)
     this.boss = createBossGroup(this)
 
     this.enemySleepAnimators = []
-    
+
     createBoss(this, this.boss, 3712, 5800)
     this.checkCollision = false // Initialize collision check
 
@@ -176,16 +182,30 @@ export default class Vesta extends Phaser.Scene {
     )
 
     // Create map
-    this.map = this.make.tilemap({ key: 'map'})
+    this.map = this.make.tilemap({ key: 'map' })
 
-    const tileset = this.map.addTilesetImage('Floor_Tiles', 'tiles', 32, 32, 1, 2)
-    const wallTileSet = this.map.addTilesetImage('Wall_Tiles', 'wallTiles', 32, 32, 1, 2);
-  
+    const tileset = this.map.addTilesetImage(
+      'Floor_Tiles',
+      'tiles',
+      32,
+      32,
+      1,
+      2
+    )
+    const wallTileSet = this.map.addTilesetImage(
+      'Wall_Tiles',
+      'wallTiles',
+      32,
+      32,
+      1,
+      2
+    )
+
     this.wallLayer = this.map.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.map.createLayer('Lights', wallTileSet, 0, 0)
-    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0);
-    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0);
-    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0);
+    this.asteroidLayer = this.map.createLayer('Floors', tileset, 0, 0)
+    this.alienLayer = this.map.createLayer('Alien Floors', tileset, 0, 0)
+    this.platformLayer = this.map.createLayer('Platforms', tileset, 0, 0)
 
     this.asteroidLayer.setCollisionByProperty({ collides: true })
     this.alienLayer.setCollisionByProperty({ collides: true })
@@ -225,8 +245,7 @@ export default class Vesta extends Phaser.Scene {
       createFlyingEnemy(this, this.flyingEnemies, spawn.x, spawn.y)
     })
 
-    scaleEnemyAttributes(this.enemies, this.flyingEnemies, this.boss);
-
+    scaleEnemyAttributes(this.enemies, this.flyingEnemies, this.boss)
 
     // expand world bounds to entire map not just the camera view
     this.physics.world.setBounds(
@@ -323,8 +342,8 @@ export default class Vesta extends Phaser.Scene {
 
     this.player = createPlayerInside(this, 109, 4580)
 
-    this.player.chaseCount = 0;
-    this.player.bossChase = false;
+    this.player.chaseCount = 0
+    this.player.bossChase = false
 
     this.playerCoordsText = this.add
       .text(16, 100, '', { fontSize: '18px', fill: '#FF0000' })

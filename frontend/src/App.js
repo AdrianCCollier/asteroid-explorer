@@ -95,7 +95,7 @@ function SolarSystem() {
       })
       .then((data) => {
         // Then take the json data returned and set it to variable
-        console.log('YOO Retrieved data inside solar is: ', data)
+        console.log('Made an API call! Retrieved data inside solar is: ', data)
         setAsteroidData(data) // Save the asteroid data in a variable
       })
       .catch((error) => console.error('Error fetching asteroids:', error))

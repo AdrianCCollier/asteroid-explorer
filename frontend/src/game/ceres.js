@@ -59,7 +59,7 @@ import galaxyBackground from './assets/spaceBackground1.png'
 
 // Import Psyche dialogue
 // import CeresDialogue from './assets/sounds/Static_Ceres_Intro.mp3'
-
+import ceresTheme from './assets/sounds/interstellar-space.mp3'
 
 // Import Score system
 import ScoreSystem from './ScoreSystem.js'
@@ -96,6 +96,7 @@ export default class Ceres extends Phaser.Scene {
 
     this.load.image('galaxy', 'assets/Background.jpg')
     // this.load.audio('CeresDialogue', CeresDialogue);
+    this.load.audio('ceresTheme', ceresTheme);
     loadHealthBar(this)
   }
 
@@ -115,6 +116,11 @@ export default class Ceres extends Phaser.Scene {
 
     // Play dialogue when level starts
     // this.CeresDialogue = this.sound.add('CeresDialogue')
+    this.ceresTheme = this.sound.add('ceresTheme', {
+      loop: true,
+      volume: 0.5,
+    });
+    this.ceresTheme.play();
 
     // Check if the player has visited the Vesta level before
     // Play the dialogue only the first time

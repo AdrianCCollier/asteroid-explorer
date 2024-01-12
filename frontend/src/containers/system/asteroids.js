@@ -1,10 +1,4 @@
 /**
- * Asteroids.js - Module for rendering asteroids on a canvas.
- * Provides functions to load images and draw them responsively.
- */
-
-
-/**
  * Asynchronously loads an image from the given source URL.
  * @param {String} src - URL or path to the image file.
  * @returns {Promise<Image>} A promise that resolves with the loaded image.
@@ -19,6 +13,48 @@ function loadAsteroidImage(src) {
   })
 }
 
+async function animateAsteroids(
+  context,
+  canvasHeight,
+  canvasWidth,
+  asteroids,
+  images
+) {
+  let time = 0;
+  const maxGlowSize = 0.55;
+  const minGlowSize = 0.15;
+  const glowSpeed = 0.25;
+
+  const draw = () => {
+    // Calculate current glow size using a sine wave for smooth transition
+    const currentGlowSize =
+      minGlowSize + ((maxGlowSize - minGlowSize) * (Math.sin(time) + 1)) / 2
+    time += glowSpeed
+
+    images.forEach((img, index) => {
+      const asteroid = asteroids[index]
+      const scale = 256 / asteroid.scale
+
+      // Set glow properties
+      context.save()
+      context.shadowBlur = currentGlowSize
+      context.shadowColor = `rgba(0, 210, 255, 0.5)`
+
+      context.drawImage(
+        img,
+        canvasWidth * asteroid.x - scale / 2,
+        canvasHeight * asteroid.y - scale / 2,
+        scale,
+        scale
+      )
+      context.restore()
+    })
+
+    requestAnimationFrame(draw)
+  }
+
+  draw()
+}
 
 /**
  * Draws asteroid images on a given canvas context.
@@ -28,15 +64,15 @@ function loadAsteroidImage(src) {
  */
 async function drawAsteroids(context, canvasHeight, canvasWidth) {
   const asteroids = [
-    { src: './assets/Ryugu.png', x: 0.35, y: 0.6, scale: 11.5 },
+    { src: './assets/Ryugu.png', x: 0.3, y: 0.6, scale: 15 },
     {
       src: './assets/Vesta.png',
-      x: 0.494,
-      y: 0.148,
-      scale: 3.75,
+      x: 0.5,
+      y: 0.15,
+      scale: 2.5,
     },
-    { src: './assets/16Psyche.png', x: 0.68, y: 0.35, scale: 2.5 },
-    { src: './assets/Ceres.png', x: 0.875, y: 0.3, scale: 4 },
+    { src: './assets/16Psyche.png', x: 0.6, y: 0.35, scale: 2.75 },
+    { src: './assets/Ceres.png', x: 0.9, y: 0.45, scale: 1.8 },
   ]
 
   // Load all images and then draw them
@@ -44,17 +80,7 @@ async function drawAsteroids(context, canvasHeight, canvasWidth) {
     asteroids.map((a) => loadAsteroidImage(a.src))
   )
 
-  images.forEach((img, index) => {
-    const asteroid = asteroids[index]
-    const scale = 256 / asteroid.scale
-    context.drawImage(
-      img,
-      canvasWidth * asteroid.x,
-      canvasHeight * asteroid.y,
-      scale,
-      scale
-    )
-  })
+  animateAsteroids(context, canvasHeight, canvasWidth, asteroids, images)
 } // end drawAsteroids
 
-export default drawAsteroids;
+export default drawAsteroids

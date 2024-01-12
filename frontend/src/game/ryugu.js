@@ -60,6 +60,8 @@ import galaxyBackground from './assets/spaceBackground1.png'
 // Import Ryugu dialogue
 // import ryuguDialogue from './assets/sounds/Static_Ryugu_Intro.mp3'
 
+import themeSound from './assets/sounds/11pm.mp3'
+
 // Import Score System
 import ScoreSystem from './ScoreSystem.js'
 
@@ -93,6 +95,7 @@ export default class Ryugu extends Phaser.Scene {
 
     this.load.image('galaxy', 'assets/Background.jpg')
     // this.load.audio('ryuguDialogue', ryuguDialogue)
+    this.load.audio('theme', themeSound);
 
     loadHealthBar(this)
   }
@@ -112,8 +115,11 @@ export default class Ryugu extends Phaser.Scene {
     window.addEventListener('resize', resizeCanvas) // Add event listener for window resize
 
     // Play dialogue when level starts
-    // this.ryuguDialogue = this.sound.add('ryuguDialogue')
-    // this.ryuguDialogue.play()
+    this.themeSound = this.sound.add('theme', {
+      loop: true,
+      volume: 0.75,
+    });
+    this.themeSound.play()
 
     // this.ryuguDialogue = this.sound.add('ryuguDialogue')
 

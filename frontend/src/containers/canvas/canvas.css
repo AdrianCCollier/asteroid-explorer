@@ -28,17 +28,17 @@
 
 /* Explicit custom tooltip placement, some asteroids are close to the canvas edge, this ensures they stay within */
 .asteroid-tooltipFirst {
-    transform: translateX(calc(40%)) translateY(60%);
+    transform: translateX(calc(70%)) translateY(250%);
 }
 .asteroid-tooltipastSecond {
-    transform: translateX(calc(-130% - 10px)) translateY(60%);
+    transform: translateX(calc(125%)) translateY(110%);
 }
 
 .asteroid-tooltipThird {
-    transform: translateX(calc(0% - 40px)) translateY(80%);
+    transform: translateX(calc(195%)) translateY(200%);
 }
 .asteroid-tooltipFourth {
-    transform: translateX(calc(0% - 40px)) translateY(80%);
+    transform: translateX(calc(225%)) translateY(220%);
 }
 
 .asteroid-info-item {
