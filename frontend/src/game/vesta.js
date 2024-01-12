@@ -263,7 +263,7 @@ export default class Vesta extends Phaser.Scene {
     this.shootControl = { canShoot: true } // Initialize shooting control
 
     if (localStorage.getItem('equipped') == '"pistol"') {
-      this.shootCooldown = 800 // Time in ms between allowed shots
+      this.shootCooldown = 225 // Time in ms between allowed shots
       if (
         localStorage.getItem('pistolLevel') == 2 ||
         localStorage.getItem('pistolLevel') == 3
@@ -280,7 +280,7 @@ export default class Vesta extends Phaser.Scene {
         this.shootCooldown = 100 // level 2 rate of fire
       }
     } else if (localStorage.getItem('equipped') == '"ar"') {
-      this.shootCooldown = 250 // Time in ms between allowed shots
+      this.shootCooldown = 125 // Time in ms between allowed shots
       if (
         localStorage.getItem('arLevel') == 2 ||
         localStorage.getItem('arLevel') == 3

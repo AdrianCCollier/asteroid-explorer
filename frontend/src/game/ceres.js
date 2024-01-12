@@ -61,7 +61,7 @@ import galaxyBackground from './assets/spaceBackground1.png'
 // import CeresDialogue from './assets/sounds/Static_Ceres_Intro.mp3'
 import ceresTheme from './assets/sounds/interstellar-space.mp3'
 
-// Import Score system
+// Import Score 
 import ScoreSystem from './ScoreSystem.js'
 
 // import new weapon
@@ -264,7 +264,7 @@ export default class Ceres extends Phaser.Scene {
         this.shootCooldown = 100 // level 2 rate of fire
       }
     } else if (localStorage.getItem('equipped') == '"ar"') {
-      this.shootCooldown = 250 // Time in ms between allowed shots
+      this.shootCooldown = 125 // Time in ms between allowed shots
       if (
         localStorage.getItem('arLevel') == 2 ||
         localStorage.getItem('arLevel') == 3

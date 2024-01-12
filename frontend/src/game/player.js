@@ -314,13 +314,13 @@ export function handlePlayerMovementInside(
   if (leftMouseButton && shootControl.canShoot) {
     if (localStorage.getItem('equipped') == '"pistol"') {
       // Play weapon shooting sound
-      scene.sound.play('stunPistol', { volume: 0.1 })
+      scene.sound.play('stunPistol', { volume: 0.25 })
     } else if (localStorage.getItem('equipped') == '"ar"') {
       // Play weapon shooting sound
-      scene.sound.play('stunAR', { volume: 0.05 })
+      scene.sound.play('stunAR', { volume: 0.1 })
     } else if (localStorage.getItem('equipped') == '"shotgun"') {
       // Play weapon shooting sound
-      scene.sound.play('stunShotgun', { volume: 0.1 })
+      scene.sound.play('stunShotgun', { volume: 0.2 })
     }
 
     // For the pistol and ar, shoot bullets in linear path
@@ -341,7 +341,7 @@ export function handlePlayerMovementInside(
         } else if (shotgunLevel >= 6) {
           randomNumber = Math.random() * 0.2
         } else {
-          randomNumber = Math.random() * 0.6 // Default, very loose shot spread
+          randomNumber = Math.random() * 0.25 // Default, very loose shot spread
         } 
 
         // Determine if the number should be positive or negative (50% chance for each)

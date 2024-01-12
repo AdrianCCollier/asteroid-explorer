@@ -1,5 +1,5 @@
 import Phaser from 'phaser'
-const maxDistance = 1000
+const maxDistance = 1200
 
 // Creates a bullet that varies depending on the current weapon
 export function createBulletInside(scene, player, w, h, a) {
@@ -16,8 +16,8 @@ export function createBulletInside(scene, player, w, h, a) {
     newBulletHeight = 16
   } else if (localStorage.getItem('equipped') == '"ar"') {
     bulletType = 'ARBullet'
-    speed = 18
-    newBulletWidth = 12
+    speed = 14
+    newBulletWidth = 10
     newBulletHeight = 16
   } else if (localStorage.getItem('equipped') == '"shotgun"') {
     bulletType = 'shotgunBullet'
@@ -38,7 +38,7 @@ export function createBulletInside(scene, player, w, h, a) {
   // velocity in x and y direction, dimensions, and sprite
   let bullet = {
     x: player.sprite.x,
-    y: player.sprite.y,
+    y: player.sprite.y - 8,
     distanceTraveled: 0, // Initialize distanceTraveled to 0
     width: w,
     height: h,
@@ -47,7 +47,7 @@ export function createBulletInside(scene, player, w, h, a) {
     velY: velocity.y, // The bullet should not move vertically.
     sprite: scene.physics.add.sprite(
       player.sprite.x,
-      player.sprite.y,
+      player.sprite.y - 8,
       bulletType
     ), // Add bullet sprite to the scene at (bullet_x, bullet_y)
   }

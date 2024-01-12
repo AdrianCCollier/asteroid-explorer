@@ -269,7 +269,7 @@ export default class Psyche extends Phaser.Scene {
         this.shootCooldown = 100 // level 2 rate of fire
       }
     } else if (localStorage.getItem('equipped') == '"ar"') {
-      this.shootCooldown = 250 // Time in ms between allowed shots
+      this.shootCooldown = 125 // Time in ms between allowed shots
       if (
         localStorage.getItem('arLevel') == 2 ||
         localStorage.getItem('arLevel') == 3
