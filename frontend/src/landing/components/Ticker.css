@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap');
+
+
+.ticker-container {
+  overflow: hidden;
+  white-space: nowrap;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+
+.ticker-text {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  color: white;
+  /* padding-left: 20%; */
+  animation: scroll-left 20s linear infinite;
+  text-shadow: 0 0 5px rgba(0, 210, 255, 0.5);
+}
+
+@keyframes scroll-left {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+} 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Header } from '../containers'
 import StartButton from './StartButton'
+import Ticker from './components/Ticker'
 import sound from './chiphead64-11pm.mp3'
 import Background from './Background2.mp4'
 import './Landing.css'
@@ -36,7 +37,7 @@ function Landing() {
       <div className="centered-content">
         <StartButton onClick={startAudioAndNavigate} />
       </div>
-      
+      <Ticker></Ticker>
     </div>
   )
 }

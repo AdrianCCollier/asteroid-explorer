@@ -121,30 +121,30 @@ export default class Ryugu extends Phaser.Scene {
     })
     this.themeSound.play()
 
-    // Create a tutorial message
-    this.tutorialText = this.add
-      .text(0, 300, 'Left Mouse Click to fire', {
-        font: '18px Arial',
-        fill: '#ffffff',
-        backgroundColor: '#000000',
-        padding: {
-          x: 10,
-          y: 5,
-        },
-        border: '1px solid #ffffff',
-      })
-      .setScrollFactor(0)
-      .setDepth(1000)
+    // // Create a tutorial message
+    // this.tutorialText = this.add
+    //   .text(0, 300, 'Left Mouse Click to fire', {
+    //     font: '18px Arial',
+    //     fill: '#ffffff',
+    //     backgroundColor: '#000000',
+    //     padding: {
+    //       x: 10,
+    //       y: 5,
+    //     },
+    //     border: '1px solid #ffffff',
+    //   })
+    //   .setScrollFactor(0)
+    //   .setDepth(1000)
 
-    // Optionally make the text disappear after some time
-    this.time.delayedCall(
-      5000,
-      () => {
-        this.tutorialText.setVisible(false)
-      },
-      [],
-      this
-    )
+    // // Optionally make the text disappear after some time
+    // this.time.delayedCall(
+    //   5000,
+    //   () => {
+    //     this.tutorialText.setVisible(false)
+    //   },
+    //   [],
+    //   this
+    // )
 
     // this.ryuguDialogue = this.sound.add('ryuguDialogue')
 
