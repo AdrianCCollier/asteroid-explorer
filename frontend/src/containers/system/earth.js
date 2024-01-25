@@ -1,7 +1,7 @@
 function loadEarthImage(src) {
   return new Promise((resolve, reject) => {
     const earthImage = new Image()
-    earthImage.src = src // Correctly assign the source here
+    earthImage.src = src 
     earthImage.onload = () => resolve(earthImage)
     earthImage.onerror = reject
   })
@@ -13,10 +13,9 @@ async function drawEarth(context, canvasHeight, canvasWidth) {
   // Load the Earth image
   const earthImage = await loadEarthImage(earthSrc)
 
-  // Set Earth size and position (modify as needed)
   const earthSize = {
-    width: 256, // Example size, adjust as required
-    height: 256, // Example size, adjust as required
+    width: 256, 
+    height: 256, 
   }
 
   const earthPosition = {

@@ -21,7 +21,7 @@ async function animateAsteroids(
   images
 ) {
   let time = 0;
-  const maxGlowSize = 0.55;
+  const maxGlowSize = .85;
   const minGlowSize = 0.15;
   const glowSpeed = 0.25;
 

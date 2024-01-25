@@ -136,15 +136,15 @@ export function createBulletInside(scene, player, w, h, a) {
 
   // Add collision with asteroid layer
   scene.physics.add.collider(bullet.sprite, scene.asteroidLayer, function () {
-    bullet.distanceTraveled = 800
+    bullet.distanceTraveled = maxDistance
   })
   // Add collision with alien layer
   scene.physics.add.collider(bullet.sprite, scene.alienLayer, function () {
-    bullet.distanceTraveled = 800
+    bullet.distanceTraveled = maxDistance
   })
   // Add collision with platform layer
   scene.physics.add.collider(bullet.sprite, scene.platformLayer, function () {
-    bullet.distanceTraveled = 800
+    bullet.distanceTraveled = maxDistance
   })
   return bullet // Return the created bullet object
 }
