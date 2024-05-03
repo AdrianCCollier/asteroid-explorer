@@ -68,8 +68,7 @@ import wallMapJSON from './assets/Maps/Psyche_Walls.json'
 // import background
 import galaxyBackground from './assets/spaceBackground1.png'
 
-// Import Psyche dialogue
-// import PsycheDialogue from './assets/sounds/Static_Psyche_Intro.mp3'
+import ControlsOverlay from './ControlsOverlay.js'
 
 // Import Psyche Theme
 import psycheTheme from './assets/sounds/space-chillout.mp3'
@@ -288,7 +287,7 @@ export default class Psyche extends Phaser.Scene {
     } else if (localStorage.getItem('equipped') == '"shotgun"') {
       this.shootCooldown = 600 // Time in ms between allowed shots
     } else {
-      localStorage.setItem('equipped', JSON.stringify('pistol'))
+      localStorage.setItem('equipped', JSON.stringify('ar'))
       this.shootCooldown = 800 // Time in ms between allowed shots
     }
     // Setup input controls
@@ -417,6 +416,9 @@ export default class Psyche extends Phaser.Scene {
 
     // Creates enemy animations for given scene
     createEnemyAnimations(this, this.player)
+
+    // Display Tutorial Controls for 15 seconds
+    this.overlay = new ControlsOverlay(this)
   } // end create function
 
   update() {

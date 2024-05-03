@@ -7,8 +7,8 @@ class ScoreSystem {
     this.points = savedScore ? parseInt(savedScore, 10) : 0;
 
     // Set up the points display text
-    this.pointsText = this.scene.add.text(0, 0, 'Points: ' + this.points, {
-      fontSize: '32px',
+    this.pointsText = this.scene.add.text(0, 0, 'Score: ' + this.points, {
+      font: '32px Arial',
       fill: '#ffffff',
     });
     this.pointsText.setScrollFactor(0);

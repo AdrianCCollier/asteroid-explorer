@@ -72,6 +72,7 @@ import galaxyBackground from './assets/spaceBackground1.png'
 
 import vestaTheme from './assets/sounds/appulse.mp3'
 
+import ControlsOverlay from './ControlsOverlay.js'
 
 // Import Score System 
 import ScoreSystem from './ScoreSystem.js'
@@ -299,9 +300,12 @@ export default class Vesta extends Phaser.Scene {
     } else if (localStorage.getItem('equipped') == '"shotgun"') {
       this.shootCooldown = 600 // Time in ms between allowed shots
     } else {
-      localStorage.setItem('equipped', JSON.stringify('pistol'))
+      localStorage.setItem('equipped', JSON.stringify('shotgun'))
       this.shootCooldown = 800 // Time in ms between allowed shots
     }
+
+    localStorage.setItem('equipped', JSON.stringify('shotgun'))
+    this.shootCooldown = 800 // Time in ms between allowed shots
 
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -420,6 +424,9 @@ export default class Vesta extends Phaser.Scene {
 
     // Creates enemy animations for given scene
     createEnemyAnimations(this, this.player)
+
+    // Display Tutorial Controls for 15 seconds
+    this.overlay = new ControlsOverlay(this)
   } // end create function
 
   update() {
@@ -475,7 +482,7 @@ export default class Vesta extends Phaser.Scene {
           }
           else if (s == 2){
             localStorage.setItem('ar', JSON.stringify(true));
-            localStorage.setItem('equipped', JSON.stringify("ar"));
+            localStorage.setItem('equipped', JSON.stringify('shotgun'));
           }
 
           // Call functions to handle the game over scenario

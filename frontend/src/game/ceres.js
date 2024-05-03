@@ -64,7 +64,7 @@ import ceresTheme from './assets/sounds/interstellar-space.mp3'
 // Import Score 
 import ScoreSystem from './ScoreSystem.js'
 
-// import new weapon
+import ControlsOverlay from './ControlsOverlay.js'
 
 import { loadHealthBar, loadShieldBar, updateBars } from './health'
 
@@ -101,7 +101,7 @@ export default class Ceres extends Phaser.Scene {
   }
 
   create() {
-    this.physics.world.gravity.y = 9.8 * 0.27 * 150; // Adjusted gravity
+    this.physics.world.gravity.y = 9.8 * 0.27 * 150 // Adjusted gravity
 
     // Handle canvas resizing on window resize
     const canvas = this.game.canvas
@@ -119,8 +119,8 @@ export default class Ceres extends Phaser.Scene {
     this.ceresTheme = this.sound.add('ceresTheme', {
       loop: true,
       volume: 0.5,
-    });
-    this.ceresTheme.play();
+    })
+    this.ceresTheme.play()
 
     // Check if the player has visited the Vesta level before
     // Play the dialogue only the first time
@@ -183,7 +183,7 @@ export default class Ceres extends Phaser.Scene {
       1,
       2
     )
-    
+
     // Create tiled layers
     this.wallLayer = this.map.createLayer('Walls', wallTileSet, 0, 0)
     this.lightLayer = this.map.createLayer('Lights', wallTileSet, 0, 0)
@@ -287,6 +287,9 @@ export default class Ceres extends Phaser.Scene {
       this.shootCooldown = 800 // Time in ms between allowed shots
     }
 
+    localStorage.setItem('equipped', JSON.stringify('ar'))
+    this.shootCooldown = 100 // Time in ms between allowed shots
+
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
 
@@ -326,9 +329,8 @@ export default class Ceres extends Phaser.Scene {
 
     this.player = createPlayerInside(this, 109, 2150)
 
-    this.player.chaseCount = 0;
-    this.player.bossChase = false;
-
+    this.player.chaseCount = 0
+    this.player.bossChase = false
 
     this.playerCoordsText = this.add
       .text(16, 100, '', { fontSize: '18px', fill: '#FF0000' })
@@ -398,12 +400,7 @@ export default class Ceres extends Phaser.Scene {
     this.player.sprite.setCollideWorldBounds(true)
 
     // Set up collider for weapon pickup
-    this.physics.add.collider(
-      this.player.sprite,
-      this.pickUpWeapon,
-      null,
-      this
-    )
+    this.physics.add.collider(this.player.sprite, this.pickUpWeapon, null, this)
 
     // Making sprite invisible so animation can play
     this.player.sprite.alpha = 0
@@ -413,6 +410,9 @@ export default class Ceres extends Phaser.Scene {
 
     // Creates enemy animations for given scene
     createEnemyAnimations(this, this.player)
+
+    // Display Tutorial Controls for 15 seconds
+    this.overlay = new ControlsOverlay(this)
   } // end create function
 
   update() {

@@ -41,7 +41,6 @@ import {
   addObjectToWorld,
 } from './collisions.js'
 
-
 import {
   loadPlayerAnimations,
   createPlayerAnimations,
@@ -59,6 +58,8 @@ import galaxyBackground from './assets/spaceBackground1.png'
 
 // Import Ryugu dialogue
 // import ryuguDialogue from './assets/sounds/Static_Ryugu_Intro.mp3'
+
+import ControlsOverlay from './ControlsOverlay.js'
 
 import themeSound from './assets/sounds/11pm.mp3'
 
@@ -95,13 +96,13 @@ export default class Ryugu extends Phaser.Scene {
 
     this.load.image('galaxy', 'assets/Background.jpg')
     // this.load.audio('ryuguDialogue', ryuguDialogue)
-    this.load.audio('theme', themeSound);
+    this.load.audio('theme', themeSound)
 
     loadHealthBar(this)
   }
 
   create() {
-    this.physics.world.gravity.y = 9.8 * 0.0011 * 20000 // Adjusted gravity
+    this.physics.world.gravity.y = 9.8 * 0.0011 * 25000 // Adjusted gravity
 
     // Handle canvas resizing on window resize
     const canvas = this.game.canvas
@@ -120,41 +121,6 @@ export default class Ryugu extends Phaser.Scene {
       volume: 1,
     })
     this.themeSound.play()
-
-    // // Create a tutorial message
-    // this.tutorialText = this.add
-    //   .text(0, 300, 'Left Mouse Click to fire', {
-    //     font: '18px Arial',
-    //     fill: '#ffffff',
-    //     backgroundColor: '#000000',
-    //     padding: {
-    //       x: 10,
-    //       y: 5,
-    //     },
-    //     border: '1px solid #ffffff',
-    //   })
-    //   .setScrollFactor(0)
-    //   .setDepth(1000)
-
-    // // Optionally make the text disappear after some time
-    // this.time.delayedCall(
-    //   5000,
-    //   () => {
-    //     this.tutorialText.setVisible(false)
-    //   },
-    //   [],
-    //   this
-    // )
-
-    // this.ryuguDialogue = this.sound.add('ryuguDialogue')
-
-    // Check if the player has visited the Ryugu level before
-    // Play the dialogue only the first time
-    // if (localStorage.getItem('RyuguVisited') !== 'true') {
-    //   this.ryuguDialogue.setVolume(0.4);
-    //   this.ryuguDialogue.play()
-    //   localStorage.setItem('RyuguVisited', 'true')
-    // }
 
     // create new Score
     this.scoreManager = new ScoreSystem(this)
@@ -284,7 +250,7 @@ export default class Ryugu extends Phaser.Scene {
         this.shootCooldown = 100 // level 2 rate of fire
       }
     } else if (localStorage.getItem('equipped') == '"ar"') {
-      this.shootCooldown = 125 // Time in ms between allowed shots
+      this.shootCooldown = 600 // Time in ms between allowed shots
       if (
         localStorage.getItem('arLevel') == 2 ||
         localStorage.getItem('arLevel') == 3
@@ -306,6 +272,9 @@ export default class Ryugu extends Phaser.Scene {
       localStorage.setItem('equipped', JSON.stringify('pistol'))
       this.shootCooldown = 800 // Time in ms between allowed shots
     }
+
+    localStorage.setItem('equipped', JSON.stringify('pistol'))
+    this.shootCooldown = 800 // Time in ms between allowed shots
 
     // Setup input controls
     this.cursors = this.input.keyboard.createCursorKeys()
@@ -421,13 +390,15 @@ export default class Ryugu extends Phaser.Scene {
 
     // Creates enemy animations for given scene
     createEnemyAnimations(this, this.player)
+
+    // Show Tutorial controls for 15 seconds
+    this.overlay = new ControlsOverlay(this)
   } // end create function
 
   update() {
-    if (this.player.chaseCount < 0){
-      this.player.chaseCount = 0;
+    if (this.player.chaseCount < 0) {
+      this.player.chaseCount = 0
     }
-
 
     // if the player falls off the map, end the game
     if (this.player.sprite.y > this.map.heightInPixels) {
@@ -552,8 +523,6 @@ export default class Ryugu extends Phaser.Scene {
       this.player.gunSprite.rotation = this.player.sprite.rotation
     }
 
-
-
     let distanceToWeapon = Phaser.Math.Distance.Between(
       this.player.sprite.x,
       this.player.sprite.y
@@ -570,8 +539,6 @@ export default class Ryugu extends Phaser.Scene {
       this.pickupText.setVisible(false)
     }
   }
-
-  
 
   // Displays congratulation message and restarts the level when 'R' is pressed
   showCongratulationScreen() {
