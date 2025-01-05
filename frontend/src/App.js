@@ -5,78 +5,21 @@ import Game from './game/index'
 import Landing from './landing/Landing.jsx'
 import Signin from './landing/Signin.jsx'
 import React, { useEffect, useState, useRef } from 'react'
+import themeSound from './11pm.mp3'
 
 // Styling sheet imports
 import './App.css'
 import './index.css'
 
 // Cutscene to be played the first time only
-import cutscene from './Intro.mp4'
+// import cutscene from './Intro.mp4'
 
-import { useNavigate } from 'react-router-dom'
+// import { useNavigate } from 'react-router-dom'
 
 function ExplorerGame({ startingScene }) {
   return (
     <div>
-      <Game startingScene={startingScene} />
-    </div>
-  )
-}
-
-function Intro() {
-  const videoRef = useRef(null)
-  const [videoEnded, setVideoEnded] = useState(false)
-  const navigate = useNavigate()
-
-  localStorage.setItem('intro', JSON.stringify(true))
-
-  const handleVideoEnd = () => {
-    console.log('ended')
-    setVideoEnded(true)
-  }
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      // After 500 milliseconds (1 second), unmute the video
-      if (videoRef.current) {
-        videoRef.current.muted = false
-      }
-    }, 500)
-
-    // Clear the timeout if the component unmounts before the delay
-    return () => clearTimeout(timeoutId)
-  }, [])
-
-  useEffect(() => {
-    if (videoEnded) {
-      // Navigate to /solarSystem when video ends
-      navigate('/solarSystem')
-    }
-  }, [videoEnded, navigate])
-
-  return (
-    <div
-      className="App"
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100vh',
-      }}
-    >
-      <video
-        ref={videoRef}
-        src={cutscene}
-        autoPlay
-        muted
-        onEnded={handleVideoEnd}
-        style={{
-          width: '80%',
-          height: 'auto',
-          maxWidth: '100%',
-          maxHeight: '100%',
-        }}
-      />
+      <Game startingScene ={startingScene} />
     </div>
   )
 }
@@ -84,11 +27,36 @@ function Intro() {
 function SolarSystem() {
   const [asteroidData, setAsteroidData] = useState(null)
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true)
+  const [isMuted, setIsMuted] = useState(false)
+  const audioRef = useRef(new Audio(themeSound))
 
   useEffect(() => {
+
+    audioRef.current.loop = true
+    audioRef.current.volume = 0.5
+
+    const playAudio = async () => {
+      try {
+        await audioRef.current.play()
+      } catch (error) {
+        console.log('Audio playback failed: ', error)
+      }
+    }
+    playAudio()
+
+    // Clean up: Stop audio when leaving solarSystem view
+    return () => {
+      audioRef.current.pause()
+      audioRef.current.currentTime = 0
+    }
+  }, [])
+
+    useEffect(() => {
+
+ 
     // Fetch the asteroid data from backend/server.js when the component mounts
-    // fetch('http://localhost:3000/api/custom-asteroids') // Fetch from link
-    fetch('https://asteroidexplorer.com/api/custom-asteroids') // AWS deployment endpoint
+    fetch('http://localhost:3000/api/custom-asteroids') // Fetch from link
+    // fetch('https://asteroidexplorer.com/api/custom-asteroids') // AWS deployment endpoint
       .then((response) => {
         // Then take response and return it in json form so it is usable
         return response.json()
@@ -154,8 +122,6 @@ function App() {
             path="/level3"
             element={<ExplorerGame startingScene="Ceres" />}
           />
-
-          <Route path="/intro" element={<Intro />} />
 
           <Route path="/landing" element={<Landing />} />
           <Route path="/solarSystem" element={<SolarSystem />} />
