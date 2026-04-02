@@ -191,7 +191,7 @@ export default class BaseLevel extends Phaser.Scene {
     this.pickupText = this.add.text(300, 100, 'Press E To Pick Up', {
       fontSize: '24px',
       fill: '#FFF',
-    })
+    }).setScrollFactor(0)
     this.pickupText.setVisible(false)
 
     // Input

@@ -49,16 +49,16 @@ class Game extends Component {
       false
     )
 
+    // Size the canvas to fit the viewport at 16:9, no CSS scaling needed
+    const gameWidth = Math.min(1920 * 0.75, window.innerWidth)
+    const gameHeight = Math.round(gameWidth * (9 / 16))
+
     // Phaser settings
     let config = {
       type: Phaser.AUTO,
       parent: 'game-container',
-      width: 1440,
-      height: 810,
-      scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-      },
+      width: gameWidth,
+      height: gameHeight,
       physics: {
         default: 'arcade',
         arcade: {

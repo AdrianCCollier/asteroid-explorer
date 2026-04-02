@@ -192,10 +192,10 @@ export function createPlayerInside(scene, x, y) {
     rotation: null,
     collider: null,
     facing: 'right', // Default facing direction
-    healthContainer: scene.add.sprite(160, 43, 'health_container'),
-    healthBar: scene.add.sprite(170, 43, 'health_bar'),
-    shieldContainer: scene.add.sprite(160, 110, 'shield_container'),
-    shieldBar: scene.add.sprite(191, 111, 'shield_bar'),
+    healthContainer: scene.add.sprite(160, 43, 'health_container').setScrollFactor(0),
+    healthBar: scene.add.sprite(68, 43, 'health_bar').setScrollFactor(0),
+    shieldContainer: scene.add.sprite(160, 110, 'shield_container').setScrollFactor(0),
+    shieldBar: scene.add.sprite(191, 111, 'shield_bar').setScrollFactor(0),
     barOffsets: [160, 43, 191, 43, 160, 110, 191, 111],
     animator: null, // player's current main animation
     shootingAnimator: null, // player's current main animation while shooting

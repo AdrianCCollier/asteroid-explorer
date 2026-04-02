@@ -35,6 +35,7 @@ function CanvasContainer({ asteroids }) {
   ])
 
   const [clickedAsteroidIndex, setClickedAsteroidIndex] = useState(null)
+  const cancelAnimRef = useRef(null)
 
   const calculateAsteroidPositions = (width, height) => {
     return asteroids.map(asteroid => ({

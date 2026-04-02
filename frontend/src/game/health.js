@@ -9,13 +9,6 @@ export function loadShieldBar(scene){
   scene.load.image('shield_container', './assets/sprites/ui/shield_container.png');
 }
 
-// This function activates in Phaser's update() scenes, to keep the Health bar in place as the player moves
-export function updateBars(scene){
-
-  scene.player.healthContainer.x = scene.cameras.main.scrollX + scene.player.barOffsets[0];
-  scene.player.healthContainer.y = scene.cameras.main.scrollY + scene.player.barOffsets[1];
-
-  scene.player.healthBar.x = scene.cameras.main.scrollX + scene.player.barOffsets[2]-123;
-  scene.player.healthBar.y = scene.cameras.main.scrollY + scene.player.barOffsets[3];
-  
-}
+// Bars use setScrollFactor(0) so Phaser keeps them in screen space automatically.
+// No manual position update needed.
+export function updateBars(scene){}
