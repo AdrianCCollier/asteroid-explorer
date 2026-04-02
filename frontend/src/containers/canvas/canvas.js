@@ -1,9 +1,9 @@
 import React, { useRef, useLayoutEffect, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'antd'
-import drawEarth from '../system/Earth.js'
-import drawAsteroids from '../system/Asteroids.js'
-import './Canvas.css'
+import drawEarth from '../system/earth.js'
+import drawAsteroids from '../system/asteroids.js'
+import './canvas.css'
 
 // Function to initialize our canvas container with placeholder values and data
 function CanvasContainer({ asteroids }) {
@@ -71,16 +71,13 @@ function CanvasContainer({ asteroids }) {
     window.addEventListener('resize', resizeCanvas)
     resizeCanvas();
     
-    // eventListener to handle the clicking of an asteroid
-    canvas.addEventListener('click', function (e) {
-      if (!asteroids || asteroids.length < 3) {
-        return
-      } // end if
+    // Click handler stored as a named reference so it can be removed on cleanup
+    const handleClick = (e) => {
+      if (!asteroids || asteroids.length < 3) return
 
       const rect = canvasRef.current.getBoundingClientRect()
       const mouseX = e.clientX - rect.left
       const mouseY = e.clientY - rect.top
-
       const canvasWidth = canvasRef.current.width
       const canvasHeight = canvasRef.current.height
 
@@ -89,37 +86,31 @@ function CanvasContainer({ asteroids }) {
         { x: 0.5, y: 0.15, radius: 35 },
         { x: 0.6, y: 0.35, radius: 25 },
         { x: 0.9, y: 0.45, radius: 45 },
-      ];
+      ]
 
+      for (let i = 0; i < asteroidPositions.length; i++) {
+        const asteroid = asteroidPositions[i]
+        const asteroidX = canvasWidth * asteroid.x
+        const asteroidY = canvasHeight * asteroid.y
+        const distance = Math.sqrt((mouseX - asteroidX) ** 2 + (mouseY - asteroidY) ** 2)
 
-
-      for(let i = 0; i < asteroidPositions.length; i++) {
-        const asteroid = asteroidPositions[i];
-        const asteroidX = canvasWidth * asteroid.x;
-        const asteroidY = canvasHeight * asteroid.y;
-
-        const distance = Math.sqrt(
-          (mouseX - asteroidX) ** 2 + (mouseY - asteroidY) ** 2
-        ); 
-
-        if(distance < asteroid.radius) {
-          console.log(`Asteroid ${i} clicked`);
+        if (distance < asteroid.radius) {
           setAsteroidInformation({
             name: asteroids[i].name,
             diameter: asteroids[i].diameter,
             distanceFromEarth: asteroids[i].distanceFromEarth,
-          });
-          handleAsteroidClick(i);
-          setClickedAsteroidIndex(i);
-          break;
-        } // end if statement
-      } // end for loop
-    }) // end click event listener
+          })
+          handleAsteroidClick(i)
+          setClickedAsteroidIndex(i)
+          break
+        }
+      }
+    }
 
-    // working event listener to resize the canvas
-    // Asteroids will not be displayed after the canvas is resized
-    window.addEventListener('resize', resizeCanvas)
+    canvas.addEventListener('click', handleClick)
+
     return () => {
+      canvas.removeEventListener('click', handleClick)
       window.removeEventListener('resize', resizeCanvas)
     }
   }, [asteroids])

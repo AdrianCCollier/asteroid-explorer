@@ -205,15 +205,23 @@ export function createPlayerInside(scene, x, y) {
     strapAnimator: null, // strap animation
     weaponSprite: null,
     weaponHolsteredSprite: null,
-    jumping: false,
-    doubleJumping: false,
+    jumping: false,       // animation state
+    doubleJumping: false, // animation state
     idle: false,
     walking: false,
     shoot: false,
     unholstering: false,
     holstered: true,
     holstering: false,
-    immovable: true, 
+    immovable: true,
+    // Physics jump state — kept on the player object so it resets
+    // correctly when the scene restarts (avoids stale module-level vars)
+    _jumping: false,
+    _doubleJumping: false,
+    _timer: 0,
+    _spaceUp: true,
+    _falling: false,
+    _frameCount: 0,
   }
 
   player.healthBar.setScale(2)
@@ -232,14 +240,7 @@ export function createPlayerInside(scene, x, y) {
   return player
 }
 
-var stopped = false
-var jumping = false
-var doubleJumping = false
-var timer = 0
-var doubleJumpTimer = 10
-var spaceUp = true
-var falling = false
-var frameCount = 0
+const DOUBLE_JUMP_TIMER = 10
 
 export function handlePlayerMovementInside(
   scene,
@@ -249,234 +250,123 @@ export function handlePlayerMovementInside(
 ) {
   const aKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A)
   const dKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D)
-  const kKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K)
-  const spaceKey = scene.input.keyboard.addKey(
-    Phaser.Input.Keyboard.KeyCodes.SPACE
-  )
+  const spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
   const speed = 200
   const jumpStrength = 300
 
   const leftMouseButton = scene.input.activePointer.leftButtonDown()
-
   const crosshairX = scene.input.mousePointer.x + scene.cameras.main.worldView.x
   const crosshairY = scene.input.mousePointer.y + scene.cameras.main.worldView.y
 
   player.angle = Phaser.Math.Angle.Between(
-    player.sprite.x,
-    player.sprite.y,
-    crosshairX,
-    crosshairY
+    player.sprite.x, player.sprite.y, crosshairX, crosshairY
   )
 
   if (player.sprite.body.velocity.y >= 640) {
     player.sprite.body.velocity.y = 640
   }
 
-  // Handle weapon scrolling
-  // CONTINUE HERE
-  // Define the list of weapons and current weapon
-  // const weapons = ['pistol', 'ar', 'shotgun']
-  // // console.log(weapons)
-  // if (!scene.currentWeapon) {
-  //   scene.currentWeapon =
-  //     weapons.find((weapon) => localStorage.getItem(weapon) === 'true') ||
-  //     'pistol'
-  // }
-
-  // // Add event listener for weapon scrolling
-  // scene.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
-  //   let currentWeaponIndex = weapons.indexOf(scene.currentWeapon)
-
-  //   // Loop through weapons based on scroll direction
-  //   do {
-  //     if (deltaY > 0) {
-  //       // Scroll down
-  //       currentWeaponIndex = (currentWeaponIndex + 1) % weapons.length
-  //     } else {
-  //       // Scroll up
-  //       currentWeaponIndex =
-  //         (currentWeaponIndex - 1 + weapons.length) % weapons.length
-  //     }
-
-  //     // Check if the next weapon is unlocked
-  //     let nextWeapon = weapons[currentWeaponIndex]
-  //     if (localStorage.getItem(nextWeapon) === 'true') {
-  //       scene.currentWeapon = nextWeapon
-  //       console.log('Weapon changed to:', scene.currentWeapon)
-  //       localStorage.setItem('equipped', JSON.stringify(scene.currentWeapon))
-  //       // need to update local storage key value pair as: equipped = "pistol" or equipped = "ar"
-  //       break
-  //     }
-  //   } while (currentWeaponIndex !== weapons.indexOf(scene.currentWeapon))
-  // })
-
-  // Conditionally adjust weapon volume and sound effect
+  // Shooting
   if (leftMouseButton && shootControl.canShoot) {
-    if (localStorage.getItem('equipped') == '"pistol"') {
-      // Play weapon shooting sound
+    const equipped = localStorage.getItem('equipped')
+    if (equipped === '"pistol"') {
       scene.sound.play('stunPistol', { volume: 0.25 })
-    } else if (localStorage.getItem('equipped') == '"ar"') {
-      // Play weapon shooting sound
+    } else if (equipped === '"ar"') {
       scene.sound.play('stunAR', { volume: 0.1 })
-    } else if (localStorage.getItem('equipped') == '"shotgun"') {
-      // Play weapon shooting sound
+    } else if (equipped === '"shotgun"') {
       scene.sound.play('stunShotgun', { volume: 0.2 })
     }
 
-    // For the pistol and ar, shoot bullets in linear path
-    if (localStorage.getItem('equipped') != '"shotgun"') {
-      let bullet = createBulletInside(scene, player, 20, 20, player.angle)
-      scene.bullets.push(bullet)
-    // For the shotgun, generate 6 bullets that will spray to achieve a shotgun effect
+    if (equipped !== '"shotgun"') {
+      scene.bullets.push(createBulletInside(scene, player, 20, 20, player.angle))
     } else {
-      let shotgunLevel = parseInt(localStorage.getItem('shotgunLevel')) || 1
-      for (var i = 0; i < 6; i++) {
-        // Generate a random number between 0 and 1
-        let randomNumber
-        // Adjust the spread based on the shotgun level
-        if (shotgunLevel === 2 || shotgunLevel === 3) {
-          randomNumber = Math.random() * 0.5;
-        } else if (shotgunLevel === 4 || shotgunLevel === 5) {
-          randomNumber = Math.random() * 0.3
-        } else if (shotgunLevel >= 6) {
-          randomNumber = Math.random() * 0.2
-        } else {
-          randomNumber = Math.random() * 0.25 // Default, very loose shot spread
-        } 
-
-        // Determine if the number should be positive or negative (50% chance for each)
-        let signedNumber = Math.random() < 0.5 ? randomNumber : -randomNumber
-
-        console.log(signedNumber)
-        let bullet = createBulletInside(
-          scene,
-          player,
-          20,
-          20,
-          player.angle + signedNumber
-        )
-        scene.bullets.push(bullet)
+      const shotgunLevel = parseInt(localStorage.getItem('shotgunLevel')) || 1
+      const spreadMap = { 2: 0.5, 3: 0.5, 4: 0.3, 5: 0.3 }
+      const spread = shotgunLevel >= 6 ? 0.2 : (spreadMap[shotgunLevel] ?? 0.25)
+      for (let i = 0; i < 6; i++) {
+        const offset = (Math.random() < 0.5 ? 1 : -1) * Math.random() * spread
+        scene.bullets.push(createBulletInside(scene, player, 20, 20, player.angle + offset))
       }
     }
+
     shootControl.canShoot = false
-    setTimeout(() => {
-      shootControl.canShoot = true
-    }, shootCooldown)
+    setTimeout(() => { shootControl.canShoot = true }, shootCooldown)
     scene.player.shoot = true
   } else {
     if (shootControl.canShoot) scene.player.shoot = false
   }
 
-  // Move left
+  // Horizontal movement
   if (aKey.isDown) {
     player.sprite.setVelocityX(-speed)
-
-    // Only updates the direction if the dKey hasn't been pressed
-    if (!dKey.isDown) player.facing = 'left' // Update facing direction
+    if (!dKey.isDown) player.facing = 'left'
   }
-
-  // Move right
   if (dKey.isDown) {
     player.sprite.setVelocityX(speed)
-
-    // Only updates the direction if the aKey hasn't been pressed
-    if (!aKey.isDown) player.facing = 'right' // Update facing direction
+    if (!aKey.isDown) player.facing = 'right'
   }
+  if (!aKey.isDown && !dKey.isDown) player.sprite.setVelocityX(0)
+  player.walking = aKey.isDown || dKey.isDown
 
-  // Not Moving
-  if (!aKey.isDown && !dKey.isDown) {
-    player.sprite.setVelocityX(0)
-  }
+  // Jumping — physics state lives on the player object so it resets
+  // cleanly when the scene is destroyed and recreated
+  const vy = player.sprite.body.velocity.y
+  if (vy < 0) player._falling = false
+  else if (vy > 0) player._falling = true
 
-  // Checking to see if player is walking in general
-  if (aKey.isDown || dKey.isDown) {
-    player.walking = true
-  } else {
-    player.walking = false
-  }
+  if (vy > 0) player.jumping = true
 
-  // JUMPING:
-
-  if (player.sprite.body.velocity.y < 0) falling = false
-  else if (player.sprite.body.velocity.y > 0) falling = true
-
-  if (player.sprite.body.velocity.y > 0) {
-    player.jumping = true
-  }
-
-  if (spaceKey.isDown && !jumping) {
-    if (player.sprite.body.velocity.y == 0) {
-      //  Normal Jump
+  if (spaceKey.isDown && !player._jumping) {
+    if (vy === 0) {
+      // Normal jump
       scene.sound.play('jump', { volume: 0.04 })
-
       player.sprite.setVelocityY(-jumpStrength)
-
-      jumping = true
+      player._jumping = true
       player.jumping = true
-
-      doubleJumping = false
+      player._doubleJumping = false
       player.doubleJumping = false
-
-      spaceUp = false
-
-      timer = 0
+      player._spaceUp = false
+      player._timer = 0
     } else {
-      // Double Jump
+      // Double jump
       scene.sound.play('boost', { volume: 0.024 })
-
       player.sprite.setVelocityY(-jumpStrength)
-
-      doubleJumping = true
+      player._doubleJumping = true
       player.doubleJumping = true
-
-      spaceUp = false
-
-      falling = false
-      jumping = true
+      player._spaceUp = false
+      player._falling = false
+      player._jumping = true
     }
   }
 
-  if (!spaceKey.isDown) {
-    spaceUp = true
-  }
+  if (!spaceKey.isDown) player._spaceUp = true
 
-  if (player.sprite.body.velocity.y == 0 && falling) {
+  if (vy === 0 && player._falling) {
     player.jumping = false
     player.doubleJumping = false
   } else {
-    timer += 1
-    if (
-      spaceKey.isDown &&
-      timer > doubleJumpTimer &&
-      !doubleJumping &&
-      spaceUp
-    ) {
+    player._timer += 1
+    if (spaceKey.isDown && player._timer > DOUBLE_JUMP_TIMER && !player._doubleJumping && player._spaceUp) {
       scene.sound.play('boost', { volume: 0.024 })
-
       player.sprite.setVelocityY(-jumpStrength)
-
-      doubleJumping = true
+      player._doubleJumping = true
       player.doubleJumping = true
-
-      spaceUp = false
-
-      falling = false
-      jumping = true
+      player._spaceUp = false
+      player._falling = false
+      player._jumping = true
     }
   }
 
-  if (player.sprite.body.velocity.y == 0 && falling && spaceUp) {
-    jumping = false
-  }
+  if (vy === 0 && player._falling && player._spaceUp) player._jumping = false
 
-  if (player.sprite.body.velocity.y == 0) {
-    frameCount += 1
-    if (frameCount > 4) {
-      falling = true
+  if (vy === 0) {
+    player._frameCount += 1
+    if (player._frameCount > 4) {
+      player._falling = true
       player.jumping = false
     }
   } else {
-    frameCount = 0
+    player._frameCount = 0
   }
 }
 

@@ -41,11 +41,8 @@ const CACHE_FILE = path.join(__dirname, 'asteroidsCache.json')
 // Import database/database.js, which encapsulates database connection code
 const { connectToDatabase, db } = require('./database/database')
 
-connectToDatabase()
-
-// Testing only, get list of current users
-app.get('/users', (req, res) => {
-  res.json(users)
+connectToDatabase().catch((err) => {
+  console.warn('MongoDB unavailable, continuing without database:', err.message)
 })
 
 // Account creation, submits username, along with salted/hashed password
@@ -63,25 +60,7 @@ app.post('/users', async (req, res) => {
   }
 })
 
-// If credentials exist, redirect to homepage
-app.post('/users/login', async (req, res) => {
-  const user = users.find((user) => (user.name = req.body.name))
-
-  if (user == null) {
-    return res.status(400).send('No User Found')
-  }
-  try {
-    if (await bcrypt.compare(req.body.password, user.password)) {
-      res.send('Success')
-    } else {
-      res.send('Not Allowed')
-    }
-  } catch {
-    res.status(500).send()
-  }
-})
-
-// Alternative register endpoint
+// Register endpoint
 app.post('/api/register', async (req, res) => {
   try {
     const database = await connectToDatabase()

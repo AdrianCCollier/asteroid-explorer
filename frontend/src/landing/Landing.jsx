@@ -4,7 +4,7 @@ import StartButton from './StartButton'
 import Ticker from './components/Ticker'
 import sound from './chiphead64-11pm.mp3'
 import Background from './Background2.mp4'
-import './Landing.css'
+import './landing.css'
 import { useNavigate } from 'react-router'
 
 function Landing() {
@@ -21,11 +21,7 @@ function Landing() {
 
   const startAudioAndNavigate = () => {
     setAudioStarted(true)
-  
-
-  const introProgress = localStorage.getItem('intro');
-  const route = introProgress !== null ? '/solarSystem' : '/intro';
-  navigate(route);
+    navigate('/solarSystem')
   }
   return (
     <div className="landing">

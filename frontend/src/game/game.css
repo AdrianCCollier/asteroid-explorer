@@ -1,30 +1,15 @@
-/* The Styling for game.css only deals with resizing the Phaser canvas window and adjusting its dimensions and positioning */
+/* Scale Manager handles all canvas sizing — no manual canvas rules needed */
 
 body {
     background-color: black;
-}
-#phaser-canvas-tall{
-    position: absolute;
-    width: 100%;
-    left: 0px;
-    top: 50%;
-    transform: translate(0%, -50%);
-}
-
-#phaser-canvas-wide{
-    position: absolute;
-    height: 75%;
-    top: 12%;
-    left: 50%;
-    transform: translate(-50%);
 }
 
 .gameContainer {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 100vw; 
-    height: 100vh; 
-    overflow: hidden; 
-    background-color: #0024; 
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #000;
 }

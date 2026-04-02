@@ -4,14 +4,13 @@ import Vesta from './vesta.js'
 import Psyche from './psyche.js'
 import Ceres from './ceres.js'
 
-import Level1Scene from './level1.js'
-import ConfirmationScene from './confirmationScene.js'
 import GameOverScene from './gameOverScene.js'
 import WinScene from './winScene.js'
 import PauseScene from './pause.js'
 
-import React, { useRef, Component } from 'react'
+import React, { Component } from 'react'
 import Phaser from 'phaser'
+import './game.css'
 
 class Game extends Component {
   game = null
@@ -25,22 +24,16 @@ class Game extends Component {
     // Conditionally load a different asteroid based on the URL endpoint
     switch (startingScene) {
       case 'Ryugu':
-        scenes = [Ryugu, ConfirmationScene, GameOverScene, WinScene, PauseScene]
+        scenes = [Ryugu, GameOverScene, WinScene, PauseScene]
         break
       case 'Vesta':
-        scenes = [Vesta, ConfirmationScene, GameOverScene, WinScene, PauseScene]
+        scenes = [Vesta, GameOverScene, WinScene, PauseScene]
         break
       case 'Psyche':
-        scenes = [
-          Psyche,
-          ConfirmationScene,
-          GameOverScene,
-          WinScene,
-          PauseScene,
-        ]
+        scenes = [Psyche, GameOverScene, WinScene, PauseScene]
         break
       case 'Ceres':
-        scenes = [Ceres, ConfirmationScene, GameOverScene, WinScene, PauseScene]
+        scenes = [Ceres, GameOverScene, WinScene, PauseScene]
         break
       default:
         scenes = [GameOverScene] // default case
@@ -59,8 +52,13 @@ class Game extends Component {
     // Phaser settings
     let config = {
       type: Phaser.AUTO,
-      width: 1920 * 0.75,
-      height: 1080 * 0.75,
+      parent: 'game-container',
+      width: 1440,
+      height: 810,
+      scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+      },
       physics: {
         default: 'arcade',
         arcade: {
@@ -82,7 +80,7 @@ class Game extends Component {
   // renders the game inside of a div called game-container
   render() {
     return (
-      <div className="gameContainer">
+      <div id="game-container" className="gameContainer">
       </div>
     )
   }

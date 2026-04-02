@@ -14,6 +14,8 @@ class GameOverScene extends Phaser.Scene {
   }
 
   create() {
+      this.cameras.main.fadeIn(400, 0, 0, 0)
+
       // Adding a semi-transparent background
       const rect = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, 400, 200, 0x000000);
       rect.setAlpha(0.8);
