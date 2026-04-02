@@ -17,11 +17,7 @@ import './index.css'
 // import { useNavigate } from 'react-router-dom'
 
 function ExplorerGame({ startingScene }) {
-  return (
-    <div>
-      <Game startingScene ={startingScene} />
-    </div>
-  )
+  return <Game startingScene={startingScene} />
 }
 
 function SolarSystem() {
