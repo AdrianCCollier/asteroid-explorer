@@ -15,12 +15,15 @@ import {
   createEnemiesGroup,
   createFlyingEnemiesGroup,
   createBossGroup,
+  createShooterEnemiesGroup,
   createEnemyInside,
   handleEnemyMovementInside,
   createFlyingEnemy,
   handleFlyingEnemyMovement,
   createBoss,
   handleBossMovement,
+  createShooterEnemy,
+  handleShooterEnemyMovement,
   scaleEnemyAttributes,
 } from './enemy.js'
 
@@ -95,6 +98,9 @@ export default class BaseLevel extends Phaser.Scene {
     this.load.tilemapTiledJSON('wallMap', wallMapJSON)
     this.load.image('galaxy', 'assets/Background.jpg')
     this.load.audio(themeKey, themeSound)
+    if (this.levelConfig.bossThemeKey) {
+      this.load.audio(this.levelConfig.bossThemeKey, this.levelConfig.bossThemeSound)
+    }
 
     loadHealthBar(this)
     loadShieldBar(this)
@@ -106,6 +112,7 @@ export default class BaseLevel extends Phaser.Scene {
 
     this.levelComplete = false
     this.bullets = []
+    this.killCount = 0
 
     this.physics.world.gravity.y = gravity
 
@@ -114,6 +121,16 @@ export default class BaseLevel extends Phaser.Scene {
     // Theme music
     this.levelTheme = this.sound.add(themeKey, { loop: true, volume: themeVolume })
     this.levelTheme.play()
+    this.bossTheme = null
+
+    // Transition to boss music the first time the boss activates
+    this.events.once('bossActivated', () => {
+      this.tweens.add({ targets: this.levelTheme, volume: 0, duration: 1000, onComplete: () => this.levelTheme.stop() })
+      if (this.levelConfig.bossThemeKey) {
+        this.bossTheme = this.sound.add(this.levelConfig.bossThemeKey, { loop: true, volume: 0.8 })
+        this.bossTheme.play()
+      }
+    })
 
     // Score
     this.scoreManager = new ScoreSystem(this)
@@ -130,6 +147,7 @@ export default class BaseLevel extends Phaser.Scene {
     this.enemies = createEnemiesGroup(this)
     this.flyingEnemies = createFlyingEnemiesGroup(this)
     this.boss = createBossGroup(this)
+    this.shooterEnemies = createShooterEnemiesGroup(this)
     this.enemySleepAnimators = []
 
     createBoss(this, this.boss, bossSpawn.x, bossSpawn.y)
@@ -161,25 +179,33 @@ export default class BaseLevel extends Phaser.Scene {
     this.physics.add.collider(this.flyingEnemies, this.alienLayer)
     this.physics.add.collider(this.boss, this.asteroidLayer)
     this.physics.add.collider(this.boss, this.alienLayer)
+    this.physics.add.collider(this.shooterEnemies, this.asteroidLayer)
+    this.physics.add.collider(this.shooterEnemies, this.alienLayer)
+    this.physics.add.collider(this.shooterEnemies, this.platformLayer)
 
     // Spawn enemies from tiles marked in the Tiled map
     this.spawnLayer = this.map.createLayer('Spawns', tileset, 0, 0)
     this.spawnWalkingEnemies = []
     this.spawnFlyingEnemies = []
 
+    this.spawnShooterEnemies = []
+
     this.spawnLayer.forEachTile(function (tile) {
       if (tile.properties.spawn == true) {
         const x = tile.pixelX + 16
         const y = tile.pixelY + 32
-        if (Math.random() < 0.5) this.spawnWalkingEnemies.push({ x, y })
-        else this.spawnFlyingEnemies.push({ x, y })
+        const roll = Math.random()
+        if (roll < 0.34) this.spawnWalkingEnemies.push({ x, y })
+        else if (roll < 0.67) this.spawnFlyingEnemies.push({ x, y })
+        else this.spawnShooterEnemies.push({ x, y })
       }
     }, this)
 
     this.spawnWalkingEnemies.forEach((s) => createEnemyInside(this, this.enemies, s.x, s.y))
     this.spawnFlyingEnemies.forEach((s) => createFlyingEnemy(this, this.flyingEnemies, s.x, s.y))
+    this.spawnShooterEnemies.forEach((s) => createShooterEnemy(this, this.shooterEnemies, s.x, s.y))
 
-    scaleEnemyAttributes(this.enemies, this.flyingEnemies, this.boss)
+    scaleEnemyAttributes(this.enemies, this.flyingEnemies, this.boss, this.shooterEnemies)
 
     this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels)
 
@@ -215,6 +241,7 @@ export default class BaseLevel extends Phaser.Scene {
     this.physics.add.collider(this.player.sprite, this.enemies, handlePlayerEnemyCollision, null, this)
     this.physics.add.collider(this.player.sprite, this.flyingEnemies, handlePlayerEnemyCollision, null, this)
     this.physics.add.collider(this.player.sprite, this.boss, handlePlayerEnemyCollision, null, this)
+    this.physics.add.collider(this.player.sprite, this.shooterEnemies, handlePlayerEnemyCollision, null, this)
 
     // Camera
     this.cameras.main.startFollow(this.player.sprite)
@@ -235,14 +262,18 @@ export default class BaseLevel extends Phaser.Scene {
     if (this.player.chaseCount < 0) this.player.chaseCount = 0
 
     // Player fell off the map
-    if (this.player.sprite.y > this.map.heightInPixels) {
+    if (this.player.sprite.y >= this.map.heightInPixels - 80) {
       this.bullets = []
       this.levelComplete = true
       this.cameras.main.fadeOut(400, 0, 0, 0)
       this.cameras.main.once('camerafadeoutcomplete', () => {
         this.scene.pause()
         this.scene.stop()
-        this.scene.launch('GameOverScene')
+        this.scene.launch('GameOverScene', {
+          gameScene: this.scene.key,
+          score: localStorage.getItem('playerPoints') || '0',
+          kills: this.killCount,
+        })
       })
       return
     }
@@ -253,6 +284,10 @@ export default class BaseLevel extends Phaser.Scene {
     })
     this.flyingEnemies.getChildren().forEach((enemy) => {
       handleFlyingEnemyMovement(this, enemy)
+      enemy.setDepth(2)
+    })
+    this.shooterEnemies.getChildren().forEach((enemy) => {
+      handleShooterEnemyMovement(this, enemy)
       enemy.setDepth(2)
     })
     this.boss.getChildren().forEach((enemy) => {
@@ -277,7 +312,7 @@ export default class BaseLevel extends Phaser.Scene {
     updateBars(this)
 
     handlePlayerMovementInside(this, this.player, this.shootControl, this.shootCooldown)
-    handleBulletMovements(this.bullets, this.enemies, this.flyingEnemies, this.boss, this)
+    handleBulletMovements(this.bullets, this.enemies, this.flyingEnemies, this.boss, this, this.shooterEnemies)
 
     // Gun sprite faces the same direction as the player
     this.player.gunSprite.setTexture(
@@ -293,9 +328,10 @@ export default class BaseLevel extends Phaser.Scene {
       )
     ) {
       this.weapon.sprite.setVisible(false)
+      this.weapon.pickedUp = true
       this.player.gunSprite.setVisible(true)
-      this.player.hasWeapon = false
-      this.player.canShoot = false
+      this.player.hasWeapon = true
+      this.player.canShoot = true
     }
 
     // Keep gun sprite glued to player
@@ -306,14 +342,18 @@ export default class BaseLevel extends Phaser.Scene {
       this.player.gunSprite.rotation = this.player.sprite.rotation
     }
 
-    // Show pickup prompt when player is near the weapon
-    const distanceToWeapon = Phaser.Math.Distance.Between(
-      this.player.sprite.x,
-      this.player.sprite.y,
-      this.weapon.sprite.x,
-      this.weapon.sprite.y
-    )
-    this.pickupText.setVisible(distanceToWeapon < 50)
+    // Show pickup prompt when player is near the weapon (and hasn't picked it up yet)
+    if (!this.weapon.pickedUp) {
+      const distanceToWeapon = Phaser.Math.Distance.Between(
+        this.player.sprite.x,
+        this.player.sprite.y,
+        this.weapon.sprite.x,
+        this.weapon.sprite.y
+      )
+      this.pickupText.setVisible(distanceToWeapon < 50)
+    } else {
+      this.pickupText.setVisible(false)
+    }
   }
 
   // Determine shoot cooldown from localStorage weapon state.
@@ -358,11 +398,17 @@ export default class BaseLevel extends Phaser.Scene {
       localStorage.setItem('equipped', JSON.stringify('ar'))
     }
 
+    if (this.bossTheme && this.bossTheme.isPlaying) {
+      this.tweens.add({ targets: this.bossTheme, volume: 0, duration: 400, onComplete: () => this.bossTheme.stop() })
+    }
     this.cameras.main.fadeOut(400, 0, 0, 0)
     this.cameras.main.once('camerafadeoutcomplete', () => {
       this.scene.pause()
       this.scene.stop()
-      this.scene.launch('WinScene')
+      this.scene.launch('WinScene', {
+        score: localStorage.getItem('playerPoints') || '0',
+        kills: this.killCount,
+      })
     })
   }
 }

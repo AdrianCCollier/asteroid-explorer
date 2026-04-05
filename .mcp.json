@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"]
+    },
+    "asteroid-explorer": {
+      "command": "node",
+      "args": ["./mcp-server/index.js"]
+    }
+  }
+}

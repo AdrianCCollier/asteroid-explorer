@@ -1,64 +1,123 @@
 
-.frontend__containers__canvas{
-    position: absolute;
-    top: 2%;
-    left: 0%;
-}
-
-
-/* Styling and general placement of tooltip appearance when an asteroid is clicked */
-.asteroid-tooltipFirst,
-.asteroid-tooltipastSecond,
-.asteroid-tooltipThird,
-.asteroid-tooltipFourth {
-    display: flex;
-    flex-direction: column;
-    width: 350px;
-    height: 150px;
-    color: #ffff;
-    text-align: center;
-    border-radius: 2rem;
-    position: absolute;
-    transform: translateX( -50% );
-    background: rgba( 225, 255, 255, 0.09 );
-    backdrop-filter: blur( 25px );
-    align-items: center;
-    justify-content: center;
-}
-
-/* Explicit custom tooltip placement, some asteroids are close to the canvas edge, this ensures they stay within */
-.asteroid-tooltipFirst {
-    transform: translateX(calc(70%)) translateY(250%);
-}
-.asteroid-tooltipastSecond {
-    transform: translateX(calc(125%)) translateY(110%);
-}
-
-.asteroid-tooltipThird {
-    transform: translateX(calc(195%)) translateY(200%);
-}
-.asteroid-tooltipFourth {
-    transform: translateX(calc(225%)) translateY(220%);
-}
-
-.asteroid-info-item {
-    margin-bottom: 10px;
-    font-family: var( --font-family );
-}
-
-.asteroid-info-label {
-    margin-bottom: 10px;
-    margin-top: 2px;
-    font-size: 20px;
-    font-family: var( --font-family );
-    font-weight: 600;
-}
-
-.startGame {
-    background-color: #00BE48;
-    border: none;
+.frontend__containers__canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
 }
 
 #frontend__containers__canvas__init {
-    position: absolute;
+  display: block;
+}
+
+/* Mission Briefing Panel */
+.mission-brief-panel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  background: rgba(2, 8, 20, 0.92);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 210, 255, 0.35);
+  border-radius: 1.25rem;
+  padding: 2rem 2rem 1.5rem;
+  color: #e0f4ff;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow:
+    0 0 0 1px rgba(0, 210, 255, 0.08),
+    0 0 40px rgba(0, 210, 255, 0.18),
+    0 0 100px rgba(0, 0, 0, 0.7);
+  animation: briefSlideIn 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes briefSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -46%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.mission-brief-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: rgba(0, 210, 255, 0.5);
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.mission-brief-close:hover {
+  color: rgba(0, 210, 255, 1);
+}
+
+.mission-brief-zone {
+  font-family: monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.25em;
+  color: rgba(0, 210, 255, 0.55);
+  text-transform: uppercase;
+}
+
+.mission-brief-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #ffffff;
+  text-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+}
+
+.mission-brief-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-family: monospace;
+  font-size: 0.82rem;
+  color: rgba(160, 210, 240, 0.8);
+  border-left: 2px solid rgba(0, 210, 255, 0.2);
+  padding-left: 0.75rem;
+}
+
+.mission-brief-difficulty {
+  font-size: 1.15rem;
+  color: #ffd700;
+  letter-spacing: 0.2em;
+  text-shadow: 0 0 8px rgba(255, 200, 0, 0.4);
+}
+
+.mission-brief-launch {
+  margin-top: 0.5rem;
+  background: linear-gradient(135deg, rgba(0, 200, 100, 0.9), rgba(0, 140, 70, 0.9));
+  border: 1px solid rgba(0, 255, 130, 0.45);
+  border-radius: 0.6rem;
+  color: #fff;
+  font-family: monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  padding: 0.7rem 0;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.1s;
+}
+
+.mission-brief-launch:hover {
+  background: linear-gradient(135deg, rgba(0, 255, 120, 0.95), rgba(0, 200, 90, 0.95));
+  box-shadow: 0 0 24px rgba(0, 255, 120, 0.4), 0 0 6px rgba(0, 255, 120, 0.3);
+  transform: translateY(-1px);
+}
+
+.mission-brief-launch:active {
+  transform: translateY(0);
 }

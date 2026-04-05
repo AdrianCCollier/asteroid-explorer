@@ -826,12 +826,6 @@ export function createEnemyAnimations(scene){
     frameRate: 8,
     repeat: 0,
   })
-  scene.anims.create({
-    key: 'boss_alien_good',
-    frames: scene.anims.generateFrameNumbers('boss_good'),
-    frameRate: 8,
-    repeat: -1,
-  })
 }
 
 
@@ -913,4 +907,27 @@ export function updateBossEnemyAnimations(scene, enemy){
 
   enemy.animator.x = enemy.x; // updates animation position
   enemy.animator.y = enemy.y; // updates animation position
+}
+
+
+export function createShooterEnemyAnimator(scene, enemy) {
+  enemy.animator = scene.add.sprite(enemy.x, enemy.y, 'flying_walk').setDepth(1)
+  enemy.animator.setTint(0xaa44ff) // Purple tint to distinguish from other enemy types
+  enemy.animator.setScale(1.5)
+}
+
+export function updateShooterEnemyAnimations(scene, enemy) {
+  enemy.alpha = 0
+  enemy.animator.setDepth(1)
+  enemy.animator.x = enemy.x
+  enemy.animator.y = enemy.y
+  enemy.animator.setFlipX(enemy.direction < 0)
+  enemy.animator.setScale(1.5)
+  enemy.animator.setTint(0xaa44ff)
+
+  if (enemy.isAiming) {
+    enemy.animator.anims.play('flying_alien_agro', true)
+  } else {
+    enemy.animator.anims.play('flying_alien_walking', true)
+  }
 }

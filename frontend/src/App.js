@@ -23,17 +23,16 @@ function ExplorerGame({ startingScene }) {
 function SolarSystem() {
   const [asteroidData, setAsteroidData] = useState(null)
   const [showWelcomeScreen, setShowWelcomeScreen] = useState(true)
-  const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef(new Audio(themeSound))
 
   useEffect(() => {
-
-    audioRef.current.loop = true
-    audioRef.current.volume = 0.5
+    const audio = audioRef.current
+    audio.loop = true
+    audio.volume = 0.5
 
     const playAudio = async () => {
       try {
-        await audioRef.current.play()
+        await audio.play()
       } catch (error) {
         console.log('Audio playback failed: ', error)
       }
@@ -42,8 +41,8 @@ function SolarSystem() {
 
     // Clean up: Stop audio when leaving solarSystem view
     return () => {
-      audioRef.current.pause()
-      audioRef.current.currentTime = 0
+      audio.pause()
+      audio.currentTime = 0
     }
   }, [])
 

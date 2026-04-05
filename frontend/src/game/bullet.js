@@ -34,22 +34,26 @@ export function createBulletInside(scene, player, w, h, a) {
     y: Math.sin(a) * speed,
   }
 
+  // Spawn bullet at the gun barrel tip — each weapon has a different barrel length
+  const barrelDist = localStorage.getItem('equipped') === '"pistol"' ? 30
+    : localStorage.getItem('equipped') === '"ar"' ? 42
+    : localStorage.getItem('equipped') === '"shotgun"' ? 52
+    : 30
+  const spawnX = player.sprite.x + Math.cos(a) * barrelDist
+  const spawnY = player.sprite.y + Math.sin(a) * barrelDist
+
   // Creating a bullet object with properties like position,
   // velocity in x and y direction, dimensions, and sprite
   let bullet = {
-    x: player.sprite.x,
-    y: player.sprite.y - 8,
+    x: spawnX,
+    y: spawnY,
     distanceTraveled: 0, // Initialize distanceTraveled to 0
     width: w,
     height: h,
     angle: a,
     velX: velocity.x, // The bullet should move horizontally at a constant speed.
     velY: velocity.y, // The bullet should not move vertically.
-    sprite: scene.physics.add.sprite(
-      player.sprite.x,
-      player.sprite.y - 8,
-      bulletType
-    ), // Add bullet sprite to the scene at (bullet_x, bullet_y)
+    sprite: scene.physics.add.sprite(spawnX, spawnY, bulletType),
   }
 
   // Set the bullet's velocity
@@ -75,7 +79,6 @@ export function createBulletInside(scene, player, w, h, a) {
     scene.boss,
     function (bulletSprite, alien) {
       alien.animator.setTint(0xff7e87) // Tints the alien red for a frame showing damage
-      console.log('boss got shot lol, increase score here by 20')
       scene.scoreManager.increasePoints(20)
 
       // for now, store all points into local storage
@@ -98,18 +101,8 @@ export function createBulletInside(scene, player, w, h, a) {
 
       // Check if the enemy is dead
       if (alien.health <= 0) {
-        // Remove the enemy if health is 0 or less
-
-        console.log('about to reward 500 pts')
-        // if boss dies, reward 500 points
         scene.scoreManager.increasePoints(500)
-
-        // store in local storage before destroying alien
-        localStorage.setItem(
-          'playerPoints',
-          scene.scoreManager.getCurrentPoints()
-        )
-        console.log('rewarded 500 pts')
+        localStorage.setItem('playerPoints', scene.scoreManager.getCurrentPoints())
 
         alien.destroy()
         if (alien.animator) {
@@ -154,7 +147,8 @@ export function handleBulletMovements(
   enemies,
   flyingEnemies,
   boss,
-  scene
+  scene,
+  shooterEnemies
 ) {
   const hitRadius = 20 // Define a hit radius for rough collision detection
 
@@ -173,7 +167,11 @@ export function handleBulletMovements(
     // Check for proximity-based collision with enemies
     let allEnemies = enemies
       .getChildren()
-      .concat(flyingEnemies.getChildren(), [boss])
+      .concat(
+        flyingEnemies.getChildren(),
+        shooterEnemies ? shooterEnemies.getChildren() : [],
+        [boss]
+      )
     for (let alien of allEnemies) {
       if (
         Phaser.Math.Distance.Between(bullet.x, bullet.y, alien.x, alien.y) <
@@ -245,7 +243,6 @@ function handleEnemyHit(bullet, alien, scene) {
     alien.health -= 3.5
   }
   alien.health -= 1
-  console.log('alien got shot lol, increase score by 10')
   scene.scoreManager.increasePoints(10)
   // local storage
   localStorage.setItem('playerPoints', scene.scoreManager.getCurrentPoints())
@@ -260,9 +257,23 @@ function handleEnemyHit(bullet, alien, scene) {
   // Set a timeout to revert the color after a short duration
   setTimeout(() => {
     alien.animator.clearTint() // Clear the tint to revert to the original color
-  }, 100) // Adjust the duration as needed (100 milliseconds in this example)
+  }, 300)
+
+  // Knockback impulse — direction derived from bullet travel direction
+  const knockbackDir = bullet.velX >= 0 ? 1 : -1
+  if (alien.flying) {
+    alien.setVelocityX(knockbackDir * 280)
+    alien.setVelocityY(-120)
+  } else if (alien.boss) {
+    alien.setVelocityX(knockbackDir * 140)
+    if (alien.body.blocked.down) alien.setVelocityY(-60)
+  } else {
+    alien.setVelocityX(knockbackDir * 280)
+    if (alien.body.blocked.down) alien.setVelocityY(-150)
+  }
 
   if (alien.health <= 0) {
+    scene.killCount += 1
     if (scene.player.chaseCount > 0){
       scene.player.chaseCount -= 1;
     }

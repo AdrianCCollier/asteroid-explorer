@@ -11,4 +11,20 @@ export function loadShieldBar(scene){
 
 // Bars use setScrollFactor(0) so Phaser keeps them in screen space automatically.
 // No manual position update needed.
-export function updateBars(scene){}
+export function updateBars(scene) {
+  const player = scene.player
+  if (!player || !player.shieldBar) return
+
+  // Shield regen: restores after ~8 seconds (480 frames at 60fps) of no damage
+  player.shieldRegenTimer += 1
+  if (player.shieldRegenTimer > 480 && player.shield < player.maxShield) {
+    player.shield = player.maxShield
+    player.shieldRegenTimer = 0
+  }
+
+  // Scale shield bar width proportionally, aligned to the left edge of the container
+  const shieldPct = player.shield / player.maxShield
+  player.shieldBar.setScale(2 * shieldPct, 2)
+  const shieldContainerLeft = player.shieldContainer.x - player.shieldContainer.width * player.shieldContainer.scaleX * 0.5
+  player.shieldBar.x = shieldContainerLeft + player.shieldBar.width * player.shieldBar.scaleX * 0.5
+}

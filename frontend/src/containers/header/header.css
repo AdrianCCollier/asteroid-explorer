@@ -1,7 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap');
 
 .solarsystem__header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
   display: flex;
+  background: linear-gradient(to bottom, rgba(0, 0, 8, 0.82) 0%, rgba(0, 0, 8, 0.45) 65%, transparent 100%);
+  pointer-events: none;
+  padding-bottom: 1.5rem;
 }
 
 .solarsystem__header-content {
@@ -10,33 +18,41 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  padding: 1rem 0 0 0;
 }
+
 .solarsystem__header-content h1 {
   font-family: 'Orbitron', sans-serif;
   font-weight: 800;
-  font-size: 64px;
-  line-height: 75px;
-  letter-spacing: -0.04em;
+  font-size: 46px;
+  line-height: 1.15;
+  letter-spacing: 0.06em;
   text-align: center;
-  color: #fff;
-  background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+  background: linear-gradient(45deg, #00d2ff, #a0e8ff, #3a7bd5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 5px rgba(0, 210, 255, 0.5), 0 0 10px rgba(58, 123, 213, 0.5);
-
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: glow 1.5s ease-in-out infinite alternate;
+  animation: titleGlow 3s ease-in-out infinite alternate;
+  margin: 0;
 }
 
-@keyframes glow {
+.solarsystem__header-subtitle {
+  font-family: monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.3em;
+  color: rgba(0, 210, 255, 0.45);
+  text-align: center;
+  margin: 5px 0 0 0;
+  text-transform: uppercase;
+}
+
+@keyframes titleGlow {
   from {
-    text-shadow: 0 0 20px rgba(0, 210, 255, 0.5),
-      0 0 10px rgba(58, 123, 213, 0.5);
+    filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.5)) drop-shadow(0 0 20px rgba(58, 123, 213, 0.3));
   }
   to {
-    text-shadow: 0 0 21px rgba(0, 210, 255, 0.6),
-      0 0 13px rgba(58, 123, 213, 0.6);
+    filter: drop-shadow(0 0 14px rgba(0, 210, 255, 0.75)) drop-shadow(0 0 35px rgba(58, 123, 213, 0.5));
   }
 }

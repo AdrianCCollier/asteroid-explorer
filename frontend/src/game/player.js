@@ -188,6 +188,9 @@ export function createPlayerInside(scene, x, y) {
     gravity: 0.4,
     hasWeapon: false,
     canShoot: false,
+    shield: 1,
+    maxShield: 1,
+    shieldRegenTimer: 0,
     sprite: playerSprite,
     rotation: null,
     collider: null,
@@ -229,6 +232,7 @@ export function createPlayerInside(scene, x, y) {
   player.shieldBar.setScale(2)
   player.shieldContainer.setScale(2)
   player.healthBar.setOrigin(0, 0.5)
+  player.shieldBar.setOrigin(0, 0.5)
 
   // Add a gun sprite if the player picks one up
   player.gunSprite = scene.add.sprite(player.x, player.y, 'weapon1')
@@ -267,7 +271,7 @@ export function handlePlayerMovementInside(
   }
 
   // Shooting
-  if (leftMouseButton && shootControl.canShoot) {
+  if (leftMouseButton && shootControl.canShoot && player.hasWeapon) {
     const equipped = localStorage.getItem('equipped')
     if (equipped === '"pistol"') {
       scene.sound.play('stunPistol', { volume: 0.25 })
@@ -378,6 +382,15 @@ export function alienFloor() {}
 export function platformFloor() {}
 
 export function handlePlayerDamage(player, amount, scene) {
+  // Shield absorbs the hit — flash blue, reset regen timer, skip health damage
+  if (player.shield > 0) {
+    player.shield -= 1
+    player.shieldRegenTimer = 0
+    player.shieldBar.setTint(0x88ccff)
+    setTimeout(() => { if (player.shieldBar) player.shieldBar.clearTint() }, 300)
+    return
+  }
+
   player.animator.setTint(0xff7e87) // Tints the alien red for a frame showing damage
   player.shootingAnimator.setTint(0xff7e87)
   player.armAnimator.setTint(0xff7e87)
@@ -413,7 +426,6 @@ export function handlePlayerDamage(player, amount, scene) {
 
   if (player.health <= 0) {
     player.health = 0
-    console.log('Game Over! Player has died.')
 
     // Reset the points
     scene.scoreManager.resetPoints()
@@ -424,7 +436,11 @@ export function handlePlayerDamage(player, amount, scene) {
     // Call functions to handle the game over scenario
     scene.scene.pause()
     scene.scene.stop()
-    scene.scene.launch('GameOverScene', { gameScene: scene.scene.key })
+    scene.scene.launch('GameOverScene', {
+      gameScene: scene.scene.key,
+      score: localStorage.getItem('playerPoints') || '0',
+      kills: scene.killCount,
+    })
   }
 }
 

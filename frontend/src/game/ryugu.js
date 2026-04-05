@@ -2,6 +2,7 @@ import BaseLevel from './BaseLevel'
 import mapJSON from './assets/Maps/Ryugu.json'
 import wallMapJSON from './assets/Maps/Ryugu_Walls.json'
 import themeSound from './assets/sounds/11pm.mp3'
+import bossThemeSound from './assets/sounds/Static_Ryugu_boss.mp3'
 
 export default class Ryugu extends BaseLevel {
   constructor() {
@@ -12,6 +13,8 @@ export default class Ryugu extends BaseLevel {
       themeKey: 'ryuguTheme',
       themeSound,
       themeVolume: 1,
+      bossThemeKey: 'ryuguBossTheme',
+      bossThemeSound,
       gravity: 9.8 * 0.0011 * 25000,
       playerSpawn: { x: 109, y: 3520 },
       bossSpawn: { x: 1315, y: 2200 },

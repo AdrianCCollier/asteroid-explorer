@@ -11,21 +11,29 @@ class GameOverScene extends Phaser.Scene {
     if (data && data.gameScene) {
       this.nextSceneKey = data.gameScene;
     }
+    this.score = (data && data.score) ? data.score : '0'
+    this.kills = (data && data.kills !== undefined) ? data.kills : 0
   }
 
   create() {
       this.cameras.main.fadeIn(400, 0, 0, 0)
 
+      const cx = this.cameras.main.width / 2
+      const cy = this.cameras.main.height / 2
+
       // Adding a semi-transparent background
-      const rect = this.add.rectangle(this.cameras.main.width / 2, this.cameras.main.height / 2, 400, 200, 0x000000);
+      const rect = this.add.rectangle(cx, cy, 420, 280, 0x000000);
       rect.setAlpha(0.8);
-      
+
       // Adding a title
-      const title = this.add.text(this.cameras.main.width / 2, this.cameras.main.height / 2 - 50, 'Game Over. Want To Try Again?', { color: '#ffffff', fontSize: '20px' });
-      title.setOrigin(0.5, 0.5); // Centering text
+      const title = this.add.text(cx, cy - 90, 'Game Over. Want To Try Again?', { color: '#ffffff', fontSize: '20px' });
+      title.setOrigin(0.5, 0.5);
+
+      this.add.text(cx, cy - 40, `Score: ${this.score}`, { color: '#ffdd00', fontSize: '22px' }).setOrigin(0.5, 0.5)
+      this.add.text(cx, cy, `Enemies Defeated: ${this.kills}`, { color: '#aaffaa', fontSize: '18px' }).setOrigin(0.5, 0.5)
       
       // Styling Yes Button
-      const yesButton = this.add.text(this.cameras.main.width / 2 - 70, this.cameras.main.height / 2 + 20, 'Yes', { fill: '#0f0', fontSize: '32px', padding: { x: 20, y: 10 }, backgroundColor: '#000000' })
+      const yesButton = this.add.text(cx - 70, cy + 60, 'Yes', { fill: '#0f0', fontSize: '32px', padding: { x: 20, y: 10 }, backgroundColor: '#000000' })
           .setInteractive()
           .on('pointerdown', () => {
               this.scene.stop();
@@ -35,7 +43,7 @@ class GameOverScene extends Phaser.Scene {
           .on('pointerout', () => yesButton.setBackgroundColor('#000000')); // Changing background color back when not hovered
       
       // Styling No Button
-      const noButton = this.add.text(this.cameras.main.width / 2 + 70, this.cameras.main.height / 2 + 20, 'No', { fill: '#f00', fontSize: '32px', padding: { x: 20, y: 10 }, backgroundColor: '#000000' })
+      const noButton = this.add.text(cx + 70, cy + 60, 'No', { fill: '#f00', fontSize: '32px', padding: { x: 20, y: 10 }, backgroundColor: '#000000' })
           .setInteractive()
           .on('pointerdown', () => {
               this.scene.stop();

@@ -2,9 +2,8 @@
 class ScoreSystem {
   constructor(scene) {
     this.scene = scene;
-    // Try to read the score from local storage, default to 0 if not found
-    const savedScore = localStorage.getItem('playerPoints');
-    this.points = savedScore ? parseInt(savedScore, 10) : 0;
+    this.points = 0;
+    localStorage.setItem('playerPoints', '0');
 
     // Set up the points display text
     this.pointsText = this.scene.add.text(0, 0, 'Score: ' + this.points, {
@@ -27,12 +26,12 @@ class ScoreSystem {
 
   increasePoints(points) {
     this.points += points
-    this.pointsText.setText('Points: ' + this.points)
+    this.pointsText.setText('Score: ' + this.points)
   }
 
   resetPoints() {
     this.points = 0
-    this.pointsText.setText('Points: ' + this.points)
+    this.pointsText.setText('Score: ' + this.points)
   }
 
   canAfford(amount) {
@@ -42,7 +41,7 @@ class ScoreSystem {
   spendPoints(amount) {
     if (this.canAfford(amount)) {
       this.points -= amount
-      this.pointsText.setText('points: ' + this.points)
+      this.pointsText.setText('Score: ' + this.points)
       return true // Purchase successful
     } else {
       // Handle case where there are not enough points

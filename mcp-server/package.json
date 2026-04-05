@@ -1,0 +1,12 @@
+{
+  "name": "asteroid-explorer-mcp",
+  "version": "1.0.0",
+  "description": "MCP dev tools for Asteroid Explorer: run_build and validate_scene",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

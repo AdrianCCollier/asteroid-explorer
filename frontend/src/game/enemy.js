@@ -2,9 +2,11 @@ import Phaser from 'phaser';
 
 import {createAsteroid, applyRotation} from './asteroid.js';
 
-import {createTallEnemyAnimator, updateTallEnemyAnimations, 
+import {createTallEnemyAnimator, updateTallEnemyAnimations,
         createFlyingEnemyAnimator, updateFlyingEnemyAnimations,
-        createBossEnemyAnimator, updateBossEnemyAnimations} from './animation'
+        createBossEnemyAnimator, updateBossEnemyAnimations,
+        createShooterEnemyAnimator, updateShooterEnemyAnimations} from './animation'
+import { handlePlayerDamage } from './player.js'
 
 export function createEnemy(scene, asteroid, w, h) {
     // Initialize an enemy object with given properties
@@ -68,8 +70,8 @@ export function createEnemyInside(scene, group, x, y) {
     enemy.body.setOffset(offsetX, offsetY);
 
     // Attach properties to the sprite directly
-    enemy.speed = 50;
-    enemy.health = 2; // Add a health property with a value of 2
+    enemy.speed = 75;
+    enemy.health = 3;
     enemy.direction = 1; // Enemy initial direction (1 for right, -1 for left)
     enemy.animator = null;
     
@@ -93,19 +95,19 @@ export function handleEnemyMovementInside(scene, enemy) {
   let distance = Math.sqrt(dx * dx + dy * dy)
 
   const isSolidGroundAhead = checkForSolidGroundAhead(scene, enemy)
-  enemy.shouldChasePlayer = distance < 300 // distance threshold to start chasing
+  enemy.shouldChasePlayer = distance < 450 // distance threshold to start chasing
   // Set a range for how close the player needs to be to trigger chasing
   if (localStorage.getItem('bossKills') == 2) {
-    enemy.shouldChasePlayer = distance < 400
+    enemy.shouldChasePlayer = distance < 550
   }
   if (localStorage.getItem('bossKills') == 3) {
-    enemy.shouldChasePlayer = distance < 500
+    enemy.shouldChasePlayer = distance < 650
   }
   if (localStorage.getItem('bossKills') == 4) {
-    enemy.shouldChasePlayer = distance < 600
+    enemy.shouldChasePlayer = distance < 750
   }
   if (localStorage.getItem('bossKills') >= 5) {
-    enemy.shouldChasePlayer = distance < 700
+    enemy.shouldChasePlayer = distance < 900
   }
 
   if (enemy.shouldChasePlayer)
@@ -216,8 +218,8 @@ export function createFlyingEnemy(scene, group, x, y) {
     enemy.body.setOffset(0, 0);
 
     // Attach properties to the flying enemy
-    enemy.speed = 100;
-    enemy.health = 1;
+    enemy.speed = 130;
+    enemy.health = 2;
     enemy.isChasing = false;
 
     enemy.chasingPlayer = true;
@@ -239,18 +241,18 @@ export function handleFlyingEnemyMovement(scene, enemy) {
     let distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, player.x, player.y);
 
     // Set a range for how close the player needs to be to trigger chasing
-    var chaseRange = 500;
+    var chaseRange = 650;
     if(localStorage.getItem('bossKills') == 2) {
-        chaseRange = 600;
+        chaseRange = 750;
     }
     if (localStorage.getItem('bossKills') == 3) {
-      chaseRange = 700
+      chaseRange = 850
     }
     if (localStorage.getItem('bossKills') == 4) {
-      chaseRange = 800
+      chaseRange = 950
     }
     if (localStorage.getItem('bossKills') >= 5) {
-      chaseRange = 900
+      chaseRange = 1100
     }
 
     if (distance < chaseRange && !scene.player.bossChase) {
@@ -309,9 +311,9 @@ export function createBoss(scene, group, x, y) {
     boss.body.setOffset(offsetX, offsetY);
 
     // Attach properties to the boss
-    boss.speed = 125;
-    boss.health = 20; 
-
+    boss.speed = 160;
+    boss.health = 25;
+    boss.bossActivated = false;
 
     // Used to tell what kind of enemy
     boss.boss = true;
@@ -322,9 +324,8 @@ export function createBoss(scene, group, x, y) {
     return boss;
 }
 
-var bossActivated = false;
 export function handleBossMovement(scene, enemy) {
-    let player = scene.player.sprite; 
+    let player = scene.player.sprite;
 
     // Calculate the distance to the player
     let distance = Phaser.Math.Distance.Between(enemy.x, enemy.y, player.x, player.y);
@@ -336,15 +337,18 @@ export function handleBossMovement(scene, enemy) {
       chaseRange = 250;
     else if (scene.scene.key == "Vesta")
       chaseRange = 800;
-    else if (scene.scene.key == "Spyche")
+    else if (scene.scene.key == "Psyche")
       chaseRange = 700;
     else
       chaseRange = 800;
 
-    if (distance < chaseRange || bossActivated) {
+    if (distance < chaseRange || enemy.bossActivated) {
+        if (!enemy.bossActivated) {
+          // First frame of activation — trigger boss music transition
+          scene.events.emit('bossActivated')
+        }
         scene.player.bossChase = true;
-
-        bossActivated = true;
+        enemy.bossActivated = true;
         // If within range, chase the player
         let directionX = (player.x - enemy.x) / distance;
         let directionY = (player.y - enemy.y) / distance;
@@ -364,7 +368,123 @@ export function handleBossMovement(scene, enemy) {
     updateBossEnemyAnimations(scene, enemy);
 }
 
-export function scaleEnemyAttributes(enemies, flyingEnemies, boss) {
+export function createShooterEnemiesGroup(scene) {
+  return scene.physics.add.group()
+}
+
+export function createShooterEnemy(scene, group, x, y) {
+  let enemy = group.create(x, y, 'enemy')
+  enemy.setCollideWorldBounds(true)
+
+  const collisionWidth = enemy.width * 0.8
+  const collisionHeight = enemy.height * 1.9
+  const offsetX = (enemy.width - collisionWidth) / 2
+  const offsetY = (enemy.height - collisionHeight) / 2
+  enemy.body.setSize(collisionWidth, collisionHeight)
+  enemy.body.setOffset(offsetX, offsetY)
+
+  enemy.speed = 60
+  enemy.health = 2
+  enemy.direction = 1
+  enemy.animator = null
+  enemy.shooter = true
+  enemy.chasingCount = 0
+  enemy.lastShotTime = 0
+  enemy.shotCooldown = 2000 // ms between shots
+  enemy.isAiming = false
+
+  createShooterEnemyAnimator(scene, enemy)
+  return enemy
+}
+
+export function handleShooterEnemyMovement(scene, enemy) {
+  const player = scene.player
+  const dx = player.sprite.x - enemy.x
+  const dy = player.sprite.y - enemy.y
+  const distance = Math.sqrt(dx * dx + dy * dy)
+
+  const SHOOT_RANGE = 500
+  const BACK_AWAY_DISTANCE = 180
+
+  enemy.direction = dx > 0 ? 1 : -1
+
+  if (distance < SHOOT_RANGE && !player.bossChase) {
+    enemy.isAiming = true
+
+    if (distance < BACK_AWAY_DISTANCE) {
+      // Back away — player is too close
+      enemy.setVelocityX(-enemy.direction * enemy.speed)
+    } else {
+      // Hold position and shoot
+      enemy.setVelocityX(0)
+    }
+
+    const now = scene.time.now
+    if (now - enemy.lastShotTime > enemy.shotCooldown) {
+      enemy.lastShotTime = now
+      _fireEnemyProjectile(scene, enemy, player.sprite.x, player.sprite.y)
+    }
+
+    if (enemy.chasingCount === 0) {
+      enemy.chasingCount = 1
+      scene.player.chaseCount += 1
+    }
+  } else {
+    enemy.isAiming = false
+    _patrolShooter(scene, enemy)
+
+    if (enemy.chasingCount !== 0) {
+      enemy.chasingCount = 0
+      scene.player.chaseCount -= 1
+    }
+  }
+
+  updateShooterEnemyAnimations(scene, enemy)
+}
+
+function _patrolShooter(scene, enemy) {
+  const offsetX = enemy.width * 0.5 * enemy.direction
+  const point = { x: enemy.x + offsetX, y: enemy.y + enemy.height * 1.9 }
+  const t1 = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Floors')
+  const t2 = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Alien Floors')
+  const t3 = scene.map.getTileAtWorldXY(point.x, point.y, true, scene.cameras.main, 'Platforms')
+  const hasGround = (t1 && t1.collides) || (t2 && t2.collides) || (t3 && t3.collides)
+  if (!hasGround) enemy.direction *= -1
+  enemy.setVelocityX(enemy.speed * enemy.direction)
+}
+
+function _fireEnemyProjectile(scene, enemy, targetX, targetY) {
+  const angle = Math.atan2(targetY - enemy.y, targetX - enemy.x)
+  const speed = 250
+
+  const projectile = scene.physics.add.sprite(enemy.x, enemy.y, 'pistolBullet')
+  projectile.body.setAllowGravity(false)
+  projectile.setTint(0xff4400)
+  projectile.setScale(0.7)
+  projectile.setRotation(angle)
+  projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed)
+  projectile.setDepth(2)
+
+  const destroyProjectile = () => { if (projectile.active) projectile.destroy() }
+
+  scene.physics.add.collider(projectile, scene.asteroidLayer, destroyProjectile)
+  scene.physics.add.collider(projectile, scene.alienLayer, destroyProjectile)
+  scene.physics.add.collider(projectile, scene.platformLayer, destroyProjectile)
+
+  scene.physics.add.overlap(projectile, scene.player.sprite, () => {
+    if (!scene.player.isInvulnerable) {
+      handlePlayerDamage(scene.player, 1, scene)
+      scene.player.isInvulnerable = true
+      scene.time.delayedCall(1500, () => { scene.player.isInvulnerable = false }, [], scene)
+    }
+    destroyProjectile()
+  })
+
+  // Auto-destroy if projectile misses everything
+  scene.time.delayedCall(4000, destroyProjectile, [], scene)
+}
+
+export function scaleEnemyAttributes(enemies, flyingEnemies, boss, shooterEnemies) {
     const bossKills = parseInt(localStorage.getItem('bossKills'));
   
     const speedScaleFactor = 2; // increase speed for each boss kill
@@ -374,18 +494,24 @@ export function scaleEnemyAttributes(enemies, flyingEnemies, boss) {
     enemies.getChildren().forEach(enemy => {
       enemy.speed += bossKills * speedScaleFactor;
       enemy.health += bossKills * healthScaleFactor;
-      console.log(enemy.health)
     });
-    
+
     flyingEnemies.getChildren().forEach(enemy => {
         enemy.speed += bossKills * speedScaleFactor;
         enemy.health += bossKills * healthScaleFactor;
-        console.log(enemy.health)
     });
-    
+
     boss.getChildren().forEach(enemy => {
         enemy.speed += bossKills * speedScaleFactor;
         enemy.health += bossKills * healthScaleFactor;
-        console.log(enemy.health)
     });
+
+    if (shooterEnemies) {
+      shooterEnemies.getChildren().forEach(enemy => {
+        enemy.speed += bossKills * speedScaleFactor;
+        enemy.health += bossKills * healthScaleFactor;
+        // Scale down shot cooldown to shoot faster at higher levels
+        enemy.shotCooldown = Math.max(800, enemy.shotCooldown - bossKills * 200)
+      })
+    }
   }

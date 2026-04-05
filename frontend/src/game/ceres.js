@@ -2,6 +2,7 @@ import BaseLevel from './BaseLevel'
 import mapJSON from './assets/Maps/Ceres.json'
 import wallMapJSON from './assets/Maps/Ceres_Walls.json'
 import themeSound from './assets/sounds/interstellar-space.mp3'
+import bossThemeSound from './assets/sounds/Static_Ceres_Boss.mp3'
 
 export default class Ceres extends BaseLevel {
   constructor() {
@@ -12,6 +13,8 @@ export default class Ceres extends BaseLevel {
       themeKey: 'ceresTheme',
       themeSound,
       themeVolume: 0.5,
+      bossThemeKey: 'ceresBossTheme',
+      bossThemeSound,
       gravity: 9.8 * 0.27 * 150,
       playerSpawn: { x: 109, y: 2150 },
       bossSpawn: { x: 1900, y: 6500 },
